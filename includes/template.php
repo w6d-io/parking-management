@@ -4,13 +4,13 @@ namespace ParkingManagement;
 class Template
 {
 	public static function get_default( $prop = 'info' ) {
-		$template = null;
 		match ($prop) {
 			'info' => $template = self::info(),
 			'database' => $template = self::database(),
 			'api' => $template = self::api(),
 			'form' => $template = self::form(),
 			'sms' => $template = self::sms(),
+			default => $template = null
 		};
 		return apply_filters( 'pkmgmt_default_template', $template, $prop );
 	}
