@@ -1,0 +1,8 @@
+{
+	"name": "parking-management",
+	"author": "david972",
+	"devDependencies": {
+		"@contactable/swv": "^1.3.0",
+		"@wordpress/scripts": "^27.8.0"
+	}
+}
