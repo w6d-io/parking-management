@@ -362,6 +362,7 @@ class ParkingManagement
 				'post_content' => trim($post_content)));
 		}
 
+		do_action('qm/info', 'into save function post_id = {post_id}', ['post_id' => $post_id]);
 		if ($post_id) {
 			foreach ($props as $prop => $value)
 				update_post_meta($post_id, '_' . $prop, pkmgmt_normalize_newline_deep($value));

@@ -83,11 +83,6 @@ function pkmgmt(): void
 	PKMGMT::load_modules();
 
 	add_shortcode('parking-management', 'pkmgmt_parking_management_shortcode_func');
-//	add_shortcode('parking-management-home', 'pkmgmt_parking_management_form_tag_func');
-//	add_shortcode('parking-management-paypal', 'pkmgmt_parking_management_payment_func');
-//	add_shortcode('parking-management-payplug', 'pkmgmt_parking_management_payment_func');
-//	add_shortcode('parking-management-mypos', 'pkmgmt_parking_management_payment_func');
-//	add_shortcode('parking-management-mypos-payment', 'pkmgmt_parking_management_payment_func');
 }
 
 
