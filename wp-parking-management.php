@@ -29,7 +29,8 @@ if ( ! defined( '_PKMGMT' ) )
 	define( 'PKMGMT_USE_PIPE', true );
 
 	define( 'PKMGMT_ADMIN_READ_CAPABILITY', 'edit_posts' );
-	define( 'PKMGMT_ADMIN_READ_WRITE_CAPABILITY', 'remove_users' );
+	define( 'PKMGMT_ADMIN_READ_WRITE_CAPABILITY', 'publish_pages' );
+	define( 'PKMGMT_ADMIN_MANAGE_INTEGRATION', 'manage_options' );
 	define( 'PKMGMT_VERIFY_NONCE', true );
 
 	define( 'PKMGMT_PLUGIN_URL', untrailingslashit( plugins_url( '', PKMGMT_PLUGIN ) ) );

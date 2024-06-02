@@ -1,24 +1,31 @@
 <?php
 //defined('_PKMGMT') or die('Restricted access');
 
+require_once PKMGMT_PLUGIN_DIR . DS . "includes" . DS . "l10n.php";
+require_once PKMGMT_PLUGIN_DIR . DS . "includes" . DS . "capabilities.php";
 require_once PKMGMT_PLUGIN_DIR . DS . "includes" . DS . "functions.php";
-require_once(PKMGMT_PLUGIN_DIR . DS . "includes" . DS . "parking-management.php");
+require_once PKMGMT_PLUGIN_DIR . DS . "includes" . DS . "parking-management.php";
+require_once PKMGMT_PLUGIN_DIR . DS . "includes" . DS . "shortcode.php";
+require_once PKMGMT_PLUGIN_DIR . DS . "includes" . DS . "messages.php";
+require_once PKMGMT_PLUGIN_DIR . DS . "includes" . DS . "template.php";
 
 if (is_admin()) {
 	require_once PKMGMT_PLUGIN_DIR . DS . "admin" . DS . "admin.php";
 } else {
 	require_once PKMGMT_PLUGIN_DIR . DS . "includes" . DS . "controller.php";
 }
+
 use ParkingManagement\ParkingManagement;
 
-class PKMGMT {
+class PKMGMT
+{
 
 	/**
 	 * Loads modules from the modules directory.
 	 */
 	public static function load_modules(): void
 	{
-		self::load_module( 'book' );
+		self::load_module('book');
 	}
 
 	/**
@@ -27,10 +34,10 @@ class PKMGMT {
 	 * @param string $mod Name of module.
 	 * @return bool True on success, false on failure.
 	 */
-	protected static function load_module(string $mod ): bool
+	protected static function load_module(string $mod): bool
 	{
-		return pkmgmt_include_module_file( $mod . '/' . $mod . '.php' )
-			|| pkmgmt_include_module_file( $mod . '.php' );
+		return pkmgmt_include_module_file($mod . '/' . $mod . '.php')
+			|| pkmgmt_include_module_file($mod . '.php');
 	}
 
 	/**
@@ -42,11 +49,11 @@ class PKMGMT {
 	 * @return mixed Array value tied to the $name key. If nothing found,
 	 *               the $default_value value will be returned.
 	 */
-	public static function get_option(string $name, bool $default_value = false ): mixed
+	public static function get_option(string $name, bool $default_value = false): mixed
 	{
-		$option = get_option( 'pkmgmt' );
+		$option = get_option('pkmgmt');
 
-		if ( false === $option ) {
+		if (false === $option) {
 			return $default_value;
 		}
 
@@ -60,16 +67,16 @@ class PKMGMT {
 	 * @param string $name Array item key.
 	 * @param mixed $value Option value.
 	 */
-	public static function update_option(string $name, mixed $value ): void
+	public static function update_option(string $name, mixed $value): void
 	{
-		$old_option = get_option( 'pkmgmt' );
-		$old_option = ( false === $old_option ) ? array() : (array) $old_option;
+		$old_option = get_option('pkmgmt');
+		$old_option = (false === $old_option) ? array() : (array)$old_option;
 
-		update_option( 'pkmgmt',
-			array_merge( $old_option, array( $name => $value ) )
+		update_option('pkmgmt',
+			array_merge($old_option, array($name => $value))
 		);
 
-		do_action( 'pkmgmt_update_option', $name, $value, $old_option );
+		do_action('pkmgmt_update_option', $name, $value, $old_option);
 	}
 }
 
@@ -86,7 +93,7 @@ function pkmgmt(): void
 }
 
 
-add_action( 'init', 'pkmgmt_init', 2);
+add_action('init', 'pkmgmt_init', 2);
 /**
  * Registers post types for parking management.
  */
@@ -99,7 +106,8 @@ function pkmgmt_init(): void
 }
 
 add_action('admin_init', 'pkmgmt_upgrade', 10, 0);
-function pkmgmt_upgrade(): void {
+function pkmgmt_upgrade(): void
+{
 	$old_version = PKMGMT::get_option('version', '0');
 	$new_version = PKMGMT_VERSION;
 
@@ -111,7 +119,7 @@ function pkmgmt_upgrade(): void {
 	PKMGMT::update_option('version', $new_version);
 }
 
-add_action( 'activate_' . PKMGMT_PLUGIN_BASENAME, 'pkmgmt_install', 10, 0 );
+add_action('activate_' . PKMGMT_PLUGIN_BASENAME, 'pkmgmt_install', 10, 0);
 
 
 /**
@@ -120,26 +128,26 @@ add_action( 'activate_' . PKMGMT_PLUGIN_BASENAME, 'pkmgmt_install', 10, 0 );
  */
 function pkmgmt_install(): void
 {
-	if (get_option( 'pkmgmt' )) {
+	if (get_option('pkmgmt')) {
 		return;
 	}
 	ParkingManagement::register_post_type();
 	pkmgmt_upgrade();
 
-	if ( get_posts( array( 'post_type' => ParkingManagement::post_type ) ) ) {
+	if (get_posts(array('post_type' => ParkingManagement::post_type))) {
 		return;
 	}
 
 	$pm = ParkingManagement::get_template(
 		array(
-			'title' => sprintf( __( 'Parking %d', 'parking-management' ), 1),
-			'name' => sprintf( __( 'Parking %d', 'parking-management' ), 1)
+			'title' => sprintf(__('Parking %d', 'parking-management'), 1),
+			'name' => sprintf(__('Parking %d', 'parking-management'), 1)
 		)
 	);
 
 	$pm->save();
 
-	PKMGMT::update_option( 'bulk_validate',
+	PKMGMT::update_option('bulk_validate',
 		array(
 			'timestamp' => time(),
 			'version' => PKMGMT_VERSION,

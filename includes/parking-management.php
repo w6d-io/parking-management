@@ -4,19 +4,14 @@ namespace ParkingManagement;
 
 use WP_Error;
 
-require_once(PKMGMT_PLUGIN_DIR . DS . "includes" . DS . "l10n.php");
-require_once(PKMGMT_PLUGIN_DIR . DS . "includes" . DS . "shortcode.php");
-require_once(PKMGMT_PLUGIN_DIR . DS . "includes" . DS . "messages.php");
-require_once(PKMGMT_PLUGIN_DIR . DS . "includes" . DS . "template.php");
-
 class ParkingManagement
 {
 
 	const post_type = 'pkmgmt_parking_management';
 
-	private static mixed $current = null;
+	private static ParkingManagement|null $current = null;
 
-	public string $id;
+	public int $id;
 	public string $name;
 	public string $title;
 	public bool $locale = false;
@@ -169,6 +164,16 @@ class ParkingManagement
 				'singular_name' => __('Parking Management', 'parking-management')),
 			'rewrite' => false,
 			'query_var' => false));
+	}
+
+	/**
+	 * Returns the parking management that is currently processed.
+	 *
+	 * @return ParkingManagement|null
+	 */
+	public static function get_current(): ?ParkingManagement
+	{
+		return self::$current;
 	}
 
 	/**
@@ -344,9 +349,7 @@ class ParkingManagement
 		$title = wp_slash($this->title);
 		$props = wp_slash($this->get_properties());
 
-
 		$post_content = implode("\n", pkmgmt_array_flatten($props));
-
 
 		if ($this->initial()) {
 			$post_id = wp_insert_post(array(
@@ -356,13 +359,12 @@ class ParkingManagement
 				'post_content' => trim($post_content)));
 		} else {
 			$post_id = wp_update_post(array(
-				'ID' => (int)$this->id,
+				'ID' => $this->id,
 				'post_status' => 'publish',
 				'post_title' => $this->title,
 				'post_content' => trim($post_content)));
 		}
 
-		do_action('qm/info', 'into save function post_id = {post_id}', ['post_id' => $post_id]);
 		if ($post_id) {
 			foreach ($props as $prop => $value)
 				update_post_meta($post_id, '_' . $prop, pkmgmt_normalize_newline_deep($value));
