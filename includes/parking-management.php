@@ -25,6 +25,7 @@ class ParkingManagement
 	{
 		$post = get_post($post);
 
+//		print_log($post);
 		if ($post
 			and self::post_type === get_post_type($post)) {
 			$this->id = $post->ID;
@@ -176,6 +177,21 @@ class ParkingManagement
 		return self::$current;
 	}
 
+	public static function get_instance( $post = null): ParkingManagement
+	{
+		$pm = null;
+
+		if ($post instanceof self ) {
+			$pm = $post;
+		} elseif ( ! empty($post)) {
+			$post = get_post($post);
+			if (isset($post) and self::post_type === get_post_type($post)) {
+				$pm = new self($post);
+			}
+		}
+		return $pm::$current = $pm;
+	}
+
 	/**
 	 * Returns a ParkingManagement data filled by default contents.
 	 *
@@ -199,6 +215,8 @@ class ParkingManagement
 		if (!isset($args['name'])) {
 			$args['name'] = __('Untitled', 'parking-management');
 		}
+		print_log("la", false);
+		print_log($args);
 
 		$callback = static function ($args) {
 			$pm = new self;
@@ -224,7 +242,6 @@ class ParkingManagement
 			$callback,
 			$args
 		);
-
 
 		self::$current = apply_filters('pkmgmt_parking_management_default_pack',
 			$pm, $args
@@ -385,5 +402,26 @@ class ParkingManagement
 		return $post_id;
 	}
 
+	public function set_title( $title ): void
+	{
+		$title = strip_tags( $title );
+		$title = trim( $title );
 
+		if ( '' === $title ) {
+			$title = __( 'Untitled', 'contact-form-7' );
+		}
+
+		$this->title = $title;
+	}
+
+	public function set_locale( $locale ): void
+	{
+		$locale = trim( $locale );
+
+		if ( is_valid_locale($locale)) {
+			$this->locale = $locale;
+		} else {
+			$this->locale = 'en_US';
+		}
+	}
 }

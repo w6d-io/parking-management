@@ -75,3 +75,13 @@ function pkmgmt_unload_textdomain(bool $reloadable = false ): bool
 	return unload_textdomain( PKMGMT_TEXT_DOMAIN, $reloadable );
 }
 
+/**
+ * Returns true if the given locale code looks valid.
+ *
+ * @param string $locale Locale code.
+ */
+function is_valid_locale(string $locale ): bool
+{
+	$pattern = '/^[a-z]{2,3}(?:_[a-zA-Z_]{2,})?$/';
+	return (bool) preg_match( $pattern, $locale );
+}

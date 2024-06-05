@@ -10,9 +10,7 @@ class Pages
 	{
 		$pm = ParkingManagement::get_current();
 		echo '<div class="wrap pkmgmt-parking-management-config">';
-		echo sprintf('<h2>%s</h2>',
-			esc_html(__('Parking Management', 'parking-management')),
-		);
+		echo '<h2>' . esc_html(__('Parking Management', 'parking-management')) . '</h2>';
 		if ($pm === null) {
 			$_REQUEST['message'] = 'Failed to get config';
 			do_action('pkmgmt_admin_notices');
@@ -46,6 +44,7 @@ class Pages
 
 		echo '<form action="" method="post">';
 		self::config_form_hidden($plugin_page, $pm->id);
+		self::config_form_header($pm);
 
 		echo '</form>';
 	}
@@ -63,66 +62,62 @@ class Pages
 		);
 	}
 
-	private static function config_form_header(ParkingManagement $pm): void {
-		if (current_user_can('pkmgmt_edit', $pm->id)) {
-			$disabled = '';
-			wp_nonce_field('pkmgmt-save_' . $pm->id);
-		} else
-			$disabled = ' disabled="disabled"';
-		$holder = array(
-			'title_placeholder' => esc_html(__("Title", 'parking-management')),
-			'title' => esc_attr( $pm->title ),
-			'name_placeholder' => esc_html(__("Name", 'parking-management')),
-			'name' => esc_attr( $pm->name )
-		);
-		echo '<div id="titlediv">';
-		echo sprintf('<input type="text" class="wide" id="pkmgmt-title" placeholder="%s" name="pkmgmt-title" size="80" value="%s" %s />', $holder['title_placeholder'],$holder['title'],$disabled );
-		echo '</div>';
-		$header = <<< EOD
-<div id="titlediv">
-		<input type="text" class="wide" id="pkmgmt-title" placeholder="{$holder['title_placeholder']}" name="pkmgmt-title" size="80" value="{$holder['title']}" {$disabled} />
-
-		<p class="tagcode">
-			{$holder['name_placeholder']}<br />
-			<input type="text" class="wide" id="pkmgmt-name" name="pkmgmt-name" size="80" value="{$holder['name']}"<?php echo $disabled; ?> />
-		</p>
-		<?php if ( ! {$pm->initial()} ) : ?>
-		<p class="tagcode">
-			<?php echo esc_html( __( "Copy and paste this code into your home page to include pre booking form.", 'parking-management' ) ); ?><br />
-
-			<input type="text" id="pkmgmt-home-form-anchor-text" value='[parking-management-home-form id="<?php echo {$pm->id} ; ?>" title="<?php echo esc_attr( {$pm->name}  ); ?>"]' onfocus="this.select();" readonly class="wide wp-ui-text-highlight code" />
-		</p>
-		<p class="tagcode">
-			<?php echo esc_html( __( "Copy this code and paste it into your post, page or text widget content.", 'parking-management' ) ); ?><br />
-
-			<input type="text" id="pkmgmt-anchor-text" onfocus="this.select();" readonly class="wide wp-ui-text-highlight code" />
-		</p>
-		<p class="tagcode">
-			<?php echo esc_html( __( "Copy this code and paste it into your post, page or text widget content to add payplug code.", 'parking-management' ) ); ?><br />
-
-			<input type="text" id="pkmgmt-payplug-anchor-text" value='[parking-management-payplug  id="<?php echo {$pm->id} ; ?>" title="<?php echo esc_attr( {$pm->name} ); ?>"]' onfocus="this.select();" readonly class="wide wp-ui-text-highlight code" />
-		</p>
-		<p class="tagcode">
-			<?php echo esc_html( __( "Copy this code and paste it into your post, page or text widget content to add paypal code.", 'parking-management' ) ); ?><br />
-
-			<input type="text" id="pkmgmt-paypal-anchor-text" value='[parking-management-paypal  id="<?php echo {$pm->id}; ?>" title="<?php echo esc_attr( {$pm->name} ); ?>"]' onfocus="this.select();" readonly class="wide wp-ui-text-highlight code" />
-		</p>
-		<?php endif; ?>
-	<?php if ( current_user_can( 'pkmgmt_admin_cap', {$pm->id} ) ) : ?>
-		<div class="save-pkmgmt">
-			<input type="submit" class="button-primary" name="pkmgmt-save" value="<?php echo esc_attr( __( 'Save', 'parking-management' ) ); ?>" />
-		</div>
-	<?php endif; ?>
-
-
-	</div>
-EOD;
-
-	}
-
-	private static function ()
+	private static function config_form_header(ParkingManagement $pm): void
 	{
+		if (current_user_can('pkmgmt_edit', $pm->id)) {
+			wp_nonce_field('pkmgmt-save_' . $pm->id);
+		}
+		echo '<div id="titlediv">';
 
+		echo self::_index("text", "pkmgmt-title", "pkmgmt-title", array(
+			'class' => "wide",
+			'placeholder' => esc_html(__("Title", 'parking-management')),
+			'size' => 80,
+			'value' => esc_attr($pm->title)
+		),
+			!(current_user_can('pkmgmt_edit', $pm->id))
+		);
+
+		echo self::_p(
+			esc_html(__("Name", 'parking-management')) . "<br/",
+			self::_index("text", "pkmgmt-name", "pkmgmt-name", array(
+				'size' => 80,
+				'value' => esc_attr($pm->name)
+			),
+				!(current_user_can('pkmgmt_edit', $pm->id))
+			)
+		);
+		echo '<div class="save-pkmgmt">';
+		echo self::_index("submit", "pkmgmt-save", "pkmgmt-save", array(
+			'class' => 'button-primary',
+			'value' => esc_html(__("Save", 'parking-management')),
+		));
+		echo '</div>';
+		echo '</div>';
 	}
 
+	private static function _p(string ...$contents): string
+	{
+		$content = "";
+		foreach ($contents as $elem) {
+			$content .= $elem . "\n";
+		}
+		return sprintf('<p class="tagcode">%s</p>', $content);
+	}
+
+	private static function _index(string $type, string $id, string $name, array $args, bool $disabled = false): string
+	{
+		return '<input type="' . $type . '" id="' . $id . '" name="' . $name . '" ' . self::array_to_html_attribute($args) . ($disabled ?  ' disabled' : '') . ' />';
+	}
+
+	public static function array_to_html_attribute(array $attr): string
+	{
+		$result = '';
+		foreach ($attr as $key => $value) {
+			if (in_array($key, ['id', 'name', 'type']))
+				continue;
+			$result .= $key . '="' . $value . '" ';
+		}
+		return trim($result);
+	}
 }

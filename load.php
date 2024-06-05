@@ -144,6 +144,8 @@ function pkmgmt_install(): void
 			'name' => sprintf(__('Parking %d', 'parking-management'), 1)
 		)
 	);
+	print_log("la", false);
+	print_log($pm);
 
 	$pm->save();
 
