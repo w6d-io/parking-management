@@ -11,6 +11,7 @@ class Pages
 		$pm = ParkingManagement::get_current();
 		echo '<div class="wrap pkmgmt-parking-management-config">';
 		echo '<h2>' . esc_html(__('Parking Management', 'parking-management')) . '</h2>';
+		echo '<br class="clear"/>';
 		if ($pm === null) {
 			$_REQUEST['message'] = 'Failed to get config';
 			do_action('pkmgmt_admin_notices');
@@ -21,8 +22,9 @@ class Pages
 		echo '</div>';
 	}
 
-	public static function notices_message($page): void
+	public static function notices_message(): void
 	{
+		$page = $_REQUEST['page'] ?? '';
 		if ($page != 'pkmgmt') {
 			return;
 		}
@@ -30,12 +32,36 @@ class Pages
 			return;
 		$message = $_REQUEST['message'];
 		if ('saved' == $message)
-			$message = esc_html(__('Site saved.', 'parking-management'));
+			$message = esc_html(__('Configuration saved.', 'parking-management'));
 		if (empty($message))
 			return;
 
 		echo sprintf('<div id="message" class="updated"><p>%s</p></div>', esc_html($message));
 
+	}
+
+	public static function array_to_html_attribute(array $attr): string
+	{
+		$result = '';
+		foreach ($attr as $key => $value) {
+			if (in_array($key, ['id', 'name', 'type']))
+				continue;
+			$result .= $key . '="' . $value . '" ';
+		}
+		return trim($result);
+	}
+
+	public static function info_box($info, $box): void
+	{
+		if ( ! isset( $box['args'] ) || ! is_array( $box['args'] ) )
+			$args = array();
+		else
+			$args = $box['args'];
+		print_log($info, false);
+		print_log($args, false);
+		print_log($box);
+		echo '<div class="info-fields">';
+		echo '</div>';
 	}
 
 	private static function config_form(ParkingManagement $pm): void
@@ -44,8 +70,12 @@ class Pages
 
 		echo '<form action="" method="post">';
 		self::config_form_hidden($plugin_page, $pm->id);
+		echo '<div id="poststuff" class="metabox-holder">';
 		self::config_form_header($pm);
 
+		do_meta_boxes(null, 'info', $pm->retrieve_property('info'));
+
+		echo '</div>';
 		echo '</form>';
 	}
 
@@ -79,14 +109,41 @@ class Pages
 		);
 
 		echo self::_p(
-			esc_html(__("Name", 'parking-management')) . "<br/",
+			esc_html(__("Name", 'parking-management')) . '<br/>',
 			self::_index("text", "pkmgmt-name", "pkmgmt-name", array(
+				'class' => "wide",
 				'size' => 80,
 				'value' => esc_attr($pm->name)
 			),
 				!(current_user_can('pkmgmt_edit', $pm->id))
 			)
 		);
+		echo self::_p(
+			esc_html(__("Copy and paste this code into your page to include booking part.", 'parking-management')),
+			'<br/>',
+			'<div class="input-container wide">',
+			self::_index(
+				"text",
+				"pkmgmt-anchor-text",
+				"pkmgmt-anchor-text",
+				array(
+					'class' => "wide",
+					'size' => 80,
+					'value' => sprintf("[parking-management id='%s']", $pm->id)
+					),
+				false,
+				true,
+			),
+			'<div class="tooltip">',
+			'<button id="shortcodeCopy" type="button">',
+			'<span class="tooltiptext">Copy to clipboard</span>',
+			'<i class="fas fa-copy darkgray"></i>',
+			'</button>',
+			'</div>',
+			'<span id="shortcodeCopyMessage">copied</span>',
+			'</div>'
+		);
+
 		echo '<div class="save-pkmgmt">';
 		echo self::_index("submit", "pkmgmt-save", "pkmgmt-save", array(
 			'class' => 'button-primary',
@@ -96,28 +153,33 @@ class Pages
 		echo '</div>';
 	}
 
-	private static function _p(string ...$contents): string
+	private static function _p(...$contents): string
 	{
-		$content = "";
-		foreach ($contents as $elem) {
-			$content .= $elem . "\n";
-		}
-		return sprintf('<p class="tagcode">%s</p>', $content);
+		return sprintf('<p class="tagcode">%s</p>', implode("", $contents));
 	}
 
-	private static function _index(string $type, string $id, string $name, array $args, bool $disabled = false): string
+	private static function _index(string $type, string $id, string $name, array $args, bool $disabled = false, bool $readonly = false): string
 	{
-		return '<input type="' . $type . '" id="' . $id . '" name="' . $name . '" ' . self::array_to_html_attribute($args) . ($disabled ?  ' disabled' : '') . ' />';
+		return '<input type="' . $type . '" id="' . $id . '" name="' . $name . '" ' . self::array_to_html_attribute($args) . ($disabled ? ' disabled' : '') . ($readonly ? ' readonly' : '') . ' />';
 	}
 
-	public static function array_to_html_attribute(array $attr): string
-	{
-		$result = '';
-		foreach ($attr as $key => $value) {
-			if (in_array($key, ['id', 'name', 'type']))
-				continue;
-			$result .= $key . '="' . $value . '" ';
-		}
-		return trim($result);
+	private static function _div($class, ...$contents): string {
+		return sprintf('<div class="%s">%s</div>', esc_attr($class), implode("", $contents));
+	}
+
+	private static function _label($for, ...$contents): string {
+		return sprintf('<lablel for="%s">%s</lablel>', esc_attr($for), implode("", $contents));
+	}
+
+	private static function _field($div_class, $name, $label_content,  $value): string {
+		return self::_div($div_class,
+			self::_label($name, $label_content),
+			'<br/>',
+			self::_index("text", $name, $name, array(
+				'class' => 'wide',
+				'size' => 80,
+				'value' => $value
+			))
+		);
 	}
 }

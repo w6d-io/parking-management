@@ -7,7 +7,7 @@ use WP_Error;
 class ParkingManagement
 {
 
-	const post_type = 'pkmgmt_parking_management';
+	const post_type = 'parking_management';
 
 	private static ParkingManagement|null $current = null;
 
@@ -24,15 +24,13 @@ class ParkingManagement
 	public function __construct($post = null)
 	{
 		$post = get_post($post);
-
-//		print_log($post);
 		if ($post
 			and self::post_type === get_post_type($post)) {
 			$this->id = $post->ID;
 			$this->name = $post->post_name;
 			$this->title = $post->post_title;
-			$this->locale = get_post_meta($post->ID, '_locale', true);
-			$this->hash = get_post_meta($post->ID, '_hash', true);
+			$this->locale = get_post_meta($post->ID, 'pkmgmt_locale', true);
+			$this->hash = get_post_meta($post->ID, 'pkmgmt_hash', true);
 
 			$this->construct_properties();
 			$this->upgrade();
@@ -177,13 +175,13 @@ class ParkingManagement
 		return self::$current;
 	}
 
-	public static function get_instance( $post = null): ParkingManagement
+	public static function get_instance($post = null): ParkingManagement
 	{
 		$pm = null;
 
-		if ($post instanceof self ) {
+		if ($post instanceof self) {
 			$pm = $post;
-		} elseif ( ! empty($post)) {
+		} else if (!empty($post)) {
 			$post = get_post($post);
 			if (isset($post) and self::post_type === get_post_type($post)) {
 				$pm = new self($post);
@@ -215,8 +213,6 @@ class ParkingManagement
 		if (!isset($args['name'])) {
 			$args['name'] = __('Untitled', 'parking-management');
 		}
-		print_log("la", false);
-		print_log($args);
 
 		$callback = static function ($args) {
 			$pm = new self;
@@ -256,20 +252,19 @@ class ParkingManagement
 	 * @param string $name Property name.
 	 * @return array|string|null Property value. Null if property does not exist.
 	 */
-	private function retrieve_property(string $name): array|string|null
+	public function retrieve_property(string $name): array|string|null
 	{
 		$property = null;
 
 		if (!$this->initial()) {
 			$post_id = $this->id;
 
-			if (metadata_exists('post', $post_id, '_' . $name)) {
-				$property = get_post_meta($post_id, '_' . $name, true);
+			if (metadata_exists('post', $post_id, 'pkmgmt_' . $name)) {
+				$property = get_post_meta($post_id, 'pkmgmt_' . $name, true);
 			} else if (metadata_exists('post', $post_id, $name)) {
 				$property = get_post_meta($post_id, $name, true);
 			}
 		}
-
 		return $property;
 	}
 
@@ -277,12 +272,12 @@ class ParkingManagement
 	 * Returns the value for the given property name.
 	 *
 	 * @param string $name Property name.
-	 * @return array|string|null Property value. Null if property does not exist.
+	 * @return array|string Property value. Null if property does not exist.
 	 */
-	public function prop(string $name): array|string|null
+	public function prop(string $name): array|string
 	{
 		$props = $this->get_properties();
-		return $props[$name] ?? null;
+		return $props[$name] ?? array();
 	}
 
 
@@ -363,6 +358,7 @@ class ParkingManagement
 
 	public function save(): WP_Error|int
 	{
+		global $wpdb;
 		$title = wp_slash($this->title);
 		$props = wp_slash($this->get_properties());
 
@@ -373,21 +369,24 @@ class ParkingManagement
 				'post_type' => self::post_type,
 				'post_status' => 'publish',
 				'post_title' => $title,
+				'post_name' => $this->name,
 				'post_content' => trim($post_content)));
 		} else {
 			$post_id = wp_update_post(array(
 				'ID' => $this->id,
 				'post_status' => 'publish',
 				'post_title' => $this->title,
+				'post_name' => $this->name,
 				'post_content' => trim($post_content)));
 		}
-
 		if ($post_id) {
 			foreach ($props as $prop => $value)
-				update_post_meta($post_id, '_' . $prop, pkmgmt_normalize_newline_deep($value));
+				update_post_meta($post_id, 'pkmgmt_' . $prop, pkmgmt_normalize_newline_deep($value));
 
 			if (!empty($this->locale))
-				update_post_meta($post_id, '_locale', $this->locale);
+				update_post_meta($post_id, 'pkmgmt_locale', $this->locale);
+			if (!empty($this->hash))
+				update_post_meta($post_id, 'pkmgmt_hash', $this->locale);
 
 			if ($this->initial()) {
 				$this->id = $post_id;
@@ -402,23 +401,35 @@ class ParkingManagement
 		return $post_id;
 	}
 
-	public function set_title( $title ): void
+	public function set_title($title): void
 	{
-		$title = strip_tags( $title );
-		$title = trim( $title );
+		$title = strip_tags($title);
+		$title = trim($title);
 
-		if ( '' === $title ) {
-			$title = __( 'Untitled', 'contact-form-7' );
+		if ('' === $title) {
+			$title = __('Untitled', 'contact-form-7');
 		}
 
 		$this->title = $title;
 	}
 
-	public function set_locale( $locale ): void
+	public function set_name($name): void
 	{
-		$locale = trim( $locale );
+		$name = strip_tags($name);
+		$name = trim($name);
 
-		if ( is_valid_locale($locale)) {
+		if ('' === $name) {
+			$name = __('Untitled', 'contact-form-7');
+		}
+
+		$this->name = $name;
+	}
+
+	public function set_locale($locale): void
+	{
+		$locale = trim($locale);
+
+		if (is_valid_locale($locale)) {
 			$this->locale = $locale;
 		} else {
 			$this->locale = 'en_US';

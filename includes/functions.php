@@ -108,11 +108,39 @@ function pkmgmt_normalize_newline(string $text, string $to = "\n" ): string
 	return str_replace( $nls, $to, $text );
 }
 
-function print_log($object, $out = true): void
+/**
+ * Print the object wrapped into <pre></pre> and call exit by default
+ *
+ * @param mixed $object
+ * @param bool $out Default: true
+ * @return void
+ */
+function print_log(mixed $object, bool $out = true): void
 {
 	print "<pre>";
 	print_r($object);
 	print "</pre>";
 	if ($out)
 		exit(1);
+}
+
+function get_post_id_by_post_type( string $post_type ): int {
+	$post_ids = get_posts( array(
+		'post_type' => $post_type,
+		'numberposts' => 1,
+		'fields' => 'ids',
+	));
+	if ( empty( $post_ids ) )
+		return 0;
+	return $post_ids[0];
+}
+
+function pkmgmt_plugin_url(string $path): string
+{
+	$url = plugins_url($path, PKMGMT_PLUGIN);
+	if ( is_ssl() and str_starts_with($url, 'http:')) {
+		$url = 'https:' . substr( $url, 5 );
+	}
+
+	return $url;
 }
