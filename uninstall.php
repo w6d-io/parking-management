@@ -1,5 +1,7 @@
 <?php
 
+use ParkingManagement\ParkingManagement;
+
 if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 	exit();
 }
@@ -20,7 +22,7 @@ function pkmgmt_delete_plugin(): void
 
 	foreach ($posts as $post) {
 		wp_delete_post($post->ID, true);
-		foreach (array('info', 'database', 'api', 'payment', 'form', 'full_dates', 'sms', 'response') as $meta_key) {
+		foreach (ParkingManagement::properties_keys as $meta_key) {
 			delete_post_meta($post->ID, 'pkmgmt_'.$meta_key);
 		}
 	}

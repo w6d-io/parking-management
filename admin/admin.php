@@ -3,6 +3,7 @@
 namespace ParkingManagement\Admin;
 
 use ParkingManagement\ParkingManagement;
+use ParkingManagement\Template;
 
 require_once PKMGMT_PLUGIN_DIR . DS . "admin" . DS . "includes" . DS . "pages.php";
 
@@ -36,7 +37,8 @@ class Admin
 		wp_enqueue_style('parking-management-admin-rtl', pkmgmt_plugin_url('admin/css/styles-rtl.css'));
 		wp_enqueue_style('font-awesome', 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css', array(), '6.0.0-beta3');
 		wp_enqueue_script('parking-management-jquery', 'https://code.jquery.com/jquery-3.6.0.min.js');
-		wp_enqueue_script('parking-management-admin', pkmgmt_plugin_url('admin/js/scripts.js'), array('parking-management-jquery'), PKMGMT_VERSION);
+		wp_enqueue_script('parking-management-jquery-ui', 'https://code.jquery.com/ui/1.12.1/jquery-ui.min.js');
+		wp_enqueue_script('parking-management-admin', pkmgmt_plugin_url('admin/js/scripts.js'), array('parking-management-jquery','parking-management-jquery-ui'), PKMGMT_VERSION);
 	}
 
 	public function menu(): void
@@ -106,13 +108,18 @@ class Admin
 				'title' => $_POST['pkmgmt-title'] ?? null,
 				'name' => $_POST['pkmgmt-name'] ?? null,
 				'locale' => $_POST['pkmgmt-locale'] ?? null,
-				'info' => $_POST['pkmgmt-info'] ?? array(),
-				'database' => $_POST['pkmgmt-database'] ?? array(),
-				'api' => $_POST['pkmgmt-api'] ?? array(),
-				'form' => $_POST['pkmgmt-form'] ?? array(),
-				'sms' => $_POST['pkmgmt-sms'] ?? array(),
+
+				'info' => $_POST['pkmgmt-info'] ?? Template::get_default(),
+				'database' => $_POST['pkmgmt-database'] ?? Template::get_default('database'),
+				'api' => $_POST['pkmgmt-api'] ?? Template::get_default('api'),
+				'payment' => $_POST['pkmgmt-payment'] ?? Template::get_default('payment'),
+				'form' => $_POST['pkmgmt-form'] ?? Template::get_default('form'),
+				'full_dates' => $_POST['pkmgmt-full_dates'] ?? Template::get_default('full_dates'),
+				'sms' => $_POST['pkmgmt-sms'] ?? Template::get_default('sms'),
+				'response' => $_POST['pkmgmt-response'] ?? Template::get_default('response'),
 			)
 		);
+//		print_log($args);
 		$args = wp_unslash($args);
 
 		$args['id'] = (int)$args['id'];
@@ -135,8 +142,10 @@ class Admin
 		}
 
 		$properties = array();
-		if (null !== $args['info']) {
-			$properties['info'] = $args['info'];
+		foreach (ParkingManagement::properties_keys as $prop) {
+			if (null !== $args[$prop]) {
+				$properties[$prop] = $args[$prop];
+			}
 		}
 		$pm->set_properties($properties);
 
@@ -187,6 +196,54 @@ class Admin
 			array('ParkingManagement\Admin\Pages', 'info_box'),
 			null,
 			'info',
+			'core'
+		);
+		add_meta_box(
+			'database',
+			__('Database', 'parking-management'),
+			array('ParkingManagement\Admin\Pages', 'database_box'),
+			null,
+			'database',
+			'core'
+		);
+		add_meta_box(
+			'api',
+			__('API', 'parking-management'),
+			array('ParkingManagement\Admin\Pages', 'api_box'),
+			null,
+			'api',
+			'core'
+		);
+		add_meta_box(
+			'payment',
+			__('Payment', 'parking-management'),
+			array('ParkingManagement\Admin\Pages', 'payment_box'),
+			null,
+			'payment',
+			'core'
+		);
+		add_meta_box(
+			'form',
+			__('Form Options', 'parking-management'),
+			array('ParkingManagement\Admin\Pages', 'form_box'),
+			null,
+			'form',
+			'core'
+		);
+		add_meta_box(
+			'full_dates',
+			__('Full Dates', 'parking-management'),
+			array('ParkingManagement\Admin\Pages', 'full_dates_box'),
+			null,
+			'full_dates',
+			'core'
+		);
+		add_meta_box(
+			'sms',
+			__('SMS', 'parking-management'),
+			array('ParkingManagement\Admin\Pages', 'sms_box'),
+			null,
+			'sms',
 			'core'
 		);
 

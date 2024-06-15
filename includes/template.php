@@ -12,7 +12,7 @@ class Template
 			'api' => $template = self::api(),
 			'payment' => $template = self::payment(),
 			'form' => $template = self::form(),
-			'full_date' => $template = self::full_date(),
+			'full_dates' => $template = self::full_dates(),
 			'sms' => $template = self::sms(),
 			'response' => $template = self::response(),
 			default => $template = null
@@ -60,16 +60,36 @@ class Template
 	{
 		return array(
 			'paypal' => array(
-				'enabled' => false,
-				'properties' => array()
+				'name'=> 'paypal',
+				'enabled' => "0",
+				'properties' => array(
+					'email' => '',
+					'login' => '',
+					'password' => '',
+					'signature' => '',
+					'notification_url' => '',
+					'ipn' => ''
+				)
 			),
 			'payplug' => array(
-				'enabled' => false,
-				'properties' => array()
+				'name'=> 'payplug',
+				'enabled' => "0",
+				'properties' => array(
+					'secret_key' => '',
+					'public_key' => '',
+					'secret_key_test' => '',
+					'public_key_test' => '',
+					'notification_url' => '',
+					'ipn' => ''
+				)
 			),
 			'mypos' => array(
-				'enabled' => false,
-				'properties' => array()
+				'name'=> 'mypos',
+				'enabled' => "0",
+				'properties' => array(
+					'configuration_package' => '',
+					'notification_url' => '',
+				)
 			)
 		);
 	}
@@ -84,7 +104,7 @@ class Template
 		);
 	}
 
-	private static function full_date(): array
+	private static function full_dates(): array
 	{
 		return array();
 	}

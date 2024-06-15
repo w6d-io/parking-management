@@ -19,4 +19,19 @@ document.addEventListener('DOMContentLoaded', function() {
 			console.error('Could not copy text: ', error);
 		});
 	});
+	$('.togglePassword').on('click', function() {
+		const passwordInput = $(this).siblings('.password-input');
+		const eyeOpen = $(this).find('.fa-eye');
+		const eyeClosed = $(this).find('.fa-eye-slash');
+
+		if (passwordInput.attr('type') === 'password') {
+			passwordInput.attr('type', 'text');
+			eyeOpen.hide();
+			eyeClosed.show();
+		} else {
+			passwordInput.attr('type', 'password');
+			eyeOpen.show();
+			eyeClosed.hide();
+		}
+	});
 });

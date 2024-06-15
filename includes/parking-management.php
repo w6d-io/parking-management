@@ -9,6 +9,7 @@ class ParkingManagement
 
 	const post_type = 'parking_management';
 
+	const properties_keys = array('info', 'database', 'api', 'payment', 'form', 'full_dates', 'sms', 'response');
 	private static ParkingManagement|null $current = null;
 
 	public int $id;
@@ -61,8 +62,8 @@ class ParkingManagement
 				'email' => '',
 				'terminal' => '',
 				'type' => array(
-					'ext' => 0,
-					'int' => 0
+					'ext' => '0',
+					'int' => '0'
 				)
 			),
 			'database' => array(
@@ -80,22 +81,22 @@ class ParkingManagement
 			),
 			'payment' => array(
 				'paypal' => array(
-					'enabled' => false,
+					'enabled' => '0',
 					'properties' => array()
 				),
 				'payplug' => array(
-					'enabled' => false,
+					'enabled' => '0',
 					'properties' => array()
 				),
 				'mypos' => array(
-					'enabled' => false,
+					'enabled' => '0',
 					'properties' => array()
 				)
 			),
 			'form' => array(
 				'booking' => array(
-					'terms_and_conditions' => 0,
-					'valid_on_payment' => 0
+					'terms_and_conditions' => '0',
+					'valid_on_payment' => '0'
 				)
 			),
 			'full_dates' => [],
@@ -252,7 +253,7 @@ class ParkingManagement
 	 * @param string $name Property name.
 	 * @return array|string|null Property value. Null if property does not exist.
 	 */
-	public function retrieve_property(string $name): array|string|null
+	private function retrieve_property(string $name): array|string|null
 	{
 		$property = null;
 
