@@ -9,13 +9,13 @@ class ParkingManagement
 
 	const post_type = 'parking_management';
 
-	const properties_keys = array('info', 'database', 'api', 'payment', 'form', 'full_dates', 'sms', 'response');
+	const properties_keys = array('info', 'database', 'api', 'payment', 'form', 'booked_dates','high_season', 'sms', 'response');
 	private static ParkingManagement|null $current = null;
 
 	public int $id;
 	public string $name;
 	public string $title;
-	public bool $locale = false;
+	public string $locale = 'en-US';
 
 	private array $properties = array();
 
@@ -31,7 +31,6 @@ class ParkingManagement
 			$this->name = $post->post_name;
 			$this->title = $post->post_title;
 			$this->locale = get_post_meta($post->ID, 'pkmgmt_locale', true);
-			$this->hash = get_post_meta($post->ID, 'pkmgmt_hash', true);
 
 			$this->construct_properties();
 			$this->upgrade();
@@ -55,59 +54,15 @@ class ParkingManagement
 	private function construct_properties(): void
 	{
 		$builtin_properties = array(
-			'info' => array(
-				'address' => '',
-				'mobile' => '',
-				'RCS' => '',
-				'email' => '',
-				'terminal' => '',
-				'type' => array(
-					'ext' => '0',
-					'int' => '0'
-				)
-			),
-			'database' => array(
-				'name' => "",
-				'host' => "",
-				'port' => "",
-				'user' => "",
-				'password' => "",
-			),
-			'api' => array(
-				'host' => "",
-				'port' => "",
-				'user' => "",
-				'password' => "",
-			),
-			'payment' => array(
-				'paypal' => array(
-					'enabled' => '0',
-					'properties' => array()
-				),
-				'payplug' => array(
-					'enabled' => '0',
-					'properties' => array()
-				),
-				'mypos' => array(
-					'enabled' => '0',
-					'properties' => array()
-				)
-			),
-			'form' => array(
-				'booking' => array(
-					'terms_and_conditions' => '0',
-					'valid_on_payment' => '0'
-				)
-			),
-			'full_dates' => [],
-			'sms' => array(
-				'type' => '',
-				'user' => '',
-				'password' => '',
-				'sender' => '',
-				'template' => ''
-			),
-			'response' => array(),
+			'info' => Template::get_default(),
+			'database' => Template::get_default('database'),
+			'api' => Template::get_default('api'),
+			'payment' => Template::get_default('payment'),
+			'form' => Template::get_default('form'),
+			'booked_dates' => Template::get_default('booked_dates'),
+			'high_season' => Template::get_default('high_season'),
+			'sms' => Template::get_default('sms'),
+			'response' => Template::get_default('response'),
 		);
 
 		$properties = apply_filters(
@@ -200,7 +155,7 @@ class ParkingManagement
 	public static function get_template(array|string $args = ''): ParkingManagement
 	{
 		$args = wp_parse_args($args, array(
-			'locale' => '',
+			'locale' => 'en-US',
 			'title' => '',
 			'name' => ''
 		));
@@ -320,17 +275,6 @@ class ParkingManagement
 	}
 
 	/**
-	 * Retrieves the random hash string tied to this parking management.
-	 *
-	 * @param int $length Length of hash string.
-	 * @return string Hash string unique to this parking management.
-	 */
-	public function hash(int $length = 7): string
-	{
-		return substr($this->hash, 0, absint($length));
-	}
-
-	/**
 	 * Upgrades this contact form properties.
 	 */
 	private function upgrade(): void
@@ -386,8 +330,6 @@ class ParkingManagement
 
 			if (!empty($this->locale))
 				update_post_meta($post_id, 'pkmgmt_locale', $this->locale);
-			if (!empty($this->hash))
-				update_post_meta($post_id, 'pkmgmt_hash', $this->locale);
 
 			if ($this->initial()) {
 				$this->id = $post_id;

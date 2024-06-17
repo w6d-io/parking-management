@@ -3,7 +3,6 @@
 namespace ParkingManagement\Admin;
 
 use ParkingManagement\ParkingManagement;
-use ParkingManagement\Template;
 
 class Pages
 {
@@ -56,7 +55,7 @@ class Pages
 	{
 		global $plugin_page;
 
-		echo '<form action="" method="post">';
+		echo '<form id="pkmgmt-admin-config" method="post">';
 		self::config_form_hidden($plugin_page, $pm->id);
 		echo '<div id="poststuff" class="metabox-holder">';
 		self::config_form_header($pm);
@@ -68,7 +67,8 @@ class Pages
 		do_meta_boxes(null, 'api', $pm->prop('api'));
 		do_meta_boxes(null, 'payment', $payment_args);
 		do_meta_boxes(null, 'form', $pm->prop('form'));
-		do_meta_boxes(null, 'full_dates', $pm->prop('full_dates'));
+		do_meta_boxes(null, 'booked_dates', $pm->prop('booked_dates'));
+		do_meta_boxes(null, 'high_season', $pm->prop('high_season'));
 		do_meta_boxes(null, 'sms', $pm->prop('sms'));
 
 		echo '</div>';
@@ -78,7 +78,7 @@ class Pages
 	private static function config_form_hidden(string $page, int $id): void
 	{
 		echo sprintf('
-		<input type="hidden" name="page" value="%s" />
+		<input type="hidden" id="page" name="page" value="%s" />
 		<input type="hidden" id="post_ID" name="post_ID" value="%d" />
 		<input type="hidden" id="hidden-action" name="action" value="save" />
 		<input type="hidden" id="pkmgmt-locale" name="pkmgmt-locale" value="fr_FR">
@@ -114,30 +114,47 @@ class Pages
 				!(current_user_can('pkmgmt_edit', $pm->id))
 			)
 		);
-		echo self::_p(
-			esc_html(__("Copy and paste this code into your page to include booking part.", 'parking-management')),
-			'<br/>',
-			'<div class="input-container wide">',
-			self::_index(
-				"text",
-				"pkmgmt-anchor-text",
-				"pkmgmt-anchor-text",
-				array(
-					'class' => "wide",
-					'size' => 80,
-					'value' => sprintf("[parking-management id='%s']", $pm->id)
-				),
-				false,
-				true,
-			),
-			'<div class="tooltip">',
-			'<button id="shortcodeCopy" type="button">',
-			'<span class="tooltiptext">Copy to clipboard</span>',
-			'<i class="fas fa-copy darkgray"></i>',
-			'</button>',
-			'</div>',
-			'<span id="shortcodeCopyMessage">copied</span>',
-			'</div>'
+		echo self::_shortcode_field(
+			'shortcode-form',
+			'shortcode-form',
+			esc_html(__("Copy and paste this code into your page to include booking form.", 'parking-management')),
+			"[parking-management type='form']"
+		);
+		echo self::_shortcode_field(
+			'shortcode-home-form',
+			'shortcode-home-form',
+			esc_html(__("Copy and paste this code into your page to include home booking form.", 'parking-management')),
+			"[parking-management type='home-form']"
+		);
+		echo self::_shortcode_field(
+			'shortcode-price',
+			'shortcode-price',
+			esc_html(__("Copy and paste this code into your page to include price table.", 'parking-management')),
+			"[parking-management type='price']"
+		);
+		echo self::_shortcode_field(
+			'shortcode-booked',
+			'shortcode-booked',
+			esc_html(__("Copy and paste this code into your page to include booked message.", 'parking-management')),
+			"[parking-management type='booked']"
+		);
+		echo self::_shortcode_field(
+			'shortcode-payment-paypal',
+			'shortcode-payment-paypal',
+			esc_html(__("Copy and paste this code into your page to include paypal payment form.", 'parking-management')),
+			"[parking-management type='payment' payment_provider='paypal']"
+		);
+		echo self::_shortcode_field(
+			'shortcode-payment-payplug',
+			'shortcode-payment-payplug',
+			esc_html(__("Copy and paste this code into your page to include payplug payment form.", 'parking-management')),
+			"[parking-management type='payment' payment_provider='payplug']"
+		);
+		echo self::_shortcode_field(
+			'shortcode-payment-mypos',
+			'shortcode-payment-mypos',
+			esc_html(__("Copy and paste this code into your page to include mypos payment form.", 'parking-management')),
+			"[parking-management type='payment' payment_provider='mypos']"
 		);
 
 		echo '<div class="save-pkmgmt">';
@@ -147,6 +164,35 @@ class Pages
 		));
 		echo '</div>';
 		echo '</div>';
+	}
+
+	private static function _shortcode_field($id, $name, $title, $shortcode): string
+	{
+		return self::_p(
+			$title,
+			'<br/>',
+			'<div class="input-container wide shortcode-div">',
+			self::_index(
+				"text",
+				$id,
+				$name,
+				array(
+					'class' => "wide shortcode",
+					'size' => 80,
+					'value' => $shortcode
+				),
+				false,
+				true,
+			),
+			'<div class="tooltip">',
+			'<button class="shortcode-copy" type="button">',
+			'<span class="tooltiptext">Copy to clipboard</span>',
+			'<i class="fas fa-copy darkgray"></i>',
+			'</button>',
+			'</div>',
+			'<span class="shortcode-copy-message">copied</span>',
+			'</div>'
+		);
 	}
 
 	private static function _p(...$contents): string
@@ -195,9 +241,9 @@ class Pages
 		return sprintf('<label for="%s">%s</label>', esc_attr($for), implode("", $contents));
 	}
 
-	private static function _fieldset($for, $args, ...$contents): string
+	private static function _fieldset(...$contents): string
 	{
-		return sprintf('<fieldset ' . self::array_to_html_attribute($args) . ' >%s</fieldset>', implode("", $contents));
+		return sprintf('<fieldset>%s</fieldset>', implode("", $contents));
 	}
 
 	private static function _checkbox($id, $name, $key, $value): string
@@ -216,26 +262,10 @@ class Pages
 		return implode("\n", $contents);
 	}
 
-	private static function _radio($id, $name, $key, $value): string
-	{
-		$contents = array();
-		$contents[] .= self::_index('hidden', '', $name . '[' . $key . ']', array('value' => '0'));
-		$contents[] .= self::_index("radio", $id . '-' . $key, $name . '[' . $key . ']',
-			array('value' => '1'),
-			false,
-			false,
-			$value == '1'
-		);
-		$contents[] .= self::_label($id . '-' . $key, $key);
-		$contents[] .= '<br/>';
-
-		return implode("\n", $contents);
-	}
-
 	private static function _field($id, $div_class, $name, $label_content, $value): string
 	{
 		return self::_div($div_class,
-			self::_label($name, $label_content),
+			self::_label($id, $label_content),
 			'<br/>',
 			self::_index("text", $id, $name, array(
 				'class' => 'wide',
@@ -248,7 +278,7 @@ class Pages
 	private static function _field_password($id, $div_class, $name, $label_content, $value): string
 	{
 		return self::_div($div_class,
-			self::_label($name, $label_content),
+			self::_label($id, $label_content),
 			'<br/>',
 			self::_password($id, $name, array(
 				'class' => 'wide password-input',
@@ -258,14 +288,14 @@ class Pages
 		);
 	}
 
-	private static function _field_checkbox($id, $div_class, $name, $label_content, $values): string
+	private static function _field_checkbox($id, $div_class, $name, $span_content, $values): string
 	{
 		if (!is_array($values)) {
 			return self::_div($div_class, "bad values type");
 		}
 
 		$contents = array();
-		$contents[] .= self::_label('', $label_content);
+		$contents[] .= '<span>'.$span_content.'</span>';
 		$contents[] .= '<br/>';
 		foreach ($values as $key => $value) {
 			$contents[] .= self::_checkbox($id, $name, $key, $value);
@@ -282,7 +312,7 @@ class Pages
 		}
 
 		return self::_div($div_class,
-			self::_label('', $label_content),
+			self::_label($id, $label_content),
 			'<br/>',
 			self::_select($id, $name, $options, $value)
 		);
@@ -305,23 +335,21 @@ class Pages
 		$contents = array();
 		foreach ($payment['properties'] as $key => $value) {
 			if (in_array($key, array("password", "secret", "secret_key", "signature", "configuration_package")))
-				$contents[] .= self::_field_password($id . '-' . $key, $div_class, $name . '[properties]' . '[' . $key . ']', $key, $value);
+				$contents[] .= self::_field_password($id . '-' . $key, $div_class . " form-group", $name . '[properties]' . '[' . $key . ']', $key, $value);
 			else
-				$contents[] .= self::_field($id . '-' . $key, $div_class, $name . '[properties]' . '[' . $key . ']', $key, $value);
+				$contents[] .= self::_field($id . '-' . $key, $div_class . " form-group", $name . '[properties]' . '[' . $key . ']', $key, $value);
 		}
-		return self::_div($div_class,
-			self::_fieldset($id,
-				array(),
-				'<legend>'.$label_content.'</legend>',
-				self::_checkbox($id, $name, 'enabled', $payment['enabled']),
-				...$contents
-			)
+		return self::_fieldset(
+			'<legend>' . $label_content . '</legend>',
+			'<div class="form-group">',
+			self::_checkbox($id, $name, 'enabled', $payment['enabled']),
+			'</div>',
+			...$contents
 		);
 	}
 
 	public static function info_box($info, $box): void
 	{
-		self::getArgs($box);
 		echo '<div class="' . $box['id'] . '-fields">';
 		echo self::_field('info-address', 'info_field', 'pkmgmt-info[address]', esc_html(__('Address', 'parking-management')), $info['address']);
 		echo '</div>';
@@ -344,7 +372,6 @@ class Pages
 
 	public static function database_box($database, $box): void
 	{
-		self::getArgs($box);
 		echo '<div class="' . $box['id'] . '-fields">';
 		echo self::_field('database-name', 'database_field', 'pkmgmt-database[name]', esc_html(__('Name', 'parking-management')), $database['name']);
 		echo '</div>';
@@ -364,7 +391,6 @@ class Pages
 
 	public static function api_box($api, $box): void
 	{
-		self::getArgs($box);
 		echo '<div class="' . $box['id'] . '-fields">';
 		echo self::_field('api-host', 'api_field', 'pkmgmt-api[host]', esc_html(__('Host', 'parking-management')), $api['host']);
 		echo '</div>';
@@ -382,42 +408,76 @@ class Pages
 
 	public static function payment_box($payment, $box): void
 	{
-		self::getArgs($box);
-		echo '<div class="' . $box['id'] . '-fields">';
-		echo self::_field_payment('payment-paypal', 'payment_field', 'Paypal', 'pkmgmt-payment[paypal]', $payment['paypal']);
+		echo '<div class="tabs">';
+		echo '<ul class="tab-links">';
+		echo '<li class="active"><a href="#payment-paypal-tab">Paypal</a></li>';
+		echo '<li><a href="#payment-payplug-tab">Payplug</a></li>';
+		echo '<li><a href="#payment-mypos-tab">MyPOS</a></li>';
+		echo '</ul>';
+		echo '<div class="tab-content">';
+		echo '<div id="payment-paypal-tab" class="tab active">';
+		echo self::_field_payment($box['id'] . '-paypal', $box['id'] . '_field', 'Paypal', 'pkmgmt-payment[paypal]', $payment['paypal']);
 		echo '</div>';
-		echo '<div class="' . $box['id'] . '-fields">';
-		echo self::_field_payment('payment-payplug', 'payment_field', 'Payplug', 'pkmgmt-payment[payplug]', $payment['payplug']);
+		echo '<div id="payment-payplug-tab" class="tab">';
+		echo self::_field_payment($box['id'] . '-payplug', $box['id'] . '_field', 'Payplug', 'pkmgmt-payment[payplug]', $payment['payplug']);
 		echo '</div>';
-		echo '<div class="' . $box['id'] . '-fields">';
-		echo self::_field_payment('payment-mypos', 'payment_field', 'MyPOS', 'pkmgmt-payment[mypos]', $payment['mypos']);
+		echo '<div id="payment-mypos-tab" class="tab">';
+		echo self::_field_payment($box['id'] . '-mypos', $box['id'] . '_field', 'MyPOS', 'pkmgmt-payment[mypos]', $payment['mypos']);
+		echo '</div>';
+		echo '</div>';
 		echo '</div>';
 	}
 
 	public static function form_box($form, $box): void
 	{
-		self::getArgs($box);
 		echo '<div class="' . $box['id'] . '-fields">';
 		echo self::_field_checkbox('form-booking', 'form_field', 'pkmgmt-form[booking]', esc_html(__('Booking', 'parking-management')), $form['booking']);
 		echo '</div>';
 
 	}
 
-	public static function full_dates_box($full_dates, $box): void
+	public static function booked_dates_box($booked_dates, $box): void
 	{
-		echo '<div id="full_date_global">';
-		echo '<div id="full_date_header">';
-		echo '<span>'.esc_html(__('Add a date', 'parking-management')).'</span>';
-		echo '<button id="add-element" type="button"><i class="fas fa-plus"></i></button>';
+		echo '<div ' . $box['id'] . 'class="dates-global">';
+		echo '<div class="dates-header">';
+		echo '<span>' . esc_html(__('Add a date', 'parking-management')) . '</span>';
+		echo '<button id="full-dates-add-element" type="button"><i class="fas fa-plus"></i></button>';
 		echo '</div>';
-		echo '<div id="full_date_body">';
+		echo '<div id="booked_dates_body" class="dates-body">';
+		foreach ($booked_dates as $id => $date) {
+			echo '<div class="dates-element">';
+			echo '<input type="date" name="pkmgmt-booked_dates[' . $id . '][start]" class="start-date" value="' . $date['start'] . '">';
+			echo '<input type="date" name="pkmgmt-booked_dates[' . $id . '][end]" class="end-date" value="' . $date['end'] . '">';
+			echo '<input type="text" name="pkmgmt-booked_dates[' . $id . '][message]" class="message" placeholder="Message" value="' . $date['message'] . '">';
+			echo '<i class="fas fa-trash delete"></i>';
+			echo '</div>';
+		}
+		echo '</div>';
+		echo '</div>';
+	}
+
+	public static function high_season_box($high_season, $box): void
+	{
+		echo '<div ' . $box['id'] . 'class="dates-global">';
+		echo '<div class="dates-header">';
+		echo '<span>' . esc_html(__('Add a date', 'parking-management')) . '</span>';
+		echo '<button id="high-season-add-element" type="button"><i class="fas fa-plus"></i></button>';
+		echo '</div>';
+		echo '<div id="high_season_dates_body" class="dates-body">';
+		foreach ($high_season as $id => $date) {
+			echo '<div class="dates-element">';
+			echo '<input type="date" name="pkmgmt-high_season[' . $id . '][start]" class="start-date" value="' . $date['start'] . '">';
+			echo '<input type="date" name="pkmgmt-high_season[' . $id . '][end]" class="end-date" value="' . $date['end'] . '">';
+			echo '<input type="text" name="pkmgmt-high_season[' . $id . '][message]" class="message" placeholder="Message" value="' . $date['message'] . '">';
+			echo '<i class="fas fa-trash delete"></i>';
+			echo '</div>';
+		}
 		echo '</div>';
 		echo '</div>';
 	}
 
 	public static function sms_box($sms_box, $box): void
 	{
-		self::getArgs($box);
 		echo '<div class="' . $box['id'] . '-fields">';
 		echo self::_field_select('sms-type', 'sms_field', 'pkmgmt-sms[type]', esc_html(__('Type', 'parking-management')), array('AWS', 'OVH'), $sms_box['type']);
 		echo '</div>';
@@ -435,20 +495,4 @@ class Pages
 		echo '</div>';
 	}
 
-	/**
-	 * @param $box
-	 * @return array
-	 */
-	public static function getArgs($box): array
-	{
-		if (!isset($box['args']) || !is_array($box['args']))
-			$args = array();
-		else
-			$args = $box['args'];
-		if (array_key_exists('debug', $_POST) && $_POST['debug'] == 1) {
-			print_log($args, false);
-			print_log($box, false);
-		}
-		return $args;
-	}
 }

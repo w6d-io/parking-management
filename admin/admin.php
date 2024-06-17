@@ -36,9 +36,11 @@ class Admin
 		wp_enqueue_style('parking-management-admin', pkmgmt_plugin_url('admin/css/styles.css'));
 		wp_enqueue_style('parking-management-admin-rtl', pkmgmt_plugin_url('admin/css/styles-rtl.css'));
 		wp_enqueue_style('font-awesome', 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css', array(), '6.0.0-beta3');
+		wp_enqueue_style('parking-management-easepick', 'https://cdn.jsdelivr.net/npm/@easepick/bundle@1.2.1/dist/index.css');
 		wp_enqueue_script('parking-management-jquery', 'https://code.jquery.com/jquery-3.6.0.min.js');
-		wp_enqueue_script('parking-management-jquery-ui', 'https://code.jquery.com/ui/1.12.1/jquery-ui.min.js');
-		wp_enqueue_script('parking-management-admin', pkmgmt_plugin_url('admin/js/scripts.js'), array('parking-management-jquery','parking-management-jquery-ui'), PKMGMT_VERSION);
+		wp_enqueue_script('parking-management-easepick', 'https://cdn.jsdelivr.net/npm/@easepick/bundle@1.2.1/dist/index.umd.min.js');
+		wp_enqueue_script('parking-management-luxon', 'https://cdn.jsdelivr.net/npm/luxon/build/global/luxon.min.js');
+		wp_enqueue_script('parking-management-admin', pkmgmt_plugin_url('admin/js/scripts.js'), array('parking-management-jquery', 'parking-management-easepick', 'parking-management-luxon'), PKMGMT_VERSION);
 	}
 
 	public function menu(): void
@@ -78,9 +80,7 @@ class Admin
 		switch ($this->current_action()) {
 			case "save":
 				$pm = $this->load_save();
-				$query = array(
-					'active-tab' => (int)($_POST['active-tab'] ?? 0),
-				);
+				$query = array();
 				if (!$pm) {
 					$query['message'] = 'failed';
 				} else {
@@ -114,12 +114,12 @@ class Admin
 				'api' => $_POST['pkmgmt-api'] ?? Template::get_default('api'),
 				'payment' => $_POST['pkmgmt-payment'] ?? Template::get_default('payment'),
 				'form' => $_POST['pkmgmt-form'] ?? Template::get_default('form'),
-				'full_dates' => $_POST['pkmgmt-full_dates'] ?? Template::get_default('full_dates'),
+				'booked_dates' => $_POST['pkmgmt-booked_dates'] ?? Template::get_default('booked_dates'),
+				'high_season' => $_POST['pkmgmt-high_season'] ?? Template::get_default('high_season'),
 				'sms' => $_POST['pkmgmt-sms'] ?? Template::get_default('sms'),
 				'response' => $_POST['pkmgmt-response'] ?? Template::get_default('response'),
 			)
 		);
-//		print_log($args);
 		$args = wp_unslash($args);
 
 		$args['id'] = (int)$args['id'];
@@ -231,11 +231,19 @@ class Admin
 			'core'
 		);
 		add_meta_box(
-			'full_dates',
-			__('Full Dates', 'parking-management'),
-			array('ParkingManagement\Admin\Pages', 'full_dates_box'),
+			'booked_dates',
+			__('Booked dates', 'parking-management'),
+			array('ParkingManagement\Admin\Pages', 'booked_dates_box'),
 			null,
-			'full_dates',
+			'booked_dates',
+			'core'
+		);
+		add_meta_box(
+			'high_season',
+			__('High season dates', 'parking-management'),
+			array('ParkingManagement\Admin\Pages', 'high_season_box'),
+			null,
+			'high_season',
 			'core'
 		);
 		add_meta_box(

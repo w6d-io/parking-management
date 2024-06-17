@@ -7,22 +7,20 @@ function pkmgmt_parking_management_shortcode_func(array $atts): string
 	}
 	$atts = shortcode_atts(
 		array(
-			'id' => 0,
-			'title' => '',
-			'type' => 'form', // type supported form, home-form, payment
+			'type' => 'form', // type supported form, home-form, payment, price, booked
 			'payment_provider' => '' // page supported payplug, mypos, mypos-payment
 		), $atts, 'parking-management'
 	);
 
-	$id = trim( $atts['id'] );
-	$title = trim( $atts['title'] );
-	$type = trim( $atts['type'] );
-	$payment_provider = trim( $atts['payment_provider'] );
+	$type = trim( array_key_exists('type', $atts) ? $atts['type']: '' );
+	$payment_provider = trim( array_key_exists('payment_provider', $atts) ? $atts['payment_provider']: '' );
 
 	return match ($type) {
-		'form' => '[parking-management "form"]',
-		'home-form' => '[parking-management "home-form"]',
-		'payment' => sprintf('[parking-management payment provider="%s"]', $payment_provider),
+		'form' => '[parking-management type="form"]',
+		'home-form' => '[parking-management type="home-form"]',
+		'price' => '[parking-management type="price"]',
+		'booked' => '[parking-management type="booked"]',
+		'payment' => sprintf('[parking-management type="payment" payment_provider="%s"]', $payment_provider),
 		default => '[parking-management "not found"]',
 	};
 }

@@ -75,7 +75,7 @@ p.tagcode {
 	margin: 2ex 0 1ex 0;
 }
 
-input#pkmgmt-anchor-text, input#pkmgmt-anchor-text-old {
+input.shortcode {
 	width: 100%;
 	padding-right: 40px;
 }
@@ -264,7 +264,11 @@ div.input-container {
 	display: inline-block;
 }
 
-#shortcodeCopy {
+/*
+** shortcode style
+*/
+
+.shortcode-copy {
 	position: absolute;
 	right: 0;
 	top: 0;
@@ -278,11 +282,11 @@ div.input-container {
 	justify-content: center;
 }
 
-#shortcodeCopy i {
+.shortcode-copy i {
 	font-size: 1.5em; /* Adjust the size as needed */
 }
 
-#shortcodeCopyMessage {
+.shortcode-copy-message {
 	display: none; /* Hidden by default */
 	position: absolute;
 	top: -20px; /* Adjust based on desired position */
@@ -292,11 +296,6 @@ div.input-container {
 	border: 1px solid #ccc;
 	border-radius: 3px;
 }
-
-/*.tooltip {*/
-/*	position: relative;*/
-/*	display: inline-block;*/
-/*}*/
 
 .tooltip .tooltiptext {
 	visibility: hidden;
@@ -335,6 +334,7 @@ div.input-container {
 /*
 ** Password field
 */
+
 .password-container {
 	position: relative;
 }
@@ -370,43 +370,48 @@ legend {
 }
 
 /*
-** Full dates style
+** Booked dates style
 */
 
-#full_date_global {
+.dates-global {
 	margin: 0 auto;
 	border: 1px solid #ccc;
-	padding: 20px;
+	padding: 0 0 20px 0;
 	border-radius: 10px;
 	box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
-#full_date_header {
+.dates-header {
 	display: flex;
 	justify-content: flex-end;
 	align-items: center;
-	margin-bottom: 20px;
-	border: 1px solid #ccc;
+	border-bottom: 1px solid #ccc;
 	padding: 10px;
-	border-radius: 5px;
 }
 
-#full_date_header span {
-	font-size: 16px;
-	font-weight: bold;
+.dates-header span {
+	font-size: 14px;
+	font-weight: normal;
+	margin-right: 10px;
 }
 
-#full_date_header button {
-	background-color: #007BFF;
-	color: white;
-	border: none;
-	padding: 10px;
-	border-radius: 5px;
+.dates-header button {
+	color: #007BFF;
+	border: 1px;
+	padding: 5px;
+	border-radius: 50%;
+	width: 27px;
+	height: 27px;
 	cursor: pointer;
-	font-size: 16px;
+	font-size: 14px;
 }
 
-#full_dates_body .element {
+.dates-body {
+	min-height: 68px;
+	padding-top: 15px;
+}
+
+.dates-body .dates-element {
 	border: 1px solid #ccc;
 	padding: 10px;
 	border-radius: 5px;
@@ -416,12 +421,72 @@ legend {
 	align-items: center;
 }
 
-#full_dates_body .element input[type="text"], #full_dates_body .element input[type="datetime-local"] {
+.dates-body .dates-element input[type="text"], .dates-body .dates-element input[type="date"] {
 	margin-right: 10px;
 }
 
-#full_dates_body .element .fa {
+.dates-body .dates-element input[type="text"] {
+	width: 70%;
+}
+
+.dates-body .dates-element .fa {
 	cursor: pointer;
 	margin-left: 10px;
 	font-size: 20px;
+}
+
+/*
+** Tabs
+ */
+
+.tabs {
+	background: #fff;
+	padding: 20px;
+	border-radius: 8px;
+	box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.tab-links {
+	list-style: none;
+	padding: 0;
+	margin: 0 0 20px 0;
+	display: flex;
+	border-bottom: 1px solid #ddd;
+}
+
+.tab-links li {
+	margin: 0;
+	padding: 0 5px 0 5px ;
+	flex: 1;
+	transition: background-color 0.3s, color 0.3s;
+}
+
+.tab-links a {
+	display: block;
+	padding: 10px;
+	text-align: center;
+	text-decoration: none;
+	color: #555;
+	border-radius: 4px 4px 0 0;
+	background: #e0e0e0;
+	transition: background-color 0.3s, color 0.3s;
+}
+
+.tab-links .active a {
+	background: #007bff;
+	color: #fff;
+	border-bottom: 1px solid #fff;
+}
+
+.tab-links li:hover a {
+	background: #0056b3;
+	color: #fff;
+}
+
+.tab {
+	display: none;
+}
+
+.tab.active {
+	display: block;
 }

@@ -12,7 +12,8 @@ class Template
 			'api' => $template = self::api(),
 			'payment' => $template = self::payment(),
 			'form' => $template = self::form(),
-			'full_dates' => $template = self::full_dates(),
+			'booked_dates' => $template = self::booked_dates(),
+			'high_season' => $template = self::high_season(),
 			'sms' => $template = self::sms(),
 			'response' => $template = self::response(),
 			default => $template = null
@@ -104,7 +105,12 @@ class Template
 		);
 	}
 
-	private static function full_dates(): array
+	private static function booked_dates(): array
+	{
+		return array();
+	}
+
+	private static function high_season(): array
 	{
 		return array();
 	}
