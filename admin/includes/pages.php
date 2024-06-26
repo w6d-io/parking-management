@@ -2,6 +2,7 @@
 
 namespace ParkingManagement\Admin;
 
+use ParkingManagement\Html;
 use ParkingManagement\ParkingManagement;
 
 class Pages
@@ -38,17 +39,6 @@ class Pages
 
 		echo sprintf('<div id="message" class="updated"><p>%s</p></div>', esc_html($message));
 
-	}
-
-	public static function array_to_html_attribute(array $attr): string
-	{
-		$result = '';
-		foreach ($attr as $key => $value) {
-			if (in_array($key, ['id', 'name', 'type']))
-				continue;
-			$result .= $key . '="' . $value . '" ';
-		}
-		return trim($result);
 	}
 
 	private static function config_form(ParkingManagement $pm): void
@@ -95,7 +85,7 @@ class Pages
 		}
 		echo '<div id="titlediv">';
 
-		echo self::_index("text", "pkmgmt-title", "pkmgmt-title", array(
+		echo Html::_index("text", "pkmgmt-title", "pkmgmt-title", array(
 			'class' => "wide",
 			'placeholder' => esc_html(__("Title", 'parking-management')),
 			'size' => 80,
@@ -104,9 +94,9 @@ class Pages
 			!(current_user_can('pkmgmt_edit', $pm->id))
 		);
 
-		echo self::_p(
+		echo Html::_p(array(),
 			esc_html(__("Name", 'parking-management')) . '<br/>',
-			self::_index("text", "pkmgmt-name", "pkmgmt-name", array(
+			Html::_index("text", "pkmgmt-name", "pkmgmt-name", array(
 				'class' => "wide",
 				'size' => 80,
 				'value' => esc_attr($pm->name)
@@ -158,7 +148,7 @@ class Pages
 		);
 
 		echo '<div class="save-pkmgmt">';
-		echo self::_index("submit", "pkmgmt-save", "pkmgmt-save", array(
+		echo Html::_index("submit", "pkmgmt-save", "pkmgmt-save", array(
 			'class' => 'button-primary',
 			'value' => esc_html(__("Save", 'parking-management')),
 		));
@@ -168,11 +158,11 @@ class Pages
 
 	private static function _shortcode_field($id, $name, $title, $shortcode): string
 	{
-		return self::_p(
+		return Html::_p(array(),
 			$title,
 			'<br/>',
 			'<div class="input-container wide shortcode-div">',
-			self::_index(
+			Html::_index(
 				"text",
 				$id,
 				$name,
@@ -195,79 +185,18 @@ class Pages
 		);
 	}
 
-	private static function _p(...$contents): string
-	{
-		return sprintf('<p class="tagcode">%s</p>', implode("", $contents));
-	}
-
-	private static function _index(string $type, string $id, string $name, array $args, bool $disabled = false, bool $readonly = false, bool $checked = false): string
-	{
-		return '<input type="' . $type . '" id="' . $id . '" name="' . $name . '" ' . self::array_to_html_attribute($args) . ($disabled ? ' disabled' : '') . ($readonly ? ' readonly' : '') . ($checked ? ' checked' : '') . ' />';
-	}
-
-	private static function _password(string $id, string $name, array $args): string
-	{
-		return self::_div('password-container',
-			self::_index("password", $id, $name, $args),
-			'<span class="togglePassword password-toggle">',
-			'<i class="fas fa-eye"></i>',
-			'<i class="fas fa-eye-slash" style="display: none;"></i>',
-			'</span>'
-		);
-	}
-
-	private static function _select(string $id, string $name, array $options, string $value): string
-	{
-		$select = '<select name="' . $name . '" id="' . $id . '">';
-		foreach ($options as $option) {
-			$select .= '<option value="' . $option . '"' . ($option == $value ? 'selected' : '') . '>' . $option . '</option>';
-		}
-		$select .= '</select>';
-		return $select;
-	}
-
-	private static function _textarea(string $id, string $name, $content, string $cols, string $rows): string
-	{
-		return '<textarea ' . 'id="' . $id . '" name="' . $name . '"' . ' cols="' . $cols . '"' . ' rows="' . $rows . '"' . '>' . $content . '</textarea>';
-	}
-
-	private static function _div($class, ...$contents): string
-	{
-		return sprintf('<div class="%s">%s</div>', esc_attr($class), implode("", $contents));
-	}
-
 	private static function _label($for, ...$contents): string
 	{
 		return sprintf('<label for="%s">%s</label>', esc_attr($for), implode("", $contents));
 	}
 
-	private static function _fieldset(...$contents): string
-	{
-		return sprintf('<fieldset>%s</fieldset>', implode("", $contents));
-	}
-
-	private static function _checkbox($id, $name, $key, $value): string
-	{
-		$contents = array();
-		$contents[] .= self::_index('hidden', '', $name . '[' . $key . ']', array('value' => '0'));
-		$contents[] .= self::_index("checkbox", $id . '-' . $key, $name . '[' . $key . ']',
-			array('value' => '1'),
-			false,
-			false,
-			$value == '1'
-		);
-		$contents[] .= self::_label($id . '-' . $key, $key);
-		$contents[] .= '<br/>';
-
-		return implode("\n", $contents);
-	}
 
 	private static function _field($id, $div_class, $name, $label_content, $value): string
 	{
-		return self::_div($div_class,
-			self::_label($id, $label_content),
+		return Html::_div(array('class'=>$div_class),
+			Html::_label($id, $label_content),
 			'<br/>',
-			self::_index("text", $id, $name, array(
+			Html::_index("text", $id, $name, array(
 				'class' => 'wide',
 				'size' => 80,
 				'value' => $value
@@ -277,10 +206,10 @@ class Pages
 
 	private static function _field_password($id, $div_class, $name, $label_content, $value): string
 	{
-		return self::_div($div_class,
-			self::_label($id, $label_content),
+		return Html::_div(array('class'=>$div_class),
+			Html::_label($id, $label_content),
 			'<br/>',
-			self::_password($id, $name, array(
+			Html::_password($id, $name, array('class'=>'password-container'), array(
 				'class' => 'wide password-input',
 				'size' => 80,
 				'value' => $value
@@ -291,16 +220,15 @@ class Pages
 	private static function _field_checkbox($id, $div_class, $name, $span_content, $values): string
 	{
 		if (!is_array($values)) {
-			return self::_div($div_class, "bad values type");
+			return Html::_div(array('class'=>$div_class), "bad values type");
 		}
-
 		$contents = array();
 		$contents[] .= '<span>'.$span_content.'</span>';
 		$contents[] .= '<br/>';
 		foreach ($values as $key => $value) {
-			$contents[] .= self::_checkbox($id, $name, $key, $value);
+			$contents[] .= Html::_checkbox($id, $name, array(), $key, $value);
 		}
-		return self::_div($div_class,
+		return Html::_div(array('class'=>$div_class),
 			...$contents
 		);
 	}
@@ -308,13 +236,13 @@ class Pages
 	private static function _field_select($id, $div_class, $name, $label_content, $options, $value): string
 	{
 		if (!is_array($options)) {
-			return self::_div($div_class, "bad values type");
+			return Html::_div(array('class'=>$div_class), "bad values type");
 		}
 
-		return self::_div($div_class,
+		return Html::_div(array('class'=>$div_class),
 			self::_label($id, $label_content),
 			'<br/>',
-			self::_select($id, $name, $options, $value)
+			Html::_select($id, $name, array(), $options, $value)
 		);
 	}
 
@@ -322,10 +250,10 @@ class Pages
 	{
 		$cols = array_key_exists('cols', $args) ? $args['cols'] : "100";
 		$rows = array_key_exists('rows', $args) ? $args['rows'] : "12";
-		return self::_div($div_class,
+		return Html::_div(array('class'=>$div_class),
 			self::_label($id, $label_content),
 			'<br/>',
-			self::_textarea($id, $name, $value, $cols, $rows),
+			Html::_textarea($id, $name, $value, $cols, $rows),
 		);
 	}
 
@@ -335,14 +263,14 @@ class Pages
 		$contents = array();
 		foreach ($payment['properties'] as $key => $value) {
 			if (in_array($key, array("password", "secret", "secret_key", "signature", "configuration_package")))
-				$contents[] .= self::_field_password($id . '-' . $key, $div_class . " form-group", $name . '[properties]' . '[' . $key . ']', $key, $value);
+				$contents[] .= self::_field_password($id . '-' . $key, $div_class . " form-control", $name . '[properties]' . '[' . $key . ']', $key, $value);
 			else
-				$contents[] .= self::_field($id . '-' . $key, $div_class . " form-group", $name . '[properties]' . '[' . $key . ']', $key, $value);
+				$contents[] .= self::_field($id . '-' . $key, $div_class . " form-control", $name . '[properties]' . '[' . $key . ']', $key, $value);
 		}
-		return self::_fieldset(
+		return Html::_fieldset(
 			'<legend>' . $label_content . '</legend>',
-			'<div class="form-group">',
-			self::_checkbox($id, $name, 'enabled', $payment['enabled']),
+			'<div class="form-control">',
+			Html::_checkbox($id, $name, array(), 'enabled', $payment['enabled']),
 			'</div>',
 			...$contents
 		);
@@ -404,6 +332,18 @@ class Pages
 		echo self::_field_password('api-password', 'api_field', 'pkmgmt-api[password]', esc_html(__('Password
 		', 'parking-management')), $api['password']);
 		echo '</div>';
+		echo '<div class="' . $box['id'] . '-fields">';
+		echo self::_field('api-zip_codes_endpoint', 'api_field', 'pkmgmt-api[zip_codes_endpoint]', esc_html(__('Zip codes endpoint', 'parking-management')), $api['zip_codes_endpoint']);
+		echo '</div>';
+		echo '<div class="' . $box['id'] . '-fields">';
+		echo self::_field('api-models-vehicle-endpoint', 'api_field', 'pkmgmt-api[models_vehicle_endpoint]', esc_html(__('Model vehicle endpoint', 'parking-management')), $api['models_vehicle_endpoint']);
+		echo '</div>';
+		echo '<div class="' . $box['id'] . '-fields">';
+		echo self::_field('api-destinations-endpoint', 'api_field', 'pkmgmt-api[destinations_endpoint]', esc_html(__('Destinations endpoint', 'parking-management')), $api['destinations_endpoint']);
+		echo '</div>';
+		echo '<div class="' . $box['id'] . '-fields">';
+		echo self::_field('api-price-endpoint', 'api_field', 'pkmgmt-api[price_endpoint]', esc_html(__('Price endpoint', 'parking-management')), $api['price_endpoint']);
+		echo '</div>';
 	}
 
 	public static function payment_box($payment, $box): void
@@ -433,6 +373,10 @@ class Pages
 		echo '<div class="' . $box['id'] . '-fields">';
 		echo self::_field_checkbox('form-booking', 'form_field', 'pkmgmt-form[booking]', esc_html(__('Booking', 'parking-management')), $form['booking']);
 		echo '</div>';
+		echo '<div class="' . $box['id'] . '-fields">';
+		echo self::_field('form-indicatif', 'form_field', 'pkmgmt-form[indicatif]', esc_html(__('Indicatif', 'parking-management')), $form['indicatif']);
+		echo '</div>';
+
 
 	}
 
@@ -479,7 +423,18 @@ class Pages
 	public static function sms_box($sms_box, $box): void
 	{
 		echo '<div class="' . $box['id'] . '-fields">';
-		echo self::_field_select('sms-type', 'sms_field', 'pkmgmt-sms[type]', esc_html(__('Type', 'parking-management')), array('AWS', 'OVH'), $sms_box['type']);
+		echo self::_field_select('sms-type', 'sms_field', 'pkmgmt-sms[type]', esc_html(__('Type', 'parking-management')),
+			array(
+				array(
+					'value' => 'AWS',
+					'label' => 'AWS',
+				),
+				array(
+					'value' => 'OVH',
+					'label' => 'OVH',
+				)
+			),
+			$sms_box['type']);
 		echo '</div>';
 		echo '<div class="' . $box['id'] . '-fields">';
 		echo self::_field('sms-user', 'sms_field', 'pkmgmt-sms[user]', esc_html(__('Username', 'parking-management')), $sms_box['user']);

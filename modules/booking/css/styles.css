@@ -1,0 +1,128 @@
+.title {
+	line-height: 25px;
+	font-family: "Century Gothic", "Arial Black", Arial;
+	color: #036faf;
+	font-weight: bold;
+	font-size: 1.333em; /* 16px */
+	margin-bottom: 15px;
+	margin-top: 15px;
+	border-bottom: none;
+}
+
+form#reservation {
+	/*width: 100%;*/
+}
+
+form#reservation legend {
+	width: auto;
+	float: none;
+}
+
+form#reservation div fieldset {
+	background: rgba(255,245,238,0.8);
+	padding: 0 10px;
+	-webkit-border-radius: 6px;
+	-moz-border-radius: 6px;
+	border-radius: 6px;
+	border: 1px solid #009;
+	margin: 10px 0;
+	width: 100% !important;
+}
+
+form#reservation div fieldset div div label {
+	line-height: 30px;
+}
+
+form#reservation input#marque, form#reservation input#ville, form#reservation input#pays, form#reservation input#destination_id {
+	position: absolute;
+	left: -9999px;
+	top: 0;
+	z-index: -1;
+}
+
+/*
+** car type
+*/
+
+form#reservation div.type-id {
+	display: flex;
+	gap: 10px;
+	overflow: hidden;
+}
+
+form#reservation div.type-id div.radio {
+	text-align: center;
+}
+
+form#reservation div.radio input[type=radio] {
+	position: absolute;
+	display: none;
+}
+
+form#reservation div.type-id label:hover {
+	cursor: pointer;
+}
+
+form#reservation div.type-id div label {
+	padding: 15px 25px;
+	margin-bottom: 10px;
+	margin-top: 10px;
+	line-height: normal;
+
+	display: flex;
+	align-items: center;
+
+}
+
+/*
+** radio
+ */
+
+form#reservation input[type=radio]:checked + label {
+	color: #fff;
+	background-color: #579BBC;
+	border-radius: 5px;
+}
+
+/*
+** CGV
+ */
+
+form#reservation div.cgv  {
+	margin: 20px 0;
+}
+
+form#reservation div.cgv label {
+	font-size: smaller;
+	padding-left: 6px;
+}
+
+/*
+** Total
+ */
+
+form#reservation .total
+{
+	color: #fff;
+	background-color: #036faf;
+	padding: 10px;
+	margin-bottom: 15px;
+}
+
+form#reservation .total span {
+	float: right;
+	font-weight: bold;
+	font-size: x-large;
+	margin: -5px;
+	padding: 0 10px;
+}
+
+/*
+** autocompletion
+ */
+
+.ui-autocomplete-category {
+	color: #fff;
+	background-color: #036faf;
+	padding: 0 10px;
+}

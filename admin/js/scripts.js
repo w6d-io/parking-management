@@ -21,6 +21,27 @@ document.addEventListener('DOMContentLoaded', function () {
 	// 	});
 	// });
 
+	document.addEventListener('keydown', function(event) {
+		if ((event.ctrlKey && event.key === 's')||(event.metaKey && event.key === 's')) {
+			event.preventDefault();
+			document.getElementById('pkmgmt-save').click();
+		}
+	});
+
+	document.addEventListener('DOMContentLoaded', function() {
+		// Restaurer la position de défilement à partir de localStorage
+		const scrollPosition = localStorage.getItem('scrollPosition');
+		if (scrollPosition) {
+			window.scrollTo(0, parseInt(scrollPosition, 10));
+		}
+	});
+
+	window.addEventListener('beforeunload', function() {
+		// Sauvegarder la position de défilement dans localStorage
+		console.log('window.scrollY',window.scrollY);
+		localStorage.setItem('scrollPosition', window.scrollY);
+	});
+
 	// Password toggle
 	$('.togglePassword').on('click', function () {
 		const passwordInput = $(this).siblings('.password-input');
@@ -51,7 +72,7 @@ document.addEventListener('DOMContentLoaded', function () {
 		return today.toISOString().slice(0, 10);
 	}
 
-	$('#full-dates-add-element').click(function (event) {
+	$('#full-dates-add-element').on("click",function (event) {
 		event.preventDefault();
 		const id = generateRandomId();
 		const newElement = `
@@ -66,7 +87,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 		initializeDateTimePickers();
 	});
-	$('#high-season-add-element').click(function (event) {
+	$('#high-season-add-element').on("click",function (event) {
 		event.preventDefault();
 		const id = generateRandomId();
 		const newElement = `
@@ -101,7 +122,7 @@ document.addEventListener('DOMContentLoaded', function () {
 				copyMessage.hide();
 			}, 2000);
 		}).catch(function (error) {
-			console.error('Could not copy text: ', error);
+			console.error(error);
 		});
 	});
 

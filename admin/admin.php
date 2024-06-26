@@ -40,7 +40,15 @@ class Admin
 		wp_enqueue_script('parking-management-jquery', 'https://code.jquery.com/jquery-3.6.0.min.js');
 		wp_enqueue_script('parking-management-easepick', 'https://cdn.jsdelivr.net/npm/@easepick/bundle@1.2.1/dist/index.umd.min.js');
 		wp_enqueue_script('parking-management-luxon', 'https://cdn.jsdelivr.net/npm/luxon/build/global/luxon.min.js');
-		wp_enqueue_script('parking-management-admin', pkmgmt_plugin_url('admin/js/scripts.js'), array('parking-management-jquery', 'parking-management-easepick', 'parking-management-luxon'), PKMGMT_VERSION);
+		wp_enqueue_script(
+			'parking-management-admin',
+			pkmgmt_plugin_url('admin/js/scripts.js'),
+			array(
+				'parking-management-jquery',
+				'parking-management-easepick',
+				'parking-management-luxon',
+				),
+			PKMGMT_VERSION);
 	}
 
 	public function menu(): void

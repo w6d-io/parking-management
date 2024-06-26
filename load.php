@@ -1,9 +1,11 @@
 <?php
 //defined('_PKMGMT') or die('Restricted access');
 
+require_once PKMGMT_PLUGIN_DIR . DS . "includes" . DS . "interfaces.php";
 require_once PKMGMT_PLUGIN_DIR . DS . "includes" . DS . "l10n.php";
 require_once PKMGMT_PLUGIN_DIR . DS . "includes" . DS . "capabilities.php";
 require_once PKMGMT_PLUGIN_DIR . DS . "includes" . DS . "functions.php";
+require_once PKMGMT_PLUGIN_DIR . DS . "includes" . DS . "html.php";
 require_once PKMGMT_PLUGIN_DIR . DS . "includes" . DS . "parking-management.php";
 require_once PKMGMT_PLUGIN_DIR . DS . "includes" . DS . "shortcode.php";
 require_once PKMGMT_PLUGIN_DIR . DS . "includes" . DS . "messages.php";
@@ -25,7 +27,8 @@ class PKMGMT
 	 */
 	public static function load_modules(): void
 	{
-		self::load_module('book');
+		self::load_module('booking');
+		self::load_module('price');
 	}
 
 	/**

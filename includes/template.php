@@ -54,6 +54,10 @@ class Template
 			'port' => "",
 			'user' => "",
 			'password' => "",
+			'zip_codes_endpoint' => "",
+			'models_vehicle_endpoint' => "",
+			'destinations_endpoint' => "",
+			'price_endpoint' => "",
 		);
 	}
 
@@ -101,7 +105,8 @@ class Template
 			'booking' => array(
 				'terms_and_conditions' => 0,
 				'valid_on_payment' => 0
-			)
+			),
+			'indicative' => '',
 		);
 	}
 
