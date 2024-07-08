@@ -8,9 +8,6 @@ use ParkingManagement\database\database;
 use ParkingManagement\Price;
 use PDO;
 
-require_once PKMGMT_PLUGIN_MODULES_DIR . DS . "database" . DS . "database.php";
-require_once PKMGMT_PLUGIN_MODULES_DIR . DS . "price" . DS . "price.php";
-
 class Order
 {
 

@@ -7,8 +7,6 @@ use ParkingManagement\database\database;
 use PDO;
 use PDOException;
 
-require_once PKMGMT_PLUGIN_MODULES_DIR . DS . "database" . DS . "database.php";
-
 class Member {
 
 	public const ADMIN = 1;

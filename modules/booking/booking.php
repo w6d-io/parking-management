@@ -17,7 +17,6 @@ require_once PKMGMT_PLUGIN_MODULES_DIR . DS . "booking" . DS . "includes" . DS .
 require_once PKMGMT_PLUGIN_MODULES_DIR . DS . "booking" . DS . "includes" . DS . "member.php";
 require_once PKMGMT_PLUGIN_MODULES_DIR . DS . "booking" . DS . "includes" . DS . "order.php";
 require_once PKMGMT_PLUGIN_MODULES_DIR . DS . "booking" . DS . "includes" . DS . "vehicle.php";
-require_once PKMGMT_PLUGIN_MODULES_DIR . DS . "database" . DS . "database.php";
 
 class Booking implements IShortcode, IParkingManagement
 {

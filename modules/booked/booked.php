@@ -10,9 +10,6 @@ use ParkingManagement\interfaces\IParkingmanagement;
 use ParkingManagement\interfaces\IShortcode;
 use PDO;
 
-require_once PKMGMT_PLUGIN_MODULES_DIR . DS . "booking" . DS . "includes" . DS . "order.php";
-require_once PKMGMT_PLUGIN_MODULES_DIR . DS . "database" . DS . "database.php";
-
 class Booked implements IShortcode, IParkingManagement
 {
 
@@ -88,7 +85,7 @@ class Booked implements IShortcode, IParkingManagement
 	public static function isBooked($date): bool
 	{
 		$date = new DateTime($date);
-		foreach (self::getBooked() as $booked)
+		foreach (self::getBookedDates() as $booked)
 		{
 			$start = new DateTime($booked['start']);
 			$end = new DateTime($booked['end']);
@@ -101,7 +98,7 @@ class Booked implements IShortcode, IParkingManagement
 	/**
 	 * @throws Exception
 	 */
-	public static function getBooked(): array
+	public static function getBookedDates(): array
 	{
 		$pm = getParkingManagementInstance();
 		if ( !$pm)
@@ -112,10 +109,34 @@ class Booked implements IShortcode, IParkingManagement
 	/**
 	 * @throws Exception
 	 */
+	public static function getBookedDate(string $date): array
+	{
+		$pm = getParkingManagementInstance();
+		if ( !$pm)
+			throw new Exception("ParkingManagement instance is not configured");
+		$dates = self::bookedSorted($pm->prop('booked_dates'));
+		foreach ($dates as $booked)
+		{
+			$start = new DateTime($booked['start']);
+			$end = new DateTime($booked['end']);
+			if ($date >= $start && $date <= $end)
+				return $booked;
+		}
+		foreach ($dates as $booked){
+			$start = new DateTime($booked['start']);
+			if ($date < $start)
+				return $booked;
+		}
+		return array();
+	}
+
+	/**
+	 * @throws Exception
+	 */
 	public static function getBookedRange(): array
 	{
 		$dates = array();
-		foreach (self::getBooked() as $booked)
+		foreach (self::getBookedDates() as $booked)
 		{
 			if ($booked['start'] == $booked['end']) {
 				$dates[] = $booked['start'];
@@ -126,6 +147,23 @@ class Booked implements IShortcode, IParkingManagement
 		return $dates;
 	}
 
+	/**
+	 * @throws Exception
+	 */
+	public static function bookedHTMLMessage() : string
+	{
+		try {
+			$date = new DateTime();
+			$booked = self::getBookedDate($date->format('Y-m-d'));
+			$message = self::getBookedMessage($booked);
+
+		} catch (Exception $e) {
+			if (array_key_exists('DEBUG', $_GET) && $_GET['DEBUG'] == '1') {
+				print_log($e->getMessage(), false);
+			}
+		}
+		return '';
+	}
 	/**
 	 * @throws Exception
 	 */
@@ -143,9 +181,17 @@ class Booked implements IShortcode, IParkingManagement
 	 */
 	private static function bookedSorted(array $booked): array
 	{
-		return usort($booked, function ($a, $b) {
+		usort($booked, function ($a, $b) {
 			return self::compareBooked($a, $b);
 		});
+		return $booked;
+	}
+
+	private static function getBookedMessage(array $booked): string
+	{
+		if (empty($booked) || empty($booked['message']))
+			return "";
+		return replacePlaceholders($booked['message'], $booked);
 	}
 
 }

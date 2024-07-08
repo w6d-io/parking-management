@@ -11,8 +11,6 @@ use ParkingManagement\interfaces\IShortcode;
 use PDO;
 use Price\Page;
 
-require_once PKMGMT_PLUGIN_MODULES_DIR . DS . "booking" . DS . "includes" . DS . "order.php";
-require_once PKMGMT_PLUGIN_MODULES_DIR . DS . "database" . DS . "database.php";
 require_once PKMGMT_PLUGIN_MODULES_DIR . DS . "price" . DS . "includes" . DS . "page.php";
 
 
