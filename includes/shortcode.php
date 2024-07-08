@@ -2,7 +2,6 @@
 
 use ParkingManagement\Booking;
 use ParkingManagement\Booked;
-use ParkingManagement\ParkingManagement;
 use ParkingManagement\Price;
 use ParkingManagement\interfaces\IShortcode;
 
@@ -33,10 +32,9 @@ function pkmgmt_parking_management_shortcode_func(array $atts, $content = null, 
 
 function pkmgmt_parking_management_shortcode_router(string $type, $payment_provider): string
 {
-	$id = get_post_id_by_post_type(ParkingManagement::post_type);
-	if (!$id)
+	$pm = getParkingManagementInstance();
+	if (!$pm)
 		return '[parking-management "not found"]';
-	$pm = ParkingManagement::get_instance($id);
 
 	/** @var IShortcode $instance */
 	$instance =  match ($type) {

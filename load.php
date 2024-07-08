@@ -8,7 +8,6 @@ require_once PKMGMT_PLUGIN_DIR . DS . "includes" . DS . "functions.php";
 require_once PKMGMT_PLUGIN_DIR . DS . "includes" . DS . "html.php";
 require_once PKMGMT_PLUGIN_DIR . DS . "includes" . DS . "parking-management.php";
 require_once PKMGMT_PLUGIN_DIR . DS . "includes" . DS . "shortcode.php";
-require_once PKMGMT_PLUGIN_DIR . DS . "includes" . DS . "messages.php";
 require_once PKMGMT_PLUGIN_DIR . DS . "includes" . DS . "template.php";
 
 if (is_admin()) {

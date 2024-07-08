@@ -33,18 +33,23 @@ class Admin
 			return;
 		}
 		// CSS
-		wp_enqueue_style('parking-management-admin', pkmgmt_plugin_url('admin/css/styles.css'));
-		wp_enqueue_style('parking-management-admin-rtl', pkmgmt_plugin_url('admin/css/styles-rtl.css'));
+		wp_enqueue_style('parking-management-admin', pkmgmt_plugin_url('admin/css/admin.css'));
+		wp_enqueue_style('parking-management-admin-rtl', pkmgmt_plugin_url('admin/css/admin-rtl.css'));
 		wp_enqueue_style('font-awesome', 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css', array(), '6.0.0-beta3');
+		wp_enqueue_style('bootstrap', 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css', array('admin-menu','forms'), '5.3.3');
 		wp_enqueue_style('parking-management-easepick', 'https://cdn.jsdelivr.net/npm/@easepick/bundle@1.2.1/dist/index.css');
 		wp_enqueue_script('parking-management-jquery', 'https://code.jquery.com/jquery-3.6.0.min.js');
+		wp_enqueue_script('parking-management-jquery-validate', 'https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js', array('parking-management-jquery'));
+		wp_enqueue_script('parking-management-additional-methods', 'https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/additional-methods.min.js', array('parking-management-jquery'));
 		wp_enqueue_script('parking-management-easepick', 'https://cdn.jsdelivr.net/npm/@easepick/bundle@1.2.1/dist/index.umd.min.js');
 		wp_enqueue_script('parking-management-luxon', 'https://cdn.jsdelivr.net/npm/luxon/build/global/luxon.min.js');
 		wp_enqueue_script(
 			'parking-management-admin',
-			pkmgmt_plugin_url('admin/js/scripts.js'),
+			pkmgmt_plugin_url('admin/js/admin.js'),
 			array(
 				'parking-management-jquery',
+				'parking-management-jquery-validate',
+				'parking-management-additional-methods',
 				'parking-management-easepick',
 				'parking-management-luxon',
 				),

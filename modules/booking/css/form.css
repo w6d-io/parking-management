@@ -126,3 +126,11 @@ form#reservation .total span {
 	background-color: #036faf;
 	padding: 0 10px;
 }
+
+/*
+** label error
+ */
+label.error {
+	color: crimson;
+	font-weight: 800;
+}

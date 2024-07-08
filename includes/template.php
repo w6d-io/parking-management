@@ -29,6 +29,11 @@ class Template
 			'RCS' => '',
 			'email' => '',
 			'terminal' => '',
+			'vehicle_type' => array(
+				'car' => 0,
+				'truck' => 0,
+				'motorcycle' => 0,
+			),
 			'type' => array(
 				'ext' => 0,
 				'int' => 0
@@ -103,8 +108,10 @@ class Template
 	{
 		return array(
 			'booking' => array(
-				'terms_and_conditions' => 0,
-				'valid_on_payment' => 0
+				'terms_and_conditions' => '0',
+				'valid_on_payment' => '0',
+				'dialog_confirmation' => '0',
+				'night_extra_charge' => '0',
 			),
 			'indicative' => '',
 		);

@@ -1,5 +1,7 @@
 <?php
 
+use ParkingManagement\ParkingManagement;
+
 /**
  * Include a file under PKMGMT_PLUGIN_MODULES_DIR.
  *
@@ -41,7 +43,6 @@ function pkmgmt_register_post_type(): bool
 	} else {
 		return false;
 	}
-
 }
 
 
@@ -124,6 +125,32 @@ function print_log(mixed $object, bool $out = true): void
 		exit(1);
 }
 
+/**
+ * Print the object into the console log
+ *
+ * @param string $title
+ * @param mixed $object
+ * @return void
+ */
+function console_log(string $title, mixed $object): void
+{
+	$data = json_encode($object);
+	echo '<script>console.log("'.$title.'", '."'".$data."'".')</script>';
+}
+
+/**
+ * Print the object into the console error
+ *
+ * @param string $title
+ * @param mixed $object
+ * @return void
+ */
+function console_error(string $title, mixed $object): void
+{
+	$data = json_encode($object);
+	echo '<script>console.error("'.$title.'", "'.$data.'")</script>';
+}
+
 function get_post_id_by_post_type( string $post_type ): int {
 	$post_ids = get_posts( array(
 		'post_type' => $post_type,
@@ -143,4 +170,77 @@ function pkmgmt_plugin_url(string $path): string
 	}
 
 	return $url;
+}
+
+// Generate a password
+function generatePassword($length=6): string
+{
+	$password = NULL;
+	$possible = "0123456789abcdfghjkmnpqrstvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+	$i = 0;
+	while($i<$length) {
+		$char = $possible[mt_rand(0, strlen($possible)-1)];
+		// we don't want this character if it's already in the password
+		if (!strstr($password, $char)) {
+			$password .= $char;
+			$i++;
+		}
+	}
+	return $password;
+}
+
+// Simplifier une chaine
+function slug($to_slug, $separator = '-'): array|string|null
+{
+	$to_slug = strip_tags(html_entity_decode($to_slug));
+	$accented = array('&', 'À', 'Á', 'Â', 'Ã', 'Ä', 'Å', 'Æ', 'Ă', 'Ą', 'Ç', 'Ć', 'Č', 'Œ',
+		'Ď', 'Đ', 'à', 'á', 'â', 'ã', 'ä', 'å', 'æ', 'ă', 'ą', 'ç', 'ć', 'č', 'œ', 'ď', 'đ',
+		'È', 'É', 'Ê', 'Ë', 'Ę', 'Ě', 'Ğ', 'Ì', 'Í', 'Î', 'Ï', 'İ', 'Ĺ', 'Ľ', 'Ł', 'è', 'é',
+		'ê', 'ë', 'ę', 'ě', 'ğ', 'ì', 'í', 'î', 'ï', 'ı', 'ĺ', 'ľ', 'ł', 'Ñ', 'Ń', 'Ň', 'Ò',
+		'Ó', 'Ô', 'Õ', 'Ö', 'Ø', 'Ő', 'Ŕ', 'Ř', 'Ś', 'Ş', 'Š', 'ñ', 'ń', 'ň', 'ò', 'ó', 'ô',
+		'ö', 'ø', 'ő', 'ŕ', 'ř', 'ś', 'ş', 'š', '$', 'Ţ', 'Ť', 'Ù', 'Ú', 'Û', 'Ų', 'Ü', 'Ů',
+		'Ű', 'Ý', 'ß', 'Ź', 'Ż', 'Ž', 'ţ', 'ť', 'ù', 'ú', 'û', 'ų', 'ü', 'ů', 'ű', 'ý', 'ÿ',
+		'ź', 'ż', 'ž', 'А', 'Б', 'В', 'Г', 'Д', 'Е', 'Ё', 'Ж', 'З', 'И', 'Й', 'К', 'Л', 'М',
+		'Н', 'О', 'П', 'Р', 'а', 'б', 'в', 'г', 'д', 'е', 'ё', 'ж', 'з', 'и', 'й', 'к', 'л',
+		'м', 'н', 'о', 'р', 'С', 'Т', 'У', 'Ф', 'Х', 'Ц', 'Ч', 'Ш', 'Щ', 'Ъ', 'Ы', 'Ь', 'Э',
+		'Ю', 'Я', 'с', 'т', 'у', 'ф', 'х', 'ц', 'ч', 'ш', 'щ', 'ъ', 'ы', 'ь', 'э', 'ю', 'я');
+	$replace = array('et', 'A', 'A', 'A', 'A', 'A', 'A', 'AE', 'A', 'A', 'C', 'C', 'C', 'OE',
+		'D', 'D', 'a', 'a', 'a', 'a', 'a', 'a', 'ae', 'a', 'a', 'c', 'c', 'c', 'oe', 'd', 'd',
+		'E', 'E', 'E', 'E', 'E', 'E', 'G', 'I', 'I', 'I', 'I', 'I', 'L', 'L', 'L', 'e', 'e',
+		'e', 'e', 'e', 'e', 'g', 'i', 'i', 'i', 'i', 'i', 'l', 'l', 'l', 'N', 'N', 'N', 'O',
+		'O', 'O', 'O', 'O', 'O', 'O', 'R', 'R', 'S', 'S', 'S', 'n', 'n', 'n', 'o', 'o', 'o',
+		'o', 'o', 'o', 'r', 'r', 's', 's', 's', 's', 'T', 'T', 'U', 'U', 'U', 'U', 'U', 'U',
+		'U', 'Y', 'Y', 'Z', 'Z', 'Z', 't', 't', 'u', 'u', 'u', 'u', 'u', 'u', 'u', 'y', 'y',
+		'z', 'z', 'z', 'A', 'B', 'B', 'r', 'A', 'E', 'E', 'X', '3', 'N', 'N', 'K', 'N', 'M',
+		'H', 'O', 'N', 'P', 'a', 'b', 'b', 'r', 'a', 'e', 'e', 'x', '3', 'n', 'n', 'k', 'n',
+		'm', 'h', 'o', 'p', 'C', 'T', 'Y', 'O', 'X', 'U', 'u', 'W', 'W', 'b', 'b', 'b', 'E',
+		'O', 'R', 'c', 't', 'y', 'o', 'x', 'u', 'u', 'w', 'w', 'b', 'b', 'b', 'e', 'o', 'r ');
+	$slug = str_replace($accented, $replace, $to_slug);
+
+	$search = array('@[ ]@i', '@[^a-zA-Z0-9_-]@');
+	$replace = array($separator, '');
+	return preg_replace(
+		'/(?:([' . $separator . '])\1)\1*/',
+		'$1',
+		trim(
+			strtolower(preg_replace($search, $replace, $slug)),
+			$separator
+		)
+	);
+}
+
+function getParkingManagementInstance(): ParkingManagement|bool
+{
+	$id = get_post_id_by_post_type(ParkingManagement::post_type);
+	if (!$id)
+		return false;
+	$pm = ParkingManagement::get_instance($id);
+	return $pm;
+}
+
+function replacePlaceholders($string, $replacements): string {
+	foreach ($replacements as $key => $value) {
+		$string = str_replace("{" . $key . "}", $value, $string);
+	}
+	return $string;
 }

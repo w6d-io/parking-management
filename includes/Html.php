@@ -2,7 +2,8 @@
 
 namespace ParkingManagement;
 
-class Html {
+class Html
+{
 
 	public static function array_to_html_attribute(array $attr): string
 	{
@@ -22,12 +23,21 @@ class Html {
 
 	public static function _p(array $args, ...$contents): string
 	{
-		return '<p '. self::array_to_html_attribute($args) .'>'.implode("", $contents).'</p>';
+		return '<p ' . self::array_to_html_attribute($args) . '>' . implode("", $contents) . '</p>';
 	}
 
 	public static function _div($args, ...$contents): string
 	{
-		return '<div '.self::array_to_html_attribute($args).'>'.implode(PHP_EOL, $contents).'</div>';
+		return '<div ' . self::array_to_html_attribute($args) . '>' . implode("\n", $contents) . '</div>';
+	}
+	public static function _ul($args, ...$contents): string
+	{
+		return '<ul ' . self::array_to_html_attribute($args) . '>' . implode(PHP_EOL, $contents) . '</ul>';
+	}
+
+	public static function _li($args, ...$contents): string
+	{
+		return '<li ' . self::array_to_html_attribute($args) . '>' . implode(PHP_EOL, $contents) . '</li>';
 	}
 
 	public static function _password(string $id, string $name, array $div_args, array $args): string
@@ -43,27 +53,27 @@ class Html {
 
 	public static function _fieldset(...$contents): string
 	{
-		return '<fieldset>'.implode("", $contents).'</fieldset>';
+		return '<fieldset>' . implode("", $contents) . '</fieldset>';
 	}
 
 	public static function _label($for, ...$contents): string
 	{
-		return '<label for="'.esc_attr($for).'">'.implode(PHP_EOL, $contents).'</label>';
+		return '<label for="' . esc_attr($for) . '">' . implode(PHP_EOL, $contents) . '</label>';
 	}
 
 	public static function _label_with_attr(array $args, $for, ...$contents): string
 	{
-		return '<label '. self::array_to_html_attribute($args).' for="'.esc_attr($for).'">'.implode("", $contents)."\n</label>";
+		return '<label ' . self::array_to_html_attribute($args) . ' for="' . esc_attr($for) . '">' . implode("", $contents) . "\n</label>";
 	}
 
 	public static function _span(array $attr, ...$contents): string
 	{
-		return '<span '.self::array_to_html_attribute($attr).'>'.implode(PHP_EOL, $contents).'</span>';
+		return '<span ' . self::array_to_html_attribute($attr) . '>' . implode(PHP_EOL, $contents) . '</span>';
 	}
 
 	public static function _checkbox($id, $name, array $args, $key, $value): string
 	{
-		$args = array_merge(array('value' => '1'),$args);
+		$args = array_merge(array('value' => '1'), $args);
 		$contents = array();
 		$contents[] .= Html::_index('hidden', '', $name . '[' . $key . ']', array('value' => '0'));
 		$contents[] .= Html::_index("checkbox", $id . '-' . $key, $name . '[' . $key . ']',
@@ -72,32 +82,32 @@ class Html {
 			false,
 			$value == '1'
 		);
-		$contents[] .= Html::_label($id . '-' . $key, $key);
+		$contents[] .= Html::_label_with_attr(array('class' => 'form-check-label'), $id . '-' . $key, $key);
 		$contents[] .= '<br/>';
 
 		return implode(PHP_EOL, $contents);
 	}
-	public static function _radio($id, $name, $value, bool $checked = false): string
+
+	public static function _radio(string $id, string $name, mixed $value, array $args, bool $checked = false): string
 	{
-		return '<input type="radio" id="'.$id.'" name="'.$name.'" value="'.$value.'"'. ($checked ? ' checked' : '') .'/>';
+		return '<input type="radio" ' . self::array_to_html_attribute($args) . ' id="' . $id . '" name="' . $name . '" value="' . $value . '"' . ($checked ? ' checked' : '') . '/>';
 	}
 
 	public static function _select(string $id, string $name, array $args, array $options, string $value): string
 	{
 
-		$select = '<select name="' . $name . '" id="' . $id . '" '. self::array_to_html_attribute($args).' >';
+		$select = '<select name="' . $name . '" id="' . $id . '" ' . self::array_to_html_attribute($args) . ' >';
 		foreach ($options as $key => $option) {
 			if ($key === 'group') {
 				foreach ($option as $group_name => $opts) {
-					$select .= '<optgroup label="' . $group_name . '">'. PHP_EOL;
+					$select .= '<optgroup label="' . $group_name . '">' . PHP_EOL;
 					foreach ($opts as $o) {
-						$select .= self::_option($o['value'], $o['label'], $o['value'] == $value). PHP_EOL;
+						$select .= self::_option($o['value'], $o['label'], $o['value'] == $value) . PHP_EOL;
 					}
-					$select .= '</optgroup>'. PHP_EOL;
+					$select .= '</optgroup>' . PHP_EOL;
 				}
 				break;
-			}
-			else
+			} else
 				$select .= self::_option($option['value'], $option['label'], $option['value'] == $value);
 		}
 		$select .= '</select>';
@@ -112,6 +122,11 @@ class Html {
 	public static function _textarea(string $id, string $name, $content, string $cols, string $rows): string
 	{
 		return '<textarea ' . 'id="' . $id . '" name="' . $name . '"' . ' cols="' . $cols . '"' . ' rows="' . $rows . '"' . '>' . $content . '</textarea>';
+	}
+
+	public static function _form(string $id, string $name, string $method, string $action, array $args, ...$contents): string
+	{
+		return '<form id="' . $id . '" name="' . $name . '" method="' . $method . '" action="' . $action . '">' . implode(PHP_EOL, $contents) . '</form>';
 	}
 
 

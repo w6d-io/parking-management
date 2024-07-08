@@ -288,17 +288,6 @@ class ParkingManagement
 
 		$this->properties['mail'] = $mail;
 
-		$messages = $this->prop('messages');
-
-		if (is_array($messages)) {
-			foreach (Messages::pkmgmt_messages() as $key => $arr) {
-				if (!isset($messages[$key])) {
-					$messages[$key] = $arr['default'];
-				}
-			}
-		}
-
-		$this->properties['messages'] = $messages;
 	}
 
 	public function save(): WP_Error|int
