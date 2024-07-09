@@ -72,7 +72,7 @@ class HomeForm
 				Html::_label_with_attr(
 					array('class' => 'form-label'),
 					'depart',
-					esc_html(__('Dropping off at', 'parking-management'))
+					esc_html__('Dropping off at', 'parking-management')
 				),
 				Html::_index('text', 'depart', 'depart', array(
 					'class' => 'departure regular required border rounded form-control py-2',
@@ -89,7 +89,7 @@ class HomeForm
 						'class' => 'form-label'
 					),
 					'retour',
-					esc_html(__('Landing at the airport', 'parking-management'))
+					esc_html__('Landing at the airport', 'parking-management')
 				),
 				Html::_index('text', 'retour', 'retour', array(
 					'class' => 'return regular required border rounded form-control py-2',

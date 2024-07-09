@@ -63,6 +63,7 @@ div.wide {
 
 i.darkgray {
 	color: darkgray;
+	opacity: 1 !important;
 }
 
 
@@ -111,6 +112,10 @@ div.input-container {
 	padding: 5px;
 	border: 1px solid #ccc;
 	border-radius: 3px;
+}
+
+div.tooltip {
+	opacity: 1!important;
 }
 
 .tooltip .tooltiptext {

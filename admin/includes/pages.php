@@ -11,7 +11,7 @@ class Pages
 	{
 		$pm = ParkingManagement::get_current();
 		echo '<div class="wrap pkmgmt-parking-management-config">';
-		echo '<h2>' . esc_html(__('Parking Management', 'parking-management')) . '</h2>';
+		echo '<h2>' . esc_html__('Parking Management', 'parking-management') . '</h2>';
 		echo '<br class="clear"/>';
 		if ($pm === null) {
 			$_REQUEST['message'] = 'Failed to get config';
@@ -33,7 +33,7 @@ class Pages
 			return;
 		$message = $_REQUEST['message'];
 		if ('saved' == $message)
-			$message = esc_html(__('Configuration saved.', 'parking-management'));
+			$message = __('Configuration saved.', 'parking-management');
 		if (empty($message))
 			return;
 
@@ -88,7 +88,7 @@ class Pages
 
 		echo Html::_index("text", "pkmgmt-title", "pkmgmt-title", array(
 			'class' => "wide",
-			'placeholder' => esc_html(__("Title", 'parking-management')),
+			'placeholder' => esc_html__("Title", 'parking-management'),
 			'size' => 80,
 			'value' => esc_attr($pm->title)
 		),
@@ -96,7 +96,7 @@ class Pages
 		);
 
 		echo Html::_p(array(),
-			esc_html(__("Name", 'parking-management')) . '<br/>',
+			esc_html__("Name", 'parking-management') . '<br/>',
 			Html::_index("text", "pkmgmt-name", "pkmgmt-name", array(
 				'class' => "wide",
 				'size' => 80,
@@ -108,50 +108,56 @@ class Pages
 		echo self::_shortcode_field(
 			'shortcode-form',
 			'shortcode-form',
-			esc_html(__("Copy and paste this code into your page to include booking form.", 'parking-management')),
+			esc_html__("Copy and paste this code into your page to include booking form.", 'parking-management'),
 			"[parking-management type='form']"
 		);
 		echo self::_shortcode_field(
 			'shortcode-home-form',
 			'shortcode-home-form',
-			esc_html(__("Copy and paste this code into your page to include home booking form.", 'parking-management')),
+			esc_html__("Copy and paste this code into your page to include home booking form.", 'parking-management'),
 			"[parking-management type='home-form']"
 		);
 		echo self::_shortcode_field(
 			'shortcode-price',
 			'shortcode-price',
-			esc_html(__("Copy and paste this code into your page to include price table.", 'parking-management')),
+			esc_html__("Copy and paste this code into your page to include price table.", 'parking-management'),
 			"[parking-management type='price']"
 		);
 		echo self::_shortcode_field(
 			'shortcode-booked',
 			'shortcode-booked',
-			esc_html(__("Copy and paste this code into your page to include booked message.", 'parking-management')),
+			esc_html__("Copy and paste this code into your page to include booked message.", 'parking-management'),
 			"[parking-management type='booked']"
+		);
+		echo self::_shortcode_field(
+			'shortcode-high-season',
+			'shortcode-high-season',
+			esc_html__("Copy and paste this code into your page to include high-season message.", 'parking-management'),
+			"[parking-management type='high-season']"
 		);
 		echo self::_shortcode_field(
 			'shortcode-payment-paypal',
 			'shortcode-payment-paypal',
-			esc_html(__("Copy and paste this code into your page to include paypal payment form.", 'parking-management')),
+			esc_html__("Copy and paste this code into your page to include paypal payment form.", 'parking-management'),
 			"[parking-management type='payment' payment_provider='paypal']"
 		);
 		echo self::_shortcode_field(
 			'shortcode-payment-payplug',
 			'shortcode-payment-payplug',
-			esc_html(__("Copy and paste this code into your page to include payplug payment form.", 'parking-management')),
+			esc_html__("Copy and paste this code into your page to include payplug payment form.", 'parking-management'),
 			"[parking-management type='payment' payment_provider='payplug']"
 		);
 		echo self::_shortcode_field(
 			'shortcode-payment-mypos',
 			'shortcode-payment-mypos',
-			esc_html(__("Copy and paste this code into your page to include mypos payment form.", 'parking-management')),
+			esc_html__("Copy and paste this code into your page to include mypos payment form.", 'parking-management'),
 			"[parking-management type='payment' payment_provider='mypos']"
 		);
 
 		echo '<div class="save-pkmgmt">';
 		echo Html::_index("submit", "pkmgmt-save", "pkmgmt-save", array(
 			'class' => 'button-primary',
-			'value' => esc_html(__("Save", 'parking-management')),
+			'value' => esc_html__("Save", 'parking-management'),
 		));
 		echo '</div>';
 		echo '</div>';
@@ -159,7 +165,7 @@ class Pages
 
 	private static function _shortcode_field($id, $name, $title, $shortcode): string
 	{
-		return Html::_p(array(),
+		return Html::_p(array('class' => 'mb-0'),
 			$title,
 			'<br/>',
 			'<div class="input-container wide shortcode-div">',
@@ -283,73 +289,73 @@ class Pages
 	public static function info_box($info, $box): void
 	{
 		echo '<div class="' . $box['id'] . '-fields">';
-		echo self::_field('info-address', 'info_field', 'pkmgmt-info[address]', esc_html(__('Address', 'parking-management')), $info['address']);
+		echo self::_field('info-address', 'info_field', 'pkmgmt-info[address]', esc_html__('Address', 'parking-management'), $info['address']);
 		echo '</div>';
 		echo '<div class="' . $box['id'] . '-fields">';
-		echo self::_field('info-mobile', 'info_field', 'pkmgmt-info[mobile]', esc_html(__('Mobile', 'parking-management')), $info['mobile']);
+		echo self::_field('info-mobile', 'info_field', 'pkmgmt-info[mobile]', esc_html__('Mobile', 'parking-management'), $info['mobile']);
 		echo '</div>';
 		echo '<div class="' . $box['id'] . '-fields">';
-		echo self::_field('info-RCS', 'info_field', 'pkmgmt-info[RCS]', esc_html(__('RCS', 'parking-management')), $info['RCS']);
+		echo self::_field('info-RCS', 'info_field', 'pkmgmt-info[RCS]', esc_html__('RCS', 'parking-management'), $info['RCS']);
 		echo '</div>';
 		echo '<div class="' . $box['id'] . '-fields">';
-		echo self::_field('info-email', 'info_field', 'pkmgmt-info[email]', esc_html(__('Email', 'parking-management')), $info['email']);
+		echo self::_field('info-email', 'info_field', 'pkmgmt-info[email]', esc_html__('Email', 'parking-management'), $info['email']);
 		echo '</div>';
 		echo '<div class="' . $box['id'] . '-fields">';
-		echo self::_field('info-terminal', 'info_field', 'pkmgmt-info[terminal]', esc_html(__('Terminal', 'parking-management')), $info['terminal']);
+		echo self::_field('info-terminal', 'info_field', 'pkmgmt-info[terminal]', esc_html__('Terminal', 'parking-management'), $info['terminal']);
 		echo '</div>';
 		echo '<div class="' . $box['id'] . '-fields">';
-		echo self::_field_checkbox('info-vehicle-type', 'info_field', 'pkmgmt-info[vehicle_type]', esc_html(__('Vehicle Type supported', 'parking-management')), $info['vehicle_type']);
+		echo self::_field_checkbox('info-vehicle-type', 'info_field', 'pkmgmt-info[vehicle_type]', esc_html__('Vehicle Type supported', 'parking-management'), $info['vehicle_type']);
 		echo '</div>';
 		echo '<div class="' . $box['id'] . '-fields">';
-		echo self::_field_checkbox('info-type', 'info_field', 'pkmgmt-info[type]', esc_html(__('Vehicle storage mode', 'parking-management')), $info['type']);
+		echo self::_field_checkbox('info-type', 'info_field', 'pkmgmt-info[type]', esc_html__('Vehicle storage mode', 'parking-management'), $info['type']);
 		echo '</div>';
 	}
 
 	public static function database_box($database, $box): void
 	{
 		echo '<div class="' . $box['id'] . '-fields">';
-		echo self::_field('database-name', 'database_field', 'pkmgmt-database[name]', esc_html(__('Name', 'parking-management')), $database['name']);
+		echo self::_field('database-name', 'database_field', 'pkmgmt-database[name]', esc_html__('Name', 'parking-management'), $database['name']);
 		echo '</div>';
 		echo '<div class="' . $box['id'] . '-fields">';
-		echo self::_field('database-host', 'database_field', 'pkmgmt-database[host]', esc_html(__('Host', 'parking-management')), $database['host']);
+		echo self::_field('database-host', 'database_field', 'pkmgmt-database[host]', esc_html__('Host', 'parking-management'), $database['host']);
 		echo '</div>';
 		echo '<div class="' . $box['id'] . '-fields">';
-		echo self::_field('database-port', 'database_field', 'pkmgmt-database[port]', esc_html(__('Port', 'parking-management')), $database['port']);
+		echo self::_field('database-port', 'database_field', 'pkmgmt-database[port]', esc_html__('Port', 'parking-management'), $database['port']);
 		echo '</div>';
 		echo '<div class="' . $box['id'] . '-fields">';
-		echo self::_field('database-user', 'database_field', 'pkmgmt-database[user]', esc_html(__('Username', 'parking-management')), $database['user']);
+		echo self::_field('database-user', 'database_field', 'pkmgmt-database[user]', esc_html__('Username', 'parking-management'), $database['user']);
 		echo '</div>';
 		echo '<div class="' . $box['id'] . '-fields">';
-		echo self::_field_password('database-password', 'database_field', 'pkmgmt-database[password]', esc_html(__('Password', 'parking-management')), $database['password']);
+		echo self::_field_password('database-password', 'database_field', 'pkmgmt-database[password]', esc_html__('Password', 'parking-management'), $database['password']);
 		echo '</div>';
 	}
 
 	public static function api_box($api, $box): void
 	{
 		echo '<div class="' . $box['id'] . '-fields">';
-		echo self::_field('api-host', 'api_field', 'pkmgmt-api[host]', esc_html(__('Host', 'parking-management')), $api['host']);
+		echo self::_field('api-host', 'api_field', 'pkmgmt-api[host]', esc_html__('Host', 'parking-management'), $api['host']);
 		echo '</div>';
 		echo '<div class="' . $box['id'] . '-fields">';
-		echo self::_field('api-port', 'api_field', 'pkmgmt-api[port]', esc_html(__('Port', 'parking-management')), $api['port']);
+		echo self::_field('api-port', 'api_field', 'pkmgmt-api[port]', esc_html__('Port', 'parking-management'), $api['port']);
 		echo '</div>';
 		echo '<div class="' . $box['id'] . '-fields">';
-		echo self::_field('api-user', 'api_field', 'pkmgmt-api[user]', esc_html(__('Username', 'parking-management')), $api['user']);
+		echo self::_field('api-user', 'api_field', 'pkmgmt-api[user]', esc_html__('Username', 'parking-management'), $api['user']);
 		echo '</div>';
 		echo '<div class="' . $box['id'] . '-fields">';
-		echo self::_field_password('api-password', 'api_field', 'pkmgmt-api[password]', esc_html(__('Password
-		', 'parking-management')), $api['password']);
+		echo self::_field_password('api-password', 'api_field', 'pkmgmt-api[password]', esc_html__('Password
+		', 'parking-management'), $api['password']);
 		echo '</div>';
 		echo '<div class="' . $box['id'] . '-fields">';
-		echo self::_field('api-zip_codes_endpoint', 'api_field', 'pkmgmt-api[zip_codes_endpoint]', esc_html(__('Zip codes endpoint', 'parking-management')), $api['zip_codes_endpoint']);
+		echo self::_field('api-zip_codes_endpoint', 'api_field', 'pkmgmt-api[zip_codes_endpoint]', esc_html__('Zip codes endpoint', 'parking-management'), $api['zip_codes_endpoint']);
 		echo '</div>';
 		echo '<div class="' . $box['id'] . '-fields">';
-		echo self::_field('api-models-vehicle-endpoint', 'api_field', 'pkmgmt-api[models_vehicle_endpoint]', esc_html(__('Model vehicle endpoint', 'parking-management')), $api['models_vehicle_endpoint']);
+		echo self::_field('api-models-vehicle-endpoint', 'api_field', 'pkmgmt-api[models_vehicle_endpoint]', esc_html__('Model vehicle endpoint', 'parking-management'), $api['models_vehicle_endpoint']);
 		echo '</div>';
 		echo '<div class="' . $box['id'] . '-fields">';
-		echo self::_field('api-destinations-endpoint', 'api_field', 'pkmgmt-api[destinations_endpoint]', esc_html(__('Destinations endpoint', 'parking-management')), $api['destinations_endpoint']);
+		echo self::_field('api-destinations-endpoint', 'api_field', 'pkmgmt-api[destinations_endpoint]', esc_html__('Destinations endpoint', 'parking-management'), $api['destinations_endpoint']);
 		echo '</div>';
 		echo '<div class="' . $box['id'] . '-fields">';
-		echo self::_field('api-price-endpoint', 'api_field', 'pkmgmt-api[price_endpoint]', esc_html(__('Price endpoint', 'parking-management')), $api['price_endpoint']);
+		echo self::_field('api-price-endpoint', 'api_field', 'pkmgmt-api[price_endpoint]', esc_html__('Price endpoint', 'parking-management'), $api['price_endpoint']);
 		echo '</div>';
 	}
 
@@ -378,10 +384,10 @@ class Pages
 	public static function form_box($form, $box): void
 	{
 		echo '<div class="' . $box['id'] . '-fields">';
-		echo self::_field_checkbox('form-booking', 'form_field', 'pkmgmt-form[booking]', esc_html(__('Booking', 'parking-management')), $form['booking']);
+		echo self::_field_checkbox('form-booking', 'form_field', 'pkmgmt-form[booking]', esc_html__('Booking', 'parking-management'), $form['booking']);
 		echo '</div>';
 		echo '<div class="' . $box['id'] . '-fields">';
-		echo self::_field('form-indicatif', 'form_field', 'pkmgmt-form[indicatif]', esc_html(__('Indicative', 'parking-management')), $form['indicatif']);
+		echo self::_field('form-indicatif', 'form_field', 'pkmgmt-form[indicatif]', esc_html__('Indicative', 'parking-management'), $form['indicatif']);
 		echo '</div>';
 
 
@@ -391,7 +397,7 @@ class Pages
 	{
 		echo '<div ' . $box['id'] . 'class="dates-global">';
 		echo '<div class="dates-header">';
-		echo '<span>' . esc_html(__('Add a date', 'parking-management')) . '</span>';
+		echo '<span>' . esc_html__('Add a date', 'parking-management') . '</span>';
 		echo '<button id="full-dates-add-element" type="button"><i class="fas fa-plus"></i></button>';
 		echo '</div>';
 		echo '<div id="booked_dates_body" class="dates-body">';
@@ -416,7 +422,7 @@ class Pages
 	{
 		echo '<div ' . $box['id'] . 'class="dates-global">';
 		echo '<div class="dates-header">';
-		echo '<span>' . esc_html(__('Add a date', 'parking-management')) . '</span>';
+		echo '<span>' . esc_html__('Add a date', 'parking-management') . '</span>';
 		echo '<button id="high-season-add-element" type="button"><i class="fas fa-plus"></i></button>';
 		echo '</div>';
 		echo '<div id="high_season_dates_body" class="dates-body">';
@@ -438,7 +444,7 @@ class Pages
 	public static function sms_box($sms_box, $box): void
 	{
 		echo '<div class="' . $box['id'] . '-fields">';
-		echo self::_field_select('sms-type', 'sms_field', 'pkmgmt-sms[type]', esc_html(__('Type', 'parking-management')),
+		echo self::_field_select('sms-type', 'sms_field', 'pkmgmt-sms[type]', esc_html__('Type', 'parking-management'),
 			array(
 				array(
 					'value' => 'AWS',
@@ -452,16 +458,16 @@ class Pages
 			$sms_box['type']);
 		echo '</div>';
 		echo '<div class="' . $box['id'] . '-fields">';
-		echo self::_field('sms-user', 'sms_field', 'pkmgmt-sms[user]', esc_html(__('Username', 'parking-management')), $sms_box['user']);
+		echo self::_field('sms-user', 'sms_field', 'pkmgmt-sms[user]', esc_html__('Username', 'parking-management'), $sms_box['user']);
 		echo '</div>';
 		echo '<div class="' . $box['id'] . '-fields">';
-		echo self::_field_password('sms-password', 'sms_field', 'pkmgmt-sms[password]', esc_html(__('Password', 'parking-management')), $sms_box['password']);
+		echo self::_field_password('sms-password', 'sms_field', 'pkmgmt-sms[password]', esc_html__('Password', 'parking-management'), $sms_box['password']);
 		echo '</div>';
 		echo '<div class="' . $box['id'] . '-fields">';
-		echo self::_field('sms-sender', 'sms_field', 'pkmgmt-sms[sender]', esc_html(__('Sender', 'parking-management')), $sms_box['sender']);
+		echo self::_field('sms-sender', 'sms_field', 'pkmgmt-sms[sender]', esc_html__('Sender', 'parking-management'), $sms_box['sender']);
 		echo '</div>';
 		echo '<div class="' . $box['id'] . '-fields">';
-		echo self::_field_textarea('sms-template', 'sms_field', 'pkmgmt-sms[template]', esc_html(__('Template', 'parking-management')), $sms_box['template'], array('cols' => "0"));
+		echo self::_field_textarea('sms-template', 'sms_field', 'pkmgmt-sms[template]', esc_html__('Template', 'parking-management'), $sms_box['template'], array('cols' => "0"));
 		echo '</div>';
 	}
 

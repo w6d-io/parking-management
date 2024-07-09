@@ -1,6 +1,7 @@
 <?php
 
 use ParkingManagement\ParkingManagement;
+use enshrined\svgSanitize\Sanitizer;
 
 /**
  * Include a file under PKMGMT_PLUGIN_MODULES_DIR.
@@ -234,8 +235,7 @@ function getParkingManagementInstance(): ParkingManagement|bool
 	$id = get_post_id_by_post_type(ParkingManagement::post_type);
 	if (!$id)
 		return false;
-	$pm = ParkingManagement::get_instance($id);
-	return $pm;
+	return ParkingManagement::get_instance($id);
 }
 
 function replacePlaceholders($string, $replacements): string {
@@ -243,4 +243,18 @@ function replacePlaceholders($string, $replacements): string {
 		$string = str_replace("{" . $key . "}", $value, $string);
 	}
 	return $string;
+}
+
+function sanitize_svg($svg) {
+	$sanitizer = new Sanitizer();
+	$sanitized_svg = $sanitizer->sanitize($svg);
+	return $sanitized_svg ?: $svg;
+}
+
+function inline_svg($file_path) {
+	if (file_exists($file_path)) {
+		$svg = file_get_contents($file_path);
+		return sanitize_svg($svg);
+	}
+	return 'SVG not found';
 }

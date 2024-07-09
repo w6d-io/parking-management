@@ -40,7 +40,7 @@ class Booking implements IShortcode, IParkingManagement
 	private function shortcode_form(): string
 	{
 		$form = new Form($this->pm);
-		return Html::_div(array('class' => 'form container-md col-xl-6'),
+		return Html::_div(array('class' => 'form container-md col-xl-6 mt-5'),
 			Html::_div(array('class' => 'row'),
 				Html::_div(array('class' => 'col-12'),
 					Html::_form('reservation', 'reservation', 'post', '', array(),

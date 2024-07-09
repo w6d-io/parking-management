@@ -2,13 +2,16 @@
 //defined('_PKMGMT') or die('Restricted access');
 
 require_once PKMGMT_PLUGIN_DIR . DS . "includes" . DS . "interfaces.php";
-require_once PKMGMT_PLUGIN_DIR . DS . "includes" . DS . "l10n.php";
 require_once PKMGMT_PLUGIN_DIR . DS . "includes" . DS . "capabilities.php";
+require_once PKMGMT_PLUGIN_DIR . DS . "includes" . DS . "dates_range.php";
 require_once PKMGMT_PLUGIN_DIR . DS . "includes" . DS . "functions.php";
 require_once PKMGMT_PLUGIN_DIR . DS . "includes" . DS . "html.php";
+require_once PKMGMT_PLUGIN_DIR . DS . "includes" . DS . "l10n.php";
 require_once PKMGMT_PLUGIN_DIR . DS . "includes" . DS . "parking-management.php";
 require_once PKMGMT_PLUGIN_DIR . DS . "includes" . DS . "shortcode.php";
 require_once PKMGMT_PLUGIN_DIR . DS . "includes" . DS . "template.php";
+require_once PKMGMT_PLUGIN_DIR . DS . "vendor" . DS . "autoload.php";
+
 
 if (is_admin()) {
 	require_once PKMGMT_PLUGIN_DIR . DS . "admin" . DS . "admin.php";
@@ -30,6 +33,7 @@ class PKMGMT
 		self::load_module('booking');
 		self::load_module('database');
 		self::load_module('price');
+		self::load_module('high_season');
 	}
 
 	/**
@@ -160,7 +164,8 @@ function pkmgmt_install(): void
 	);
 }
 
-function enable_svg_upload($mimes) {
+function enable_svg_upload($mimes)
+{
 	$mimes['svg'] = 'image/svg+xml';
 	return $mimes;
 }

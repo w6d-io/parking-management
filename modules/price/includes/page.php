@@ -34,8 +34,8 @@ class Page implements IParkingmanagement
 		$div_class = ($info['type']['ext'] + $info['type']['int']) === 2 ? 'col-md-6' : 'col';
 		return Html::_div(
 			array('class' => 'row'),
-			$this->elem($div_class, esc_html(__('Outside lots', 'parking-management')), 0, $info['type']['ext']),
-			$this->elem($div_class, esc_html(__('Inside lots', 'parking-management')), 1, $info['type']['int']),
+			$this->elem($div_class, esc_html__('Outside lots', 'parking-management'), 0, $info['type']['ext']),
+			$this->elem($div_class, esc_html__('Inside lots', 'parking-management'), 1, $info['type']['int']),
 			$this->options()
 		);
 	}
@@ -62,8 +62,8 @@ class Page implements IParkingmanagement
 				'<caption>'.$title.'</caption>',
 				'<thead class="table-dark">',
 				'<tr>',
-				'<th>' . esc_html(__("Number of days", 'parking-management')) . '</th>',
-				'<th>' . esc_html(__("Price", "parking-management")) . '</th>',
+				'<th>' . esc_html__("Number of days", 'parking-management') . '</th>',
+				'<th>' . esc_html__("Price", "parking-management") . '</th>',
 				'</tr>',
 				'</thead>',
 				'<tbody>',
@@ -79,19 +79,19 @@ class Page implements IParkingmanagement
 			$extraCharge = Price::extraCharge();
 			return Html::_div(
 				array('class' => 'col mt-5'),
-				'<h3 class="option">'.esc_html(__("Options price", 'parking-management')).'</h3>',
+				'<h3 class="option">'.esc_html__("Options price", 'parking-management').'</h3>',
 				Html::_ul(array('class' => 'list-group list-group-flush'),
 					Html::_li(array('class' => 'list-group-item'),
-						esc_html(__("Shuffle with more than 4 persons")) . " <strong>{$extraCharge['navette']} € / ".esc_html(__("person", 'parking-management'))."</strong>"
+						esc_html__("Shuffle with more than 4 persons") . " <strong>{$extraCharge['navette']} € / ".esc_html__("person", 'parking-management')."</strong>"
 					),
 					Html::_li(array('class' => 'list-group-item'),
-						esc_html(__("Days late")) . " <strong>{$extraCharge['retard']} € / ".esc_html(__("person", 'parking-management'))."</strong>"
+						esc_html__("Days late") . " <strong>{$extraCharge['retard']} € / ".esc_html__("person", 'parking-management')."</strong>"
 					),
 					Html::_li(array('class' => 'list-group-item'),
-						esc_html(__("Holidays (on leave and/or return)")) . " <strong>{$extraCharge['ferie']} € / ".esc_html(__("person", 'parking-management'))."</strong>"
+						esc_html__("Holidays (on leave and/or return)") . " <strong>{$extraCharge['ferie']} € / ".esc_html__("person", 'parking-management')."</strong>"
 					),
 					Html::_li(array('class' => 'list-group-item'),
-						esc_html(__("Things forgotten in the vehicle")) . " <strong>{$extraCharge['oubli']} € / ".esc_html(__("person", 'parking-management'))."</strong>"
+						esc_html__("Things forgotten in the vehicle") . " <strong>{$extraCharge['oubli']} € / ".esc_html__("person", 'parking-management')."</strong>"
 					),
 				)
 			);

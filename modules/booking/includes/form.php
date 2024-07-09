@@ -70,13 +70,13 @@ class Form
 			if (array_key_exists('ext', $info['type']) && $info['type']['ext'] === '1')
 				$types[] = array(
 					'id' => '1',
-					'label' => esc_html(__('Outside', 'parking-management')),
+					'label' => esc_html__('Outside', 'parking-management'),
 					'value' => '0'
 				);
 			if (array_key_exists('int', $info['type']) && $info['type']['int'] === '1')
 				$types[] = array(
 					'id' => '2',
-					'label' => esc_html(__('Inside', 'parking-management')),
+					'label' => esc_html__('Inside', 'parking-management'),
 					'value' => '1'
 				);
 		}
@@ -243,7 +243,7 @@ class Form
 			Html::_fieldset(
 				'<legend>' . __('Personal Information', 'parking-management') . '</legend>',
 				self::_row_field('name',
-					self::_label('nom', esc_html(__('Name', 'parking-management'))),
+					self::_label('nom', esc_html__('Name', 'parking-management')),
 					Html::_index('text', 'nom', 'nom',
 						array(
 							'class' => 'name regular required col-5 border rounded py-2 px-3 form-control',
@@ -254,7 +254,7 @@ class Form
 					),
 				),
 				self::_row_field('firstname',
-					self::_label('prenom', esc_html(__('Firstname', 'parking-management'))),
+					self::_label('prenom', esc_html__('Firstname', 'parking-management')),
 					Html::_index('text', 'prenom', 'prenom',
 						array(
 							'class' => 'firstname regular required col-5 border rounded py-2 px-3 form-control',
@@ -264,7 +264,7 @@ class Form
 					),
 				),
 				self::_row_field('zip-code',
-					self::_label('code_postal', esc_html(__('Zip code', 'parking-management'))),
+					self::_label('code_postal', esc_html__('Zip code', 'parking-management')),
 					Html::_index('text', 'code_postal', 'code_postal',
 						array(
 							'class' => 'zip-code regular required col-5 border rounded py-2 px-3 form-control',
@@ -292,7 +292,7 @@ class Form
 					Html::_label_with_attr(
 						array('class' => 'tel_port col-sm-3'),
 						'tel_port',
-						esc_html(__('Mobile phone', 'parking-management'))
+						esc_html__('Mobile phone', 'parking-management')
 					),
 					Html::_index('tel', 'tel_port', 'tel_port',
 						array(
@@ -303,7 +303,7 @@ class Form
 					),
 				),
 				self::_row_field('email',
-					self::_label('email', esc_html(__('Email', 'parking-management'))),
+					self::_label('email', esc_html__('Email', 'parking-management')),
 					Html::_index('email', 'email', 'email',
 						array(
 							'class' => 'email regular required col-5 border rounded py-2 px-3 form-control',
@@ -316,7 +316,7 @@ class Form
 					Html::_label_with_attr(
 						array('class' => 'type_id col-sm-3'),
 						'type_id',
-						esc_html(__('Type of vehicle', 'parking-management'))
+						esc_html__('Type of vehicle', 'parking-management')
 					),
 					Html::_div(
 						array(
@@ -331,7 +331,7 @@ class Form
 					)
 				),
 				self::_row_field('modele',
-					self::_label('modele', esc_html(__('Car model', 'parking-management'))),
+					self::_label('modele', esc_html__('Car model', 'parking-management')),
 					Html::_index('text', 'marque', 'marque',
 						array(
 							'class' => 'marque regular',
@@ -348,7 +348,7 @@ class Form
 					)
 				),
 				self::_row_field('immatriculation',
-					self::_label('immatriculation', esc_html(__('Immatriculation', 'parking-management'))),
+					self::_label('immatriculation', esc_html__('Immatriculation', 'parking-management')),
 					Html::_index('text', 'immatriculation', 'immatriculation',
 						array(
 							'class' => 'immatriculation regular required col-5 border rounded py-2 px-3 form-control',
@@ -361,7 +361,7 @@ class Form
 					Html::_label_with_attr(
 						array('class' => 'parking_type col-sm-3'),
 						'parking_type',
-						esc_html(__('Car Park', 'parking-management'))
+						esc_html__('Car Park', 'parking-management')
 					),
 					Html::_div(
 						array(
@@ -388,7 +388,7 @@ class Form
 				'<legend>' . __('Trip Information', 'parking-management') . '</legend>',
 
 				self::_row_field('destination',
-					self::_label('destination', esc_html(__('Destination', 'parking-management'))),
+					self::_label('destination', esc_html__('Destination', 'parking-management')),
 					Html::_index('text', 'destination', 'destination',
 						array(
 							'class' => 'destination regular required border rounded py-2 form-control',
@@ -431,7 +431,7 @@ class Form
 								Html::_label_with_attr(
 									array('class' => 'form-label'),
 									'terminal_depart',
-									esc_html(__('Terminal departure', 'parking-management'))
+									esc_html__('Terminal departure', 'parking-management')
 								),
 								Html::_select('terminal_depart', 'terminal[depart]',
 									array(
@@ -447,7 +447,7 @@ class Form
 								Html::_label_with_attr(
 									array('class' => 'form-label'),
 									'terminal_arrivee',
-									esc_html(__('Terminal return', 'parking-management'))
+									esc_html__('Terminal return', 'parking-management')
 								),
 								Html::_select('terminal_arrivee', 'terminal[arrivee]',
 									array(
@@ -465,7 +465,7 @@ class Form
 								Html::_label_with_attr(
 									array('class' => 'form-label'),
 									'depart',
-									esc_html(__('Dropping off at', 'parking-management'))
+									esc_html__('Dropping off at', 'parking-management')
 								),
 								Html::_index('text', 'depart', 'depart', array(
 									'class' => 'departure regular required border rounded form-control py-2',
@@ -482,7 +482,7 @@ class Form
 										'class' => 'form-label'
 									),
 									'retour',
-									esc_html(__('Landing at the airport', 'parking-management'))
+									esc_html__('Landing at the airport', 'parking-management')
 								),
 								Html::_index('text', 'retour', 'retour', array(
 									'class' => 'return regular required border rounded form-control py-2',
@@ -495,7 +495,7 @@ class Form
 					),
 				),
 				self::_row_field('nb_pax',
-					self::_label('nb_pax', esc_html(__('Number of pax', 'parking-management'))),
+					self::_label('nb_pax', esc_html__('Number of pax', 'parking-management')),
 					Html::_select('nb_pax', 'nb_pax', array(
 						'class' => 'required border col-5 rounded py-2 px-3 form-select',
 						'tabindex' => "14",
@@ -582,7 +582,7 @@ EOT;
 					'class' => 'total form-control',
 					'id' => 'total',
 				),
-				esc_html(__('Order amount', 'parking-management')),
+				esc_html__('Order amount', 'parking-management'),
 				'<span>0€</span>'
 			)
 		);
@@ -601,7 +601,7 @@ EOT;
 				Html::_index('hidden', 'aeroport', 'aeroport', array('value' => Order::getSiteID($info['terminal']))),
 				Html::_index('hidden', 'pkmgmt_action', 'pkmgmt_action', array('value' => 'booking')),
 				'<button type="submit" tabindex="16" id="submit" name="submit" class="form-control btn btn-primary text-center" disabled>'
-				. esc_html(__('Validate your order', 'parking-management'))
+				. esc_html__('Validate your order', 'parking-management')
 				. ' <i class="fa-regular fa-circle-right"></i>'
 				. '</button>'
 
@@ -619,20 +619,20 @@ EOT;
 			$form['booking']['dialog_confirmation'] === '0') {
 			return '';
 		}
-		return '<div id="dialog_booking_confirmation" title="' . esc_html(__('Confirmation', 'parking-management')) . '">
+		return '<div id="dialog_booking_confirmation" title="' . esc_html__('Confirmation', 'parking-management') . '">
 	<form id="confirmation" name="confirmation" method="post" action="">
 		<div class="row">
 			<div>
-				<label class="form-label" for="depart2">' . esc_html(__('Dropping off at', 'parking-management')) . '</label>
+				<label class="form-label" for="depart2">' . esc_html__('Dropping off at', 'parking-management') . '</label>
 				<input tabindex="18" type="text" id="depart2" name="depart" class="departure regular required border rounded form-control py-2" autocomplete="off" value="' . ($post['depart'] ?? '') . '">
 			</div>
 			<div>
-					<label class="form-label" for="retour2">' . esc_html(__('Landing at the airport', 'parking-management')) . '</label>
+					<label class="form-label" for="retour2">' . esc_html__('Landing at the airport', 'parking-management') . '</label>
 					<input tabindex="-1" type="text" id="retour2" name="retour" class="return regular required border rounded form-control py-2" autocomplete="off" value="' . ($post['retour'] ?? '') . '">
 			</div>
 			<div class="mb-3">
 				<div class="col email">
-					<label class="label form-label" for="email2">' . esc_html(__('Email', 'parking-management')) . '</label>
+					<label class="label form-label" for="email2">' . esc_html__('Email', 'parking-management') . '</label>
 					<input tabindex="17" type="email" id="email2" name="email" class="email regular required col-5 border rounded py-2 px-3 form-control" value="' . ($post['email'] ?? '') . '">
 				</div>
 			</div>
@@ -640,7 +640,7 @@ EOT;
         <div class="row my-3 position-absolute bottom-0 start-50 translate-middle-x">
 			<div class="col">
                 <button tabindex="19" id="submit2" class="form-control btn btn-primary text-center gradient-e97445" name="submit2" type="submit">
-                    ' . esc_html(__('Confirm your order', 'parking-management')) . '
+                    ' . esc_html__('Confirm your order', 'parking-management') . '
                     <i class="fa-regular fa-circle-right"></i>
 				</button>
 			</div>

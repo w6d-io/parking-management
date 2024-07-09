@@ -3,5 +3,5 @@
 namespace ParkingManagement\interfaces;
 interface IShortcode
 {
-	public function shortcode(string $type);
+	public function shortcode(string $type): string;
 }
