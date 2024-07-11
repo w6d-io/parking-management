@@ -17,13 +17,13 @@ document.addEventListener('DOMContentLoaded', function () {
 		// On fait la liste des options dans une variables javascript
 		$.ajax({
 			type: 'GET',
-			url: external_object.properties.api.price_endpoint,
+			url: '/wp-json/pkmgmt/v1/prices',
 			data: $('#reservation').serialize(),
 			processData: true,
 			dataType: 'json',
 			async: false,
 			error: function (e, f, g) {
-				console.error("get price", e, f, g);
+				console.error("get price failed", f);
 				// $('#footer').html('Error : get price');
 			},
 			success: function (data) {
@@ -61,7 +61,7 @@ document.addEventListener('DOMContentLoaded', function () {
 	$('#cgv_reservation').on('change', function () {
 		switchSubmitBtn($(this).is(':checked'))
 	});
-	$('#type_id, #depart, #return, #nb_pax').on('change', function () {
+	$('#type_id, #depart, #return, #nb_pax, #assurance_annulation').on('change', function () {
 		getPrice();
 	})
 
@@ -147,7 +147,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 	// Zip Codes
 	$("#code_postal").catcomplete({
-		source: external_object.properties.api.zip_codes_endpoint,
+		source: '/wp-json/pkmgmt/v1/zipcode',
 		dataType: "json",
 		minLength: 2,
 		select: function (event, ui) {
@@ -158,7 +158,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 	// Models vehicle
 	$("#modele").catcomplete({
-		source: external_object.properties.api.models_vehicle_endpoint,
+		source: '/wp-json/pkmgmt/v1/vehicle',
 		dataType: "json",
 		minLength: 2,
 		select: function (event, ui) {
@@ -168,7 +168,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 	// Destination
 	$('#destination').catcomplete({
-		source: external_object.properties.api.destinations_endpoint,
+		source: '/wp-json/pkmgmt/v1/destination',
 		dataType: "json",
 		minLength: 2,
 		select: function (event, ui) {

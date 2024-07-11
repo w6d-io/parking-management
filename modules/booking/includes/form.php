@@ -227,6 +227,7 @@ class Form
 			'external_object',
 			array(
 				'locale' => $pm->locale,
+				'home_url' => home_url(),
 				'properties' => $properties
 			)
 		);
@@ -540,33 +541,33 @@ class Form
 
 	public function cgv(ParkingManagement $pm): string
 	{
+		$form = $pm->prop('form');
+		if ($form['booking']['terms_and_conditions'] !== '1')
+			return '';
 		$post = array_merge($_GET, $_POST);
 		$warning_msg = "Merci de valider les conditions générales de vente";
 		$msg = <<<EOT
 En cochant cette case (obligatoire), j'accèpte les <a href="/cgv" target="_blank">conditions générales de vente</a>, atteste la validation de commande et mon obligation de paiement, <strong>en vertu de l'article L.121-19-3</strong>
 EOT;
-		$form = $pm->prop('form');
-		if ($form['booking']['terms_and_conditions'] !== '1')
-			return '';
 
 		return Html::_div(
-			array('class' => 'cgv input-group'),
+			array('class' => 'cgv form-check'),
 			Html::_index('hidden', '', 'cgv_reservation', array('value' => '0')),
 			Html::_index(
 				'checkbox',
 				'cgv_reservation',
 				'cgv_reservation',
 				array(
-					'class' => 'cgv_reservation required',
+					'class' => 'cgv_reservation required form-check-input',
 					'value' => "1",
-					'tabindex' => "15",
+					'tabindex' => "16",
 					'data-msg-required' => $warning_msg,
 				),
 				false,
 				false,
 				(array_key_exists('cgv_reservation', $post) ? $post['cgv_reservation'] : '0') == '1'
 			),
-			Html::_label('cgv_reservation', $msg),
+			Html::_label_with_attr(array('class'=> 'form-check-label'),'cgv_reservation', $msg),
 		);
 	}
 
@@ -600,7 +601,7 @@ EOT;
 			),
 				Html::_index('hidden', 'aeroport', 'aeroport', array('value' => Order::getSiteID($info['terminal']))),
 				Html::_index('hidden', 'pkmgmt_action', 'pkmgmt_action', array('value' => 'booking')),
-				'<button type="submit" tabindex="16" id="submit" name="submit" class="form-control btn btn-primary text-center" disabled>'
+				'<button type="submit" tabindex="17" id="submit" name="submit" class="form-control btn btn-primary text-center" disabled>'
 				. esc_html__('Validate your order', 'parking-management')
 				. ' <i class="fa-regular fa-circle-right"></i>'
 				. '</button>'
@@ -624,7 +625,7 @@ EOT;
 		<div class="row">
 			<div>
 				<label class="form-label" for="depart2">' . esc_html__('Dropping off at', 'parking-management') . '</label>
-				<input tabindex="18" type="text" id="depart2" name="depart" class="departure regular required border rounded form-control py-2" autocomplete="off" value="' . ($post['depart'] ?? '') . '">
+				<input tabindex="19" type="text" id="depart2" name="depart" class="departure regular required border rounded form-control py-2" autocomplete="off" value="' . ($post['depart'] ?? '') . '">
 			</div>
 			<div>
 					<label class="form-label" for="retour2">' . esc_html__('Landing at the airport', 'parking-management') . '</label>
@@ -633,13 +634,13 @@ EOT;
 			<div class="mb-3">
 				<div class="col email">
 					<label class="label form-label" for="email2">' . esc_html__('Email', 'parking-management') . '</label>
-					<input tabindex="17" type="email" id="email2" name="email" class="email regular required col-5 border rounded py-2 px-3 form-control" value="' . ($post['email'] ?? '') . '">
+					<input tabindex="18" type="email" id="email2" name="email" class="email regular required col-5 border rounded py-2 px-3 form-control" value="' . ($post['email'] ?? '') . '">
 				</div>
 			</div>
 		</div>
         <div class="row my-3 position-absolute bottom-0 start-50 translate-middle-x">
 			<div class="col">
-                <button tabindex="19" id="submit2" class="form-control btn btn-primary text-center gradient-e97445" name="submit2" type="submit">
+                <button tabindex="20" id="submit2" class="form-control btn btn-primary text-center gradient-e97445" name="submit2" type="submit">
                     ' . esc_html__('Confirm your order', 'parking-management') . '
                     <i class="fa-regular fa-circle-right"></i>
 				</button>
@@ -647,5 +648,33 @@ EOT;
 		</div>
 	</form>
 </div>';
+	}
+
+	public function cancellation_insurance(ParkingManagement $pm): string
+	{
+		$form = $pm->prop('form');
+		if ($form['options']['cancellation_insurance']['enabled'] !== '1' || $form['options']['cancellation_insurance']['price'] === '0' )
+			return '';
+		// Cocher cette case si le client souscrit l'assurance annulation à
+		$post = array_merge($_GET, $_POST);
+		$msg = esc_html__('I hereby subscribe to the cancellation insurance for '.$form['options']['cancellation_insurance']['price'].' €', 'parking-management');
+		return Html::_div(
+			array('class' => 'cancellation-insurance form-check'),
+			Html::_index('hidden', '', 'assurance_annulation', array('value' => '0')),
+			Html::_index(
+				'checkbox',
+				'assurance_annulation',
+				'assurance_annulation',
+				array(
+					'class' => 'cancellation-insurance form-check-input',
+					'value' => "1",
+					'tabindex' => "15",
+				),
+				false,
+				false,
+				(array_key_exists('assurance_annulation', $post) ? $post['assurance_annulation'] : '0') == '1'
+			),
+			Html::_label_with_attr(array('class' => 'form-check-label'),'assurance_annulation', $msg),
+		);
 	}
 }

@@ -13,7 +13,7 @@ class Controller
 	{
 		$post = array_merge($_GET, $_POST);
 
-		if (!empty($post) && array_key_exists('pkmgmt_action', $post)) {
+		if (!empty($post) && array_key_exists('pkmgmt_action', $post) && (!str_starts_with($_SERVER['REQUEST_URI'], '/wp-json/pkmgmt')) ) {
 			$post = array_merge($_POST, $_GET);
 			if (array_key_exists('DEBUG', $post) && $post['DEBUG'] === '1') {
 				print_log($post, false);

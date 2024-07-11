@@ -111,7 +111,38 @@ class Template
 				'terms_and_conditions' => '0',
 				'valid_on_payment' => '0',
 				'dialog_confirmation' => '0',
-				'night_extra_charge' => '0',
+			),
+			'options' => array(
+				'night_extra_charge' => array(
+					'enabled' => "0",
+					'title' => 'Night extra charge',
+					'price' => 0
+				),
+				'shuttle' => array(
+					'enabled' => "0",
+					'title' => 'Shuttle',
+					'price' => 0
+				),
+				'late' => array(
+					'enabled' => "0",
+					'title' => 'Late',
+					'price' => 0
+				),
+				'holiday' => array(
+					'enabled' => "0",
+					'title' => 'Holiday',
+					'price' => 0
+				),
+				'forgetting' => array(
+					'enabled' => "0",
+					'title' => 'Forgetting',
+					'price' => 0
+				),
+				'cancellation_insurance' => array(
+					'enabled' => "0",
+					'title' => 'Cancellation insurance',
+					'price' => 0
+				),
 			),
 			'indicative' => '',
 		);

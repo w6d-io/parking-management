@@ -200,7 +200,7 @@ class Pages
 
 	private static function _field($id, $div_class, $name, $label_content, $value): string
 	{
-		return Html::_div(array('class'=>$div_class),
+		return Html::_div(array('class' => $div_class),
 			Html::_label($id, $label_content),
 			'<br/>',
 			Html::_index("text", $id, $name, array(
@@ -213,10 +213,10 @@ class Pages
 
 	private static function _field_password($id, $div_class, $name, $label_content, $value): string
 	{
-		return Html::_div(array('class'=>$div_class),
+		return Html::_div(array('class' => $div_class),
 			Html::_label($id, $label_content),
 			'<br/>',
-			Html::_password($id, $name, array('class'=>'password-container'), array(
+			Html::_password($id, $name, array('class' => 'password-container'), array(
 				'class' => 'wide password-input',
 				'size' => 80,
 				'value' => $value
@@ -227,18 +227,18 @@ class Pages
 	private static function _field_checkbox($id, $div_class, $name, $span_content, $values): string
 	{
 		if (!is_array($values)) {
-			return Html::_div(array('class'=>$div_class), "bad values type");
+			return Html::_div(array('class' => $div_class), "bad values type");
 		}
 		$contents = array();
-		$contents[] .= '<span>'.$span_content.'</span>';
+		$contents[] .= '<span>' . $span_content . '</span>';
 		$contents[] .= '<br/>';
 		foreach ($values as $key => $value) {
 			$contents[] .= Html::_div(
-				array('class'=>'form-check form-switch  '),
-				Html::_checkbox($id, $name, array('class'=> $id . ' form-check-input'), $key, $value),
+				array('class' => 'form-check form-switch  '),
+				Html::_checkbox($id, $name, array('class' => $id . ' form-check-input'), $key, $value),
 			);
 		}
-		return Html::_div(array('class'=>$div_class),
+		return Html::_div(array('class' => $div_class),
 			...$contents
 		);
 	}
@@ -246,10 +246,10 @@ class Pages
 	private static function _field_select($id, $div_class, $name, $label_content, $options, $value): string
 	{
 		if (!is_array($options)) {
-			return Html::_div(array('class'=>$div_class), "bad values type");
+			return Html::_div(array('class' => $div_class), "bad values type");
 		}
 
-		return Html::_div(array('class'=>$div_class),
+		return Html::_div(array('class' => $div_class),
 			Html::_label($id, $label_content),
 			'<br/>',
 			Html::_select($id, $name, array(), $options, $value)
@@ -260,7 +260,7 @@ class Pages
 	{
 		$cols = array_key_exists('cols', $args) ? $args['cols'] : "100";
 		$rows = array_key_exists('rows', $args) ? $args['rows'] : "12";
-		return Html::_div(array('class'=>$div_class),
+		return Html::_div(array('class' => $div_class),
 			Html::_label($id, $label_content),
 			'<br/>',
 			Html::_textarea($id, $name, $value, $cols, $rows),
@@ -284,6 +284,36 @@ class Pages
 			'</div>',
 			...$contents
 		);
+	}
+
+	private static function _option_card(string $id, array $option): string
+	{
+		return '<div class="col-sm-3">'
+			. '<div class="card">'
+			. '<div class="card-body">'
+			. '<h5 class="card-title">' . $option['title'] . '</h5>'
+			. '<input type="hidden" value="' . $option['title'] . '" name="pkmgmt-form[options][' . $id . '][title]"/>'
+			. '<div class="input-group mb-3">'
+			. '<div class="input-group-text">'
+			. '<input type="hidden" value="0" name="pkmgmt-form[options][' . $id . '][enabled]"/>'
+			. Html::_index('checkbox', 'pkmgmt-form-options-' . $id . '-enabled', 'pkmgmt-form[options][' . $id . '][enabled]',
+				array(
+					'aria-label' => 'Enable the ' . $option['title'],
+					"value" => '1',
+					'class' => 'form-check-input mt-0'
+				),
+				false,
+				false,
+				$option['enabled'] === '1'
+
+			)
+			. '</div>'
+			. '<span class="input-group-text">€</span>'
+			. '<input type="number" class="form-control" name="pkmgmt-form[options][' . $id . '][price]" aria-label="Price for ' . $option['title'] . '" value="' . $option['price'] . '">'
+			. '</div>'
+			. '</div>'
+			. '</div>'
+			. '</div>';
 	}
 
 	public static function info_box($info, $box): void
@@ -390,6 +420,15 @@ class Pages
 		echo self::_field('form-indicatif', 'form_field', 'pkmgmt-form[indicatif]', esc_html__('Indicative', 'parking-management'), $form['indicatif']);
 		echo '</div>';
 
+		echo '<div class="' . $box['id'] . '-fields">';
+		echo '<div class="row">';
+
+		foreach ($form['options'] as $id => $option) {
+			echo self::_option_card($id, $option);
+		}
+
+		echo '</div>';
+		echo '</div>';
 
 	}
 
@@ -404,12 +443,12 @@ class Pages
 		foreach ($booked_dates as $id => $date) {
 			echo '<div>';
 			echo '<div class="dates-element">';
-			echo '<label for="pkmgmt-booked-dates-start-'.$id.'">start</label>';
-			echo '<input type="date" id="pkmgmt-booked-dates-start-'.$id.'" name="pkmgmt-booked_dates[' . $id . '][start]" class="start-date" value="' . $date['start'] . '">';
-			echo '<label for="pkmgmt-booked-dates-end-'.$id.'">end</label>';
-			echo '<input type="date" id="pkmgmt-booked-dates-end-'.$id.'" name="pkmgmt-booked_dates[' . $id . '][end]" class="end-date" value="' . $date['end'] . '">';
-			echo '<label for="pkmgmt-booked-dates-message-'.$id.'">message</label>';
-			echo '<input type="text" id="pkmgmt-booked-dates-message-'.$id.'" name="pkmgmt-booked_dates[' . $id . '][message]" class="message" placeholder="Message" value="' . $date['message'] . '">';
+			echo '<label for="pkmgmt-booked-dates-start-' . $id . '">start</label>';
+			echo '<input type="date" id="pkmgmt-booked-dates-start-' . $id . '" name="pkmgmt-booked_dates[' . $id . '][start]" class="start-date" value="' . $date['start'] . '">';
+			echo '<label for="pkmgmt-booked-dates-end-' . $id . '">end</label>';
+			echo '<input type="date" id="pkmgmt-booked-dates-end-' . $id . '" name="pkmgmt-booked_dates[' . $id . '][end]" class="end-date" value="' . $date['end'] . '">';
+			echo '<label for="pkmgmt-booked-dates-message-' . $id . '">message</label>';
+			echo '<input type="text" id="pkmgmt-booked-dates-message-' . $id . '" name="pkmgmt-booked_dates[' . $id . '][message]" class="message" placeholder="Message" value="' . $date['message'] . '">';
 			echo '<i class="fas fa-trash delete"></i>';
 			echo '</div>';
 			echo '</div>';
@@ -428,12 +467,12 @@ class Pages
 		echo '<div id="high_season_dates_body" class="dates-body">';
 		foreach ($high_season as $id => $date) {
 			echo '<div class="dates-element">';
-			echo '<label for="pkmgmt-high-season-start-'.$id.'">start</label>';
-			echo '<input type="date" id="pkmgmt-high-season-start-'.$id.'" name="pkmgmt-high_season[' . $id . '][start]" class="start-date" value="' . $date['start'] . '">';
-			echo '<label for="pkmgmt-high-season-end-'.$id.'">end</label>';
-			echo '<input type="date" id="pkmgmt-high-season-end-'.$id.'" name="pkmgmt-high_season[' . $id . '][end]" class="end-date" value="' . $date['end'] . '">';
-			echo '<label for="pkmgmt-high-season-message-'.$id.'">message</label>';
-			echo '<input type="text" id="pkmgmt-high-season-message-'.$id.'" name="pkmgmt-high_season[' . $id . '][message]" class="message" placeholder="Message" value="' . $date['message'] . '">';
+			echo '<label for="pkmgmt-high-season-start-' . $id . '">start</label>';
+			echo '<input type="date" id="pkmgmt-high-season-start-' . $id . '" name="pkmgmt-high_season[' . $id . '][start]" class="start-date" value="' . $date['start'] . '">';
+			echo '<label for="pkmgmt-high-season-end-' . $id . '">end</label>';
+			echo '<input type="date" id="pkmgmt-high-season-end-' . $id . '" name="pkmgmt-high_season[' . $id . '][end]" class="end-date" value="' . $date['end'] . '">';
+			echo '<label for="pkmgmt-high-season-message-' . $id . '">message</label>';
+			echo '<input type="text" id="pkmgmt-high-season-message-' . $id . '" name="pkmgmt-high_season[' . $id . '][message]" class="message" placeholder="Message" value="' . $date['message'] . '">';
 			echo '<i class="fas fa-trash delete"></i>';
 			echo '</div>';
 		}

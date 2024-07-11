@@ -9,17 +9,17 @@ use enshrined\svgSanitize\Sanitizer;
  * @param string $path File path relative to the module dir.
  * @return bool True on success, false on failure.
  */
-function pkmgmt_include_module_file(string $path ): bool
+function pkmgmt_include_module_file(string $path): bool
 {
 	$dir = PKMGMT_PLUGIN_MODULES_DIR;
 
-	if ( empty( $dir ) or ! is_dir( $dir ) ) {
+	if (empty($dir) or !is_dir($dir)) {
 		return false;
 	}
 
-	$path = path_join( $dir, ltrim( $path, DS ) );
+	$path = path_join($dir, ltrim($path, DS));
 
-	if ( file_exists( $path ) ) {
+	if (file_exists($path)) {
 		include_once $path;
 		return true;
 	}
@@ -31,14 +31,14 @@ function pkmgmt_get_request_uri(): string
 {
 	static $request_uri = '';
 
-	if ( empty( $request_uri ) )
-		$request_uri = add_query_arg( array() );
-	return sanitize_url( $request_uri );
+	if (empty($request_uri))
+		$request_uri = add_query_arg(array());
+	return sanitize_url($request_uri);
 }
 
 function pkmgmt_register_post_type(): bool
 {
-	if ( class_exists( 'ParkingManagement' ) ) {
+	if (class_exists('ParkingManagement')) {
 		ParkingManagement::register_post_type();
 		return true;
 	} else {
@@ -53,16 +53,16 @@ function pkmgmt_register_post_type(): bool
  * @param mixed $input Array or item of array.
  * @return array Flatten array.
  */
-function pkmgmt_array_flatten(mixed $input ): array
+function pkmgmt_array_flatten(mixed $input): array
 {
-	if ( ! is_array( $input ) ) {
-		return array( $input );
+	if (!is_array($input)) {
+		return array($input);
 	}
 
 	$output = array();
 
-	foreach ( $input as $value ) {
-		$output = array_merge( $output, pkmgmt_array_flatten( $value ) );
+	foreach ($input as $value) {
+		$output = array_merge($output, pkmgmt_array_flatten($value));
 	}
 
 	return $output;
@@ -77,19 +77,19 @@ function pkmgmt_array_flatten(mixed $input ): array
  * @param string $to Optional. The newline character that is used in the output.
  * @return string|array Processed value.
  */
-function pkmgmt_normalize_newline_deep(mixed $input, string $to = "\n" ): string|array
+function pkmgmt_normalize_newline_deep(mixed $input, string $to = "\n"): string|array
 {
-	if ( is_array( $input ) ) {
+	if (is_array($input)) {
 		$result = array();
 
-		foreach ( $input as $key => $text ) {
-			$result[$key] = pkmgmt_normalize_newline_deep( $text, $to );
+		foreach ($input as $key => $text) {
+			$result[$key] = pkmgmt_normalize_newline_deep($text, $to);
 		}
 
 		return $result;
 	}
 
-	return pkmgmt_normalize_newline( $input, $to );
+	return pkmgmt_normalize_newline($input, $to);
 }
 
 /**
@@ -99,15 +99,15 @@ function pkmgmt_normalize_newline_deep(mixed $input, string $to = "\n" ): string
  * @param string $to Optional. The newline character that is used in the output.
  * @return string Normalized text.
  */
-function pkmgmt_normalize_newline(string $text, string $to = "\n" ): string
+function pkmgmt_normalize_newline(string $text, string $to = "\n"): string
 {
-	$nls = array( "\r\n", "\r", "\n" );
+	$nls = array("\r\n", "\r", "\n");
 
-	if ( ! in_array( $to, $nls ) ) {
+	if (!in_array($to, $nls)) {
 		return $text;
 	}
 
-	return str_replace( $nls, $to, $text );
+	return str_replace($nls, $to, $text);
 }
 
 /**
@@ -136,7 +136,7 @@ function print_log(mixed $object, bool $out = true): void
 function console_log(string $title, mixed $object): void
 {
 	$data = json_encode($object);
-	echo '<script>console.log("'.$title.'", '."'".$data."'".')</script>';
+	echo '<script>console.log("' . $title . '", ' . "'" . $data . "'" . ')</script>';
 }
 
 /**
@@ -149,16 +149,17 @@ function console_log(string $title, mixed $object): void
 function console_error(string $title, mixed $object): void
 {
 	$data = json_encode($object);
-	echo '<script>console.error("'.$title.'", "'.$data.'")</script>';
+	echo '<script>console.error("' . $title . '", "' . $data . '")</script>';
 }
 
-function get_post_id_by_post_type( string $post_type ): int {
-	$post_ids = get_posts( array(
+function get_post_id_by_post_type(string $post_type): int
+{
+	$post_ids = get_posts(array(
 		'post_type' => $post_type,
 		'numberposts' => 1,
 		'fields' => 'ids',
 	));
-	if ( empty( $post_ids ) )
+	if (empty($post_ids))
 		return 0;
 	return $post_ids[0];
 }
@@ -166,21 +167,21 @@ function get_post_id_by_post_type( string $post_type ): int {
 function pkmgmt_plugin_url(string $path): string
 {
 	$url = plugins_url($path, PKMGMT_PLUGIN);
-	if ( is_ssl() and str_starts_with($url, 'http:')) {
-		$url = 'https:' . substr( $url, 5 );
+	if (is_ssl() and str_starts_with($url, 'http:')) {
+		$url = 'https:' . substr($url, 5);
 	}
 
 	return $url;
 }
 
 // Generate a password
-function generatePassword($length=6): string
+function generatePassword($length = 6): string
 {
 	$password = NULL;
 	$possible = "0123456789abcdfghjkmnpqrstvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 	$i = 0;
-	while($i<$length) {
-		$char = $possible[mt_rand(0, strlen($possible)-1)];
+	while ($i < $length) {
+		$char = $possible[mt_rand(0, strlen($possible) - 1)];
 		// we don't want this character if it's already in the password
 		if (!strstr($password, $char)) {
 			$password .= $char;
@@ -230,6 +231,40 @@ function slug($to_slug, $separator = '-'): array|string|null
 	);
 }
 
+function sansAccent($subject): array|string
+{
+	$subject = strip_tags(html_entity_decode($subject));
+
+	$search = array('À', 'Á', 'Â', 'Ã', 'Ä', 'Å', 'Æ', 'Ă', 'Ą', 'Ç', 'Ć', 'Č',
+		'Œ', 'Ď', 'Đ', 'à', 'á', 'â', 'ã', 'ä', 'å', 'æ', 'ă', 'ą', 'ç', 'ć', 'č',
+		'œ', 'ď', 'đ', 'È', 'É', 'Ê', 'Ë', 'Ę', 'Ě', 'Ğ', 'Ì', 'Í', 'Î', 'Ï', 'İ',
+		'Ĺ', 'Ľ', 'Ł', 'è', 'é', 'ê', 'ë', 'ę', 'ě', 'ğ', 'ì', 'í', 'î', 'ï', 'ı',
+		'ĺ', 'ľ', 'ł', 'Ñ', 'Ń', 'Ň', 'Ò', 'Ó', 'Ô', 'Õ', 'Ö', 'Ø', 'Ő', 'Ŕ', 'Ř',
+		'Ś', 'Ş', 'Š', 'ñ', 'ń', 'ň', 'ò', 'ó', 'ô', 'ö', 'ø', 'ő', 'ŕ', 'ř', 'ś',
+		'ş', 'š', 'Ţ', 'Ť', 'Ù', 'Ú', 'Û', 'Ų', 'Ü', 'Ů', 'Ű', 'Ý', 'ß', 'Ź', 'Ż',
+		'Ž', 'ţ', 'ť', 'ù', 'ú', 'û', 'ų', 'ü', 'ů', 'ű', 'ý', 'ÿ', 'ź', 'ż', 'ž',
+		'А', 'Б', 'В', 'Г', 'Д', 'Е', 'Ё', 'Ж', 'З', 'И', 'Й', 'К', 'Л', 'М', 'Н',
+		'О', 'П', 'Р', 'а', 'б', 'в', 'г', 'д', 'е', 'ё', 'ж', 'з', 'и', 'й', 'к',
+		'л', 'м', 'н', 'о', 'р', 'С', 'Т', 'У', 'Ф', 'Х', 'Ц', 'Ч', 'Ш', 'Щ', 'Ъ',
+		'Ы', 'Ь', 'Э', 'Ю', 'Я', 'с', 'т', 'у', 'ф', 'х', 'ц', 'ч', 'ш', 'щ', 'ъ',
+		'ы', 'ь', 'э', 'ю', 'я');
+	$replace = array('A', 'A', 'A', 'A', 'A', 'A', 'AE', 'A', 'A', 'C', 'C', 'C',
+		'OE', 'D', 'D', 'a', 'a', 'a', 'a', 'a', 'a', 'ae', 'a', 'a', 'c', 'c', 'c',
+		'oe', 'd', 'd', 'E', 'E', 'E', 'E', 'E', 'E', 'G', 'I', 'I', 'I', 'I', 'I',
+		'L', 'L', 'L', 'e', 'e', 'e', 'e', 'e', 'e', 'g', 'i', 'i', 'i', 'i', 'i',
+		'l', 'l', 'l', 'N', 'N', 'N', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'R', 'R',
+		'S', 'S', 'S', 'n', 'n', 'n', 'o', 'o', 'o', 'o', 'o', 'o', 'r', 'r', 's',
+		's', 's', 'T', 'T', 'U', 'U', 'U', 'U', 'U', 'U', 'U', 'Y', 'Y', 'Z', 'Z',
+		'Z', 't', 't', 'u', 'u', 'u', 'u', 'u', 'u', 'u', 'y', 'y', 'z', 'z', 'z',
+		'A', 'B', 'B', 'r', 'A', 'E', 'E', 'X', '3', 'N', 'N', 'K', 'N', 'M', 'H',
+		'O', 'N', 'P', 'a', 'b', 'b', 'r', 'a', 'e', 'e', 'x', '3', 'n', 'n', 'k',
+		'n', 'm', 'h', 'o', 'p', 'C', 'T', 'Y', 'O', 'X', 'U', 'u', 'W', 'W', 'b',
+		'b', 'b', 'E', 'O', 'R', 'c', 't', 'y', 'o', 'x', 'u', 'u', 'w', 'w', 'b',
+		'b', 'b', 'e', 'o', 'r ');
+	return str_replace($search, $replace, $subject);
+}
+
+
 function getParkingManagementInstance(): ParkingManagement|bool
 {
 	$id = get_post_id_by_post_type(ParkingManagement::post_type);
@@ -238,20 +273,23 @@ function getParkingManagementInstance(): ParkingManagement|bool
 	return ParkingManagement::get_instance($id);
 }
 
-function replacePlaceholders($string, $replacements): string {
+function replacePlaceholders($string, $replacements): string
+{
 	foreach ($replacements as $key => $value) {
 		$string = str_replace("{" . $key . "}", $value, $string);
 	}
 	return $string;
 }
 
-function sanitize_svg($svg) {
+function sanitize_svg($svg)
+{
 	$sanitizer = new Sanitizer();
 	$sanitized_svg = $sanitizer->sanitize($svg);
 	return $sanitized_svg ?: $svg;
 }
 
-function inline_svg($file_path) {
+function inline_svg($file_path)
+{
 	if (file_exists($file_path)) {
 		$svg = file_get_contents($file_path);
 		return sanitize_svg($svg);

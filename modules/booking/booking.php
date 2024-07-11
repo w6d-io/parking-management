@@ -49,6 +49,7 @@ class Booking implements IShortcode, IParkingManagement
 								$form->personal_information($this->pm),
 								$form->trip_information($this->pm)
 							),
+							$form->cancellation_insurance($this->pm),
 							$form->cgv($this->pm),
 							$form->total(),
 							$form->submit($this->pm),

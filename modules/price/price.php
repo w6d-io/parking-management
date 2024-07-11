@@ -10,6 +10,7 @@ use ParkingManagement\interfaces\IParkingmanagement;
 use ParkingManagement\interfaces\IShortcode;
 use PDO;
 use Price\Page;
+use WP_REST_Request;
 
 require_once PKMGMT_PLUGIN_MODULES_DIR . DS . "price" . DS . "includes" . DS . "page.php";
 
@@ -78,11 +79,11 @@ class Price implements IShortcode, IParkingmanagement
 	/**
 	 * @throws Exception
 	 */
-	public static function getPrice(array $data): array
+	public static function getPrice(array|WP_REST_Request $data): array
 	{
 		$pm = getParkingManagementInstance();
 		$info = $pm->prop('info');
-		$form = $pm->prop('$form');
+		$form = $pm->prop('form');
 		$instance = new self($pm);
 		$start = substr($instance->getData($data, 'depart'), 0, 10);
 		$start_hour = substr($instance->getData($data, 'depart'), 11, 5);
@@ -111,32 +112,39 @@ class Price implements IShortcode, IParkingmanagement
 		$price['du'] = !empty($start) ? $start : NULL;
 		$price['au'] = !empty($end) ? $end : NULL;
 		$price['nb_vehicule'] = 1;
-
-		$priceGrid = self::priceGrid(Order::getSiteID($info['terminal']), $numberOfDay, $start, $end, $instance->getData($data, 'type_id'), $instance->getData($data, 'parking_type'));
+		$type_id = $instance->getData($data, 'type_id');
+		$type_id = !empty($type_id) && is_numeric($type_id) ? $type_id : '1';
+		if (!is_numeric($type_id))
+			$type_id = '1';
+		$type_id = (int)$type_id;
+		$site_id = Order::getSiteID($info['terminal']);
+		$parking_type = $type_id - 1;
+		$priceGrid = self::priceGrid($site_id, $numberOfDay, $start, $end, $type_id, $parking_type);
 		$priceGrid = unserialize($priceGrid['grille']);
 
-		$parking_type = $instance->getData($data, 'type_id') - 1;
-		if (!empty($priceGrid[Order::getSiteID($info['terminal'])][$instance->getData($data, 'type_id')][$parking_type][$numberOfDay])) {
-			$total = $priceGrid[Order::getSiteID($info['terminal'])][$instance->getData($data, 'type_id')][$parking_type][$numberOfDay];
+		if (!empty($priceGrid[$site_id][$type_id][$parking_type][$numberOfDay])) {
+			$total = $priceGrid[$site_id][$type_id][$parking_type][$numberOfDay];
 		} else {
 			// Price isn't set
-			$latest = self::latestPrice($priceGrid[Order::getSiteID($info['terminal'])][$instance->getData($data, 'type_id')][$parking_type]);
-			$total = $priceGrid[Order::getSiteID($info['terminal'])][$instance->getData($data, 'type_id')][$parking_type][$latest];
-			$total += ($numberOfDay - $latest) * $priceGrid[Order::getSiteID($info['terminal'])][$instance->getData($data, 'type_id')][$parking_type]['jour_supplementaire'];
+			$latest = self::latestPrice($priceGrid[$site_id][$type_id][$parking_type]);
+			$total = $priceGrid[$site_id][$type_id][$parking_type][$latest];
+			$total += ($numberOfDay - $latest) * $priceGrid[$site_id][$type_id][$parking_type]['jour_supplementaire'];
 		}
-
 		$price['total'] = $price['total_reel'] = $total;
-		$extraCharge = self::extraCharge();
 		if (self::isHoliday($start))
-			$price['total'] += $extraCharge['ferie'];
+			$price['total'] += self::get_extra_price($form['options']['holiday']);
 		if (self::isHoliday($end))
-			$price['total'] += $extraCharge['ferie'];
+			$price['total'] += self::get_extra_price($form['options']['holiday']);
 		$nb_pax = $instance->getData($data, 'nb_pax');
 		if (!empty($nb_pax) && $nb_pax > 4)
-			$price['total'] += ($nb_pax - 4) * $extraCharge['pax_charge'];
+			$price['total'] += ($nb_pax - 4) * self::get_extra_price($form['options']['shuttle']);
 		$price['timing'] = microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"];
-		$price['total'] += self::nigth_extra($start_hour, $form['night_extra_charge'], $extraCharge);
-		$price['total'] += self::nigth_extra($end_hour, $form['night_extra_charge'], $extraCharge);
+		$price['total'] += self::nigth_extra($start_hour, $form['options']['night_extra_charge']);
+		$price['total'] += self::nigth_extra($end_hour, $form['options']['night_extra_charge']);
+		$assurance_annulation = $instance->getData($data, 'assurance_annulation');
+		if (!empty($assurance_annulation) && ($assurance_annulation == '1')) {
+			$price['total'] += (int)$form['options']['cancellation_insurance']['price'];
+		}
 		return $price;
 	}
 
@@ -150,7 +158,10 @@ class Price implements IShortcode, IParkingmanagement
 			throw new Exception("Database connection failed");
 		$query = "SELECT DATE_FORMAT(`date`, '%d/%m/%Y') as `date`, `titre` FROM `tbl_ferie` WHERE `date` = :date";
 		$req = $conn->prepare($query);
-		if ($req->execute(['date' => $date])) return true;
+		if ($req->execute(['date' => $date])) {
+			$row = $req->fetch(PDO::FETCH_ASSOC);
+			return !empty($row);
+		}
 		return false;
 	}
 
@@ -188,25 +199,6 @@ class Price implements IShortcode, IParkingmanagement
 		return array('grille' => $priceGrid[$flip[$max]], 'date' => $flip[$max]);
 	}
 
-	/**
-	 * @throws Exception
-	 */
-	public static function extraCharge(): array
-	{
-		$conn = database::connect();
-		if (!$conn)
-			throw new Exception("Database connection failed");
-		$query = "SELECT `name`, `price` FROM tbl_extra_charge";
-		$req = $conn->prepare($query);
-		if (!$req->execute())
-			throw new Exception("get price extra charge failed");
-		$extraCharge = array();
-		while ($row = $req->fetch(PDO::FETCH_ASSOC)) {
-			$extraCharge[$row['name']] = $row['price'];
-		}
-		return $extraCharge;
-	}
-
 	public static function latestPrice($grid): int
 	{
 		$day = 1;
@@ -219,18 +211,31 @@ class Price implements IShortcode, IParkingmanagement
 		return $day - 1;
 	}
 
-	private static function nigth_extra($hour, $night_extra_charge, $extraCharge): int
+	private static function nigth_extra($hour, $night_extra_charge): int
 	{
-		if ($night_extra_charge === '1') {
+		if ($night_extra_charge['enabled'] === '1') {
 			$hour = (int)str_replace(":", "", $hour);
 			if (($hour < 600) || ($hour > 2200))
-				return $extraCharge['arrivee_de_nuit'];
+				return $night_extra_charge['price'];
 		}
 		return 0;
 	}
 
-	private function getData(array $data, $field = null)
+	private static function get_extra_price($option): int
 	{
+		if ($option['enabled'] === '1') {
+				return $option['price'];
+		}
+		return 0;
+	}
+
+	private function getData(WP_REST_Request|array $data, $field = null)
+	{
+		if (($data instanceof WP_REST_Request)) {
+			if ($data->has_param($field))
+				return $data->get_param($field);
+			return '';
+		}
 		if (is_null($field) || !array_key_exists($field, $data))
 			return '';
 		return $data[$field];

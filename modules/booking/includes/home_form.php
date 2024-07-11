@@ -40,6 +40,7 @@ class HomeForm
 			'external_object',
 			array(
 				'locale' => $pm->locale,
+				'home_url' => home_url(),
 				'site_id' => Order::getSiteID($properties['info']['terminal']),
 				'properties' => $properties,
 			)

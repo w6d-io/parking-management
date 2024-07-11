@@ -75,7 +75,7 @@ document.addEventListener('DOMContentLoaded', function () {
 			return;
 		$.ajax({
 			type: 'GET',
-			url: external_object.properties.api.price_endpoint,
+			url: '/wp-json/pkmgmt/v1/prices',
 			data: $('#quote').serialize(),
 			processData: true,
 			dataType: 'json',
