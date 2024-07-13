@@ -55,7 +55,6 @@ class Pages
 		$payment_args = $pm->prop('payment');
 		do_meta_boxes(null, 'info', $pm->prop('info'));
 		do_meta_boxes(null, 'database', $pm->prop('database'));
-		do_meta_boxes(null, 'api', $pm->prop('api'));
 		do_meta_boxes(null, 'payment', $payment_args);
 		do_meta_boxes(null, 'form', $pm->prop('form'));
 		do_meta_boxes(null, 'booked_dates', $pm->prop('booked_dates'));
@@ -360,35 +359,6 @@ class Pages
 		echo '</div>';
 	}
 
-	public static function api_box($api, $box): void
-	{
-		echo '<div class="' . $box['id'] . '-fields">';
-		echo self::_field('api-host', 'api_field', 'pkmgmt-api[host]', esc_html__('Host', 'parking-management'), $api['host']);
-		echo '</div>';
-		echo '<div class="' . $box['id'] . '-fields">';
-		echo self::_field('api-port', 'api_field', 'pkmgmt-api[port]', esc_html__('Port', 'parking-management'), $api['port']);
-		echo '</div>';
-		echo '<div class="' . $box['id'] . '-fields">';
-		echo self::_field('api-user', 'api_field', 'pkmgmt-api[user]', esc_html__('Username', 'parking-management'), $api['user']);
-		echo '</div>';
-		echo '<div class="' . $box['id'] . '-fields">';
-		echo self::_field_password('api-password', 'api_field', 'pkmgmt-api[password]', esc_html__('Password
-		', 'parking-management'), $api['password']);
-		echo '</div>';
-		echo '<div class="' . $box['id'] . '-fields">';
-		echo self::_field('api-zip_codes_endpoint', 'api_field', 'pkmgmt-api[zip_codes_endpoint]', esc_html__('Zip codes endpoint', 'parking-management'), $api['zip_codes_endpoint']);
-		echo '</div>';
-		echo '<div class="' . $box['id'] . '-fields">';
-		echo self::_field('api-models-vehicle-endpoint', 'api_field', 'pkmgmt-api[models_vehicle_endpoint]', esc_html__('Model vehicle endpoint', 'parking-management'), $api['models_vehicle_endpoint']);
-		echo '</div>';
-		echo '<div class="' . $box['id'] . '-fields">';
-		echo self::_field('api-destinations-endpoint', 'api_field', 'pkmgmt-api[destinations_endpoint]', esc_html__('Destinations endpoint', 'parking-management'), $api['destinations_endpoint']);
-		echo '</div>';
-		echo '<div class="' . $box['id'] . '-fields">';
-		echo self::_field('api-price-endpoint', 'api_field', 'pkmgmt-api[price_endpoint]', esc_html__('Price endpoint', 'parking-management'), $api['price_endpoint']);
-		echo '</div>';
-	}
-
 	public static function payment_box($payment, $box): void
 	{
 		echo '<div class="tabs">';
@@ -460,21 +430,31 @@ class Pages
 	public static function high_season_box($high_season, $box): void
 	{
 		echo '<div ' . $box['id'] . 'class="dates-global">';
-		echo '<div class="dates-header">';
+		echo '<div class="dates-header justify-content-between">';
+		echo '<div class="col-sm-1">';
+		echo '<div class="input-group">';
+		echo '<span class="input-group-text m-0">€</span>';
+		echo '<input type="number" class="form-control" name="pkmgmt-high_season[price]" aria-label="Price for High season" value="' . $high_season['price'] . '">';
+		echo '</div>';
+		echo '</div>';
+		echo '<div>';
 		echo '<span>' . esc_html__('Add a date', 'parking-management') . '</span>';
 		echo '<button id="high-season-add-element" type="button"><i class="fas fa-plus"></i></button>';
 		echo '</div>';
+		echo '</div>';
 		echo '<div id="high_season_dates_body" class="dates-body">';
-		foreach ($high_season as $id => $date) {
-			echo '<div class="dates-element">';
-			echo '<label for="pkmgmt-high-season-start-' . $id . '">start</label>';
-			echo '<input type="date" id="pkmgmt-high-season-start-' . $id . '" name="pkmgmt-high_season[' . $id . '][start]" class="start-date" value="' . $date['start'] . '">';
-			echo '<label for="pkmgmt-high-season-end-' . $id . '">end</label>';
-			echo '<input type="date" id="pkmgmt-high-season-end-' . $id . '" name="pkmgmt-high_season[' . $id . '][end]" class="end-date" value="' . $date['end'] . '">';
-			echo '<label for="pkmgmt-high-season-message-' . $id . '">message</label>';
-			echo '<input type="text" id="pkmgmt-high-season-message-' . $id . '" name="pkmgmt-high_season[' . $id . '][message]" class="message" placeholder="Message" value="' . $date['message'] . '">';
-			echo '<i class="fas fa-trash delete"></i>';
-			echo '</div>';
+		if (array_key_exists('dates', $high_season)) {
+			foreach ($high_season['dates'] as $id => $date) {
+				echo '<div class="dates-element">';
+				echo '<label for="pkmgmt-high-season-dates-start-' . $id . '">start</label>';
+				echo '<input type="date" id="pkmgmt-high-season-dates-start-' . $id . '" name="pkmgmt-high_season[dates][' . $id . '][start]" class="start-date" value="' . $date['start'] . '">';
+				echo '<label for="pkmgmt-high-season-dates-end-' . $id . '">end</label>';
+				echo '<input type="date" id="pkmgmt-high-season-dates-end-' . $id . '" name="pkmgmt-high_season[dates][' . $id . '][end]" class="end-date" value="' . $date['end'] . '">';
+				echo '<label for="pkmgmt-high-season-dates-message-' . $id . '">message</label>';
+				echo '<input type="text" id="pkmgmt-high-season-dates-message-' . $id . '" name="pkmgmt-high_season[dates][' . $id . '][message]" class="message" placeholder="Message" value="' . $date['message'] . '">';
+				echo '<i class="fas fa-trash delete"></i>';
+				echo '</div>';
+			}
 		}
 		echo '</div>';
 		echo '</div>';

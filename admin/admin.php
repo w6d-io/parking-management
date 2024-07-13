@@ -124,7 +124,6 @@ class Admin
 
 				'info' => $_POST['pkmgmt-info'] ?? Template::get_default(),
 				'database' => $_POST['pkmgmt-database'] ?? Template::get_default('database'),
-				'api' => $_POST['pkmgmt-api'] ?? Template::get_default('api'),
 				'payment' => $_POST['pkmgmt-payment'] ?? Template::get_default('payment'),
 				'form' => $_POST['pkmgmt-form'] ?? Template::get_default('form'),
 				'booked_dates' => $_POST['pkmgmt-booked_dates'] ?? Template::get_default('booked_dates'),
@@ -217,14 +216,6 @@ class Admin
 			array('ParkingManagement\Admin\Pages', 'database_box'),
 			null,
 			'database',
-			'core'
-		);
-		add_meta_box(
-			'api',
-			__('API', 'parking-management'),
-			array('ParkingManagement\Admin\Pages', 'api_box'),
-			null,
-			'api',
 			'core'
 		);
 		add_meta_box(

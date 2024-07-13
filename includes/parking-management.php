@@ -9,7 +9,7 @@ class ParkingManagement
 
 	const post_type = 'parking_management';
 
-	const properties_keys = array('info', 'database', 'api', 'payment', 'form', 'booked_dates','high_season', 'sms', 'response');
+	const properties_keys = array('info', 'database', 'payment', 'form', 'booked_dates','high_season', 'sms', 'response');
 	private static ParkingManagement|null $current = null;
 
 	public int $id;
@@ -56,7 +56,6 @@ class ParkingManagement
 		$builtin_properties = array(
 			'info' => Template::get_default(),
 			'database' => Template::get_default('database'),
-			'api' => Template::get_default('api'),
 			'payment' => Template::get_default('payment'),
 			'form' => Template::get_default('form'),
 			'booked_dates' => Template::get_default('booked_dates'),

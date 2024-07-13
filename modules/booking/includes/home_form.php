@@ -32,8 +32,6 @@ class HomeForm
 		$properties = $pm->get_properties();
 		unset($properties['payment']);
 		unset($properties['database']);
-		unset($properties['api']['user']);
-		unset($properties['api']['password']);
 		unset($properties['sms']);
 		unset($properties['response']);
 		wp_localize_script('parking-management-home-form',

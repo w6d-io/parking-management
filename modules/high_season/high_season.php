@@ -24,8 +24,11 @@ class HighSeason implements IShortcode, IParkingmanagement
 	private static function HTMLMessage(ParkingManagement $pm): string
 	{
 		try {
+			$high_season = $pm->prop('high_season');
+			if (!array_key_exists('dates', $high_season))
+				return '';
 			$date = new DateTime();
-			$hs = DatesRange::getDateRange($date->format('Y-m-d'), $pm->prop('high_season'));
+			$hs = DatesRange::getDateRange($date->format('Y-m-d'), $high_season['dates']);
 			$message = DatesRange::getMessage($hs, $pm->locale);
 			if (empty($message)) {
 				return '';

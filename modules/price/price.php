@@ -36,54 +36,12 @@ class Price implements IShortcode, IParkingmanagement
 	/**
 	 * @throws Exception
 	 */
-	public static function getPriceFromAPI($data): mixed
-	{
-		try {
-			$pm = getParkingManagementInstance();
-			if (!$pm) {
-				throw new Exception("failed to get parking management instance");
-			}
-			$api = $pm->prop('api');
-			$endpoint = $api['price_endpoint'];
-			$auth = '';
-			if (isset($api['username'])) {
-				$auth .= $api['username'];
-			}
-			if (isset($api['password'])) {
-				$auth .= ':' . $api['password'];
-			}
-			if (!empty($auth))
-				$auth = "Authorization: Basic " . base64_encode($auth) . "\r\n";
-			$url = $endpoint;
-			$options = array(
-				'http' => array(
-					'header' => "Content-Type: application/json\r\n$auth",
-					'method' => 'POST',
-					'content' => json_encode($data)
-				),
-				'ssl' => array(
-					'verify_peer' => false,
-					'verify_peer_name' => false
-				)
-			);
-			$context = stream_context_create($options);
-
-			$result_raw = file_get_contents($url, false, $context);
-			return json_decode($result_raw);
-		} catch (Exception $e) {
-			print_log($e->getMessage(), false);
-		}
-		return false;
-	}
-
-	/**
-	 * @throws Exception
-	 */
 	public static function getPrice(array|WP_REST_Request $data): array
 	{
 		$pm = getParkingManagementInstance();
 		$info = $pm->prop('info');
 		$form = $pm->prop('form');
+		$high_season = $pm->prop('high_season');
 		$instance = new self($pm);
 		$start = substr($instance->getData($data, 'depart'), 0, 10);
 		$start_hour = substr($instance->getData($data, 'depart'), 11, 5);
@@ -135,6 +93,8 @@ class Price implements IShortcode, IParkingmanagement
 			$price['total'] += self::get_extra_price($form['options']['holiday']);
 		if (self::isHoliday($end))
 			$price['total'] += self::get_extra_price($form['options']['holiday']);
+		if (self::isHighSeason($start) || self::isHighSeason($end))
+			$price['total'] += $high_season['price'];
 		$nb_pax = $instance->getData($data, 'nb_pax');
 		if (!empty($nb_pax) && $nb_pax > 4)
 			$price['total'] += ($nb_pax - 4) * self::get_extra_price($form['options']['shuttle']);
@@ -165,7 +125,17 @@ class Price implements IShortcode, IParkingmanagement
 		return false;
 	}
 
-
+	public static function isHighSeason($date): bool
+	{
+		$date = DateTime::createFromFormat('d/m/Y', $date)->format('Y-m-d');
+		$pm = getParkingManagementInstance();
+		if (!$pm)
+			return false;
+		$high_season = $pm->prop('high_season');
+		if (!array_key_exists('dates', $high_season))
+			return false;
+		return DatesRange::isContain($date, $high_season['dates']);
+	}
 	/**
 	 * @throws Exception
 	 */
@@ -243,6 +213,7 @@ class Price implements IShortcode, IParkingmanagement
 
 	private function enqueue(): void
 	{
+		wp_enqueue_style('parking-management-booking', pkmgmt_plugin_url('modules/price/css/price.css'));
 		wp_enqueue_style('bootstrap', 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css', array(), '5.3.3');
 	}
 }

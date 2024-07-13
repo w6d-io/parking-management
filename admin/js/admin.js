@@ -1,7 +1,7 @@
 
 document.addEventListener('DOMContentLoaded', function () {
 	window.addEventListener('beforeunload', function () {
-		localStorage.setItem('scrollPosition', window.scrollY);
+		localStorage.setItem('scrollPosition', window.scrollY.toString());
 	});
 	window.addEventListener('keydown', function (event) {
 		if ((event.ctrlKey && event.key === 's') || (event.metaKey && event.key === 's')) {
@@ -69,11 +69,11 @@ document.addEventListener('DOMContentLoaded', function () {
 		const newElement = `
             <div class="dates-element">
             	<label for="pkmgmt-high-season-start-${id}">start</label>
-                <input type="date" id="pkmgmt-high-season-start-${id}" name="pkmgmt-high_season[${id}][start]" class="start-date" value="${getToday()}">
+                <input type="date" id="pkmgmt-high-season-dates-start-${id}" name="pkmgmt-high_season[dates][${id}][start]" class="start-date" value="${getToday()}">
             	<label for="pkmgmt-high-season-end-${id}">end</label>
-                <input type="date" id="pkmgmt-high-season-end-${id}" name="pkmgmt-high_season[${id}][end]" class="end-date" value="${getToday()}">
+                <input type="date" id="pkmgmt-high-season-dates-end-${id}" name="pkmgmt-high_season[dates][${id}][end]" class="end-date" value="${getToday()}">
             	<label for="pkmgmt-high-season-message-${id}">message</label>
-                <input type="text" id="pkmgmt-high-season-message-${id}" name="pkmgmt-high_season[${id}][message]" class="message" placeholder="Message">
+                <input type="text" id="pkmgmt-high-season-dates-message-${id}" name="pkmgmt-high_season[dates][${id}][message]" class="message" placeholder="Message">
                 <i class="fas fa-trash delete"></i>
             </div>
         `;

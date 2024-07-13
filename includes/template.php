@@ -9,7 +9,6 @@ class Template
 		match ($prop) {
 			'info' => $template = self::info(),
 			'database' => $template = self::database(),
-			'api' => $template = self::api(),
 			'payment' => $template = self::payment(),
 			'form' => $template = self::form(),
 			'booked_dates' => $template = self::booked_dates(),
@@ -49,20 +48,6 @@ class Template
 			'port' => "",
 			'user' => "",
 			'password' => ""
-		);
-	}
-
-	private static function api(): array
-	{
-		return array(
-			'host' => "",
-			'port' => "",
-			'user' => "",
-			'password' => "",
-			'zip_codes_endpoint' => "",
-			'models_vehicle_endpoint' => "",
-			'destinations_endpoint' => "",
-			'price_endpoint' => "",
 		);
 	}
 
@@ -155,7 +140,10 @@ class Template
 
 	private static function high_season(): array
 	{
-		return array();
+		return array(
+			'price' => 0,
+			'dates' => array()
+		);
 	}
 
 	private static function sms(): array
