@@ -2,6 +2,7 @@
 
 namespace ParkingManagement\Admin;
 
+use Exception;
 use ParkingManagement\ParkingManagement;
 use ParkingManagement\Template;
 
@@ -24,6 +25,7 @@ class Admin
 
 		// CSS and Javascript
 		add_action('admin_enqueue_scripts', array($this, 'enqueue_scripts'));
+//		add_action('admin_footer', array('ParkingManagement\Admin\Pages', 'dialog_page_list'));
 
 	}
 
@@ -37,8 +39,12 @@ class Admin
 		wp_enqueue_style('parking-management-admin-rtl', pkmgmt_plugin_url('admin/css/admin-rtl.css'));
 		wp_enqueue_style('font-awesome', 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css', array(), '6.0.0-beta3');
 		wp_enqueue_style('bootstrap', 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css', array('admin-menu','forms'), '5.3.3');
+		wp_enqueue_style('parking-management-jquery-ui', 'https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css');
 		wp_enqueue_style('parking-management-easepick', 'https://cdn.jsdelivr.net/npm/@easepick/bundle@1.2.1/dist/index.css');
+
+		wp_enqueue_script('bootstrap', 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js', array(), false, true);
 		wp_enqueue_script('parking-management-jquery', 'https://code.jquery.com/jquery-3.6.0.min.js');
+		wp_enqueue_script('parking-management-jquery-ui', 'https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js', array('parking-management-jquery'));
 		wp_enqueue_script('parking-management-jquery-validate', 'https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js', array('parking-management-jquery'));
 		wp_enqueue_script('parking-management-additional-methods', 'https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/additional-methods.min.js', array('parking-management-jquery'));
 		wp_enqueue_script('parking-management-easepick', 'https://cdn.jsdelivr.net/npm/@easepick/bundle@1.2.1/dist/index.umd.min.js');
@@ -48,6 +54,7 @@ class Admin
 			pkmgmt_plugin_url('admin/js/admin.js'),
 			array(
 				'parking-management-jquery',
+				'parking-management-jquery-ui',
 				'parking-management-jquery-validate',
 				'parking-management-additional-methods',
 				'parking-management-easepick',
@@ -88,6 +95,9 @@ class Admin
 
 	}
 
+	/**
+	 * @throws Exception
+	 */
 	public function load(): void
 	{
 		switch ($this->current_action()) {
@@ -108,6 +118,9 @@ class Admin
 		}
 	}
 
+	/**
+	 * @throws Exception
+	 */
 	private function load_save(): false|ParkingManagement
 	{
 		$id = get_post_id_by_post_type(ParkingManagement::post_type);

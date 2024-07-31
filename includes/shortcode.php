@@ -3,6 +3,7 @@
 use ParkingManagement\Booking;
 use ParkingManagement\Booked;
 use ParkingManagement\HighSeason;
+use ParkingManagement\Payment;
 use ParkingManagement\Price;
 use ParkingManagement\interfaces\IShortcode;
 
@@ -25,8 +26,7 @@ function pkmgmt_parking_management_shortcode_func(array $atts, $content = null, 
 	$payment_provider = trim(array_key_exists('payment_provider', $atts) ? $atts['payment_provider'] : '');
 
 	return match ($type) {
-		'form', 'home-form', 'price', 'booked', 'high-season' => pkmgmt_parking_management_shortcode_router($type, $payment_provider),
-		'payment' => sprintf('[parking-management type="payment" payment_provider="%s"]', $payment_provider),
+		'form', 'home-form', 'price', 'booked', 'high-season', 'payment' => pkmgmt_parking_management_shortcode_router($type, $payment_provider),
 		default => '[parking-management "not found"]',
 	};
 }
@@ -43,7 +43,11 @@ function pkmgmt_parking_management_shortcode_router(string $type, $payment_provi
 		'price' => new Price($pm),
 		'booked' => new Booked($pm),
 		'high-season' => new HighSeason($pm),
+		'payment' => new Payment($pm),
 	};
+
+	if ($type === 'payment')
+		$type = $payment_provider;
 
 	return $instance->shortcode($type);
 }

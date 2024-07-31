@@ -177,7 +177,7 @@ function pkmgmt_plugin_url(string $path): string
 // Generate a password
 function generatePassword($length = 6): string
 {
-	$password = NULL;
+	$password = "";
 	$possible = "0123456789abcdfghjkmnpqrstvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 	$i = 0;
 	while ($i < $length) {

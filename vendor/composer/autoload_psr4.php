@@ -7,4 +7,6 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'enshrined\\svgSanitize\\' => array($vendorDir . '/enshrined/svg-sanitize/src'),
+    'Payplug\\' => array($vendorDir . '/payplug/payplug-php/lib/Payplug'),
+    'Mypos\\IPC\\' => array($vendorDir . '/developermypos/mypos-checkout-sdk/IPC'),
 );

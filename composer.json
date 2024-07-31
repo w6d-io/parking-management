@@ -3,6 +3,8 @@
         "enshrined/svg-sanitize": "^0.19.0",
 		"ext-pdo": "*",
 		"ext-iconv": "*",
-		"ext-mbstring": "*"
+		"ext-mbstring": "*",
+        "payplug/payplug-php": "^3.5",
+        "developermypos/mypos-checkout-sdk": "^1.3"
 	}
 }

@@ -26,7 +26,7 @@ class DatesRange
 					return $dateRange;
 			}
 		} catch (Exception $e) {
-
+			Logger::error("datesRange.getDateRange", $e->getMessage());
 		}
 		return array();
 	}
@@ -35,6 +35,7 @@ class DatesRange
 	{
 		return self::datesSorted($dates);
 	}
+
 	public static function datesSorted(array $dateRanges): array
 	{
 		usort($dateRanges, function ($a, $b) {
@@ -45,29 +46,32 @@ class DatesRange
 
 	public static function getDatesRangeAPI(array $dates): array
 	{
-		$dates = array();
-		foreach (self::getDatesRangeSorted($dates) as $date)
-		{
+		$datesRange = array();
+		$sorted = self::getDatesRangeSorted($dates);
+		foreach ($sorted as $date) {
 			if ($date['start'] == $date['end']) {
-				$dates[] = $date['start'];
+				$datesRange[] = $date['start'];
 				continue;
 			}
-			$dates[] = array($date['start'], $date['end']);
+			$datesRange[] = array($date['start'], $date['end']);
 		}
-		return $dates;
+		return $datesRange;
 	}
 
 	public static function isContain(string $search, array $dates): bool
 	{
 		try {
 			$search = new DateTime($search);
-			foreach (self::getDatesRangeSorted($dates) as $date) {
+			$sorted = self::getDatesRangeSorted($dates);
+			foreach ($sorted as $date) {
 				$start = new DateTime($date['start']);
 				$end = new DateTime($date['end']);
 				if ($search >= $start && $search <= $end)
 					return true;
 			}
-		} catch (Exception $e) {}
+		} catch (Exception $e) {
+			Logger::error("DatesRange.isContain", $e->getMessage());
+		}
 		return false;
 	}
 
@@ -89,6 +93,7 @@ class DatesRange
 		$date['end'] = $formatter->format($date['end']);
 		return replacePlaceholders($date['message'], $date);
 	}
+
 	private static function compareDate($a, $b): int
 	{
 		try {
@@ -98,6 +103,7 @@ class DatesRange
 				return 0;
 			return ($date1 < $date2) ? -1 : 1;
 		} catch (Exception $e) {
+			Logger::error("DatesRange.compareDate", $e->getMessage());
 			return 0;
 		}
 	}

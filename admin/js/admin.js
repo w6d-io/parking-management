@@ -1,4 +1,3 @@
-
 document.addEventListener('DOMContentLoaded', function () {
 	window.addEventListener('beforeunload', function () {
 		localStorage.setItem('scrollPosition', window.scrollY.toString());
@@ -14,7 +13,6 @@ document.addEventListener('DOMContentLoaded', function () {
 	if (scrollPosition) {
 		window.scrollTo(0, parseInt(scrollPosition, 10));
 	}
-
 
 
 	// Password toggle
@@ -84,9 +82,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
 	$('.shortcode-copy').on('click', function (event) {
 		event.preventDefault();
-		const shortdiv = $(this).closest('.shortcode-div');
-		const copyText = shortdiv.find('.shortcode').val();
-		const copyMessage = shortdiv.find('.shortcode-copy-message');
+		const short_div = $(this).closest('.shortcode-div');
+		const copyText = short_div.find('.shortcode').val();
+		const copyMessage = short_div.find('.shortcode-copy-message');
 		// Get the text from the input field
 
 		// Use the Clipboard API to copy the text
@@ -134,7 +132,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 	$('.tab-links a').on('click', function (e) {
 		e.preventDefault();
-		var currentAttrValue = $(this).attr('href');
+		const currentAttrValue = $(this).attr('href');
 
 		// Show/Hide Tabs
 		$('.tab').removeClass('active');
@@ -146,7 +144,7 @@ document.addEventListener('DOMContentLoaded', function () {
 	});
 
 	// Initialize the first tab
-	$('.tab-links li:first-child a').click();
+	$('.tab-links li:first-child a').trigger('click');
 
 	$('#pkmgmt-admin-config').validate({
 		rules: {
@@ -166,6 +164,19 @@ document.addEventListener('DOMContentLoaded', function () {
 				require_from_group: [1, '.info-vehicle-type']
 			},
 		}
+	})
+
+	// Page List dialog
+	let currentInput;
+	$('#dialog-pages-list').on('shown.bs.modal', function (e) {
+		currentInput = $(e.relatedTarget).closest('.input-group').find('input');
+		console.log("currentInput", currentInput);
+
+	})
+	$('li.page').on('click', function (e) {
+		if (currentInput)
+			currentInput.val(e.target.getAttribute('data-url'));
+		$('.btn-close').trigger('click');
 	})
 
 });

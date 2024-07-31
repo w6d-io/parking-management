@@ -16,11 +16,11 @@ class Form
 	{
 		$contents = array();
 		foreach ($elements as $element) {
-			$contents[] .= Html::_div(
+			$contents[] = Html::_div(
 				array(
 					'class' => 'radio ' . $div_class,
 				),
-				Html::_radio($id . '_' . $element['id'], $name, $element['value'], array('tabindex' => "9"), $value == $element['value']),
+				Html::_radio($id . '_' . $element['id'], $name, $element['value'], array('class'=>'parking-type','tabindex' => "9"), $value == $element['value']),
 				Html::_label_with_attr(
 					array(
 						'class' => 'px-md-5 px-3',
@@ -36,11 +36,11 @@ class Form
 	{
 		$contents = array();
 		foreach ($elements as $element) {
-			$contents[] .= Html::_div(
+			$contents[] = Html::_div(
 				array(
 					'class' => 'radio ' . $div_class,
 				),
-				Html::_radio($id . '_' . $element['value'], $name, $element['value'], array('tabindex' => "6",), $value == $element['value']),
+				Html::_radio($id . '_' . $element['value'], $name, $element['value'], array('class'=> 'type-id', 'tabindex' => "6",), $value == $element['value']),
 				Html::_label_with_attr(array(
 					'class' => 'label px-3 px-md-5'
 				), $id . '_' . $element['value'],
@@ -226,6 +226,7 @@ class Form
 			array(
 				'locale' => $pm->locale,
 				'home_url' => home_url(),
+				'form_css' => pkmgmt_plugin_url('modules/booking/css/form.css'),
 				'properties' => $properties
 			)
 		);
@@ -597,7 +598,7 @@ EOT;
 			Html::_div(array(
 				'class' => 'col-sm-4',
 			),
-				Html::_index('hidden', 'aeroport', 'aeroport', array('value' => Order::getSiteID($info['terminal']))),
+				Html::_index('hidden', 'aeroport', 'aeroport', array('value' => Order::getSiteID($info['terminal'])->value)),
 				Html::_index('hidden', 'pkmgmt_action', 'pkmgmt_action', array('value' => 'booking')),
 				'<button type="submit" tabindex="17" id="submit" name="submit" class="form-control btn btn-primary text-center" disabled>'
 				. esc_html__('Validate your order', 'parking-management')
@@ -673,6 +674,17 @@ EOT;
 				(array_key_exists('assurance_annulation', $post) ? $post['assurance_annulation'] : '0') == '1'
 			),
 			Html::_label_with_attr(array('class' => 'form-check-label'),'assurance_annulation', $msg),
+		);
+	}
+
+	public function spinner(): string
+	{
+		return Html::_div(array('class' => 'spinner-container', 'id' => 'spinner-container'),
+			Html::_div(array('class' => 'spinner-border text-primary', 'role'=>'status'),
+				Html::_span(array('class' => 'sr-only'),
+					__('Loading...', 'parking-management')
+				),
+			)
 		);
 	}
 }

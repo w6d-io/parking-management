@@ -3,9 +3,7 @@
 namespace Price;
 
 use Booking\Order;
-use DateTime;
 use Exception;
-use ParagonIE\Sodium\Core\Curve25519\H;
 use ParkingManagement\Html;
 use ParkingManagement\interfaces\IParkingmanagement;
 use ParkingManagement\ParkingManagement;
@@ -25,7 +23,7 @@ class Page implements IParkingmanagement
 	{
 		$this->pm = $pm;
 		$info = $pm->prop('info');
-		$priceGrid = Price::priceGrid(Order::getSiteID($info['terminal']), 1, date('d/m/Y'), date('d/m/Y'));
+		$priceGrid = Price::priceGrid(Order::getSiteID($info['terminal']), 1, date('Y-m-d'), date('Y-m-d'));
 		$this->priceGrid = unserialize($priceGrid['grille']);
 	}
 
@@ -48,9 +46,8 @@ class Page implements IParkingmanagement
 			return '';
 		$info = $this->pm->prop('info');
 		$high_season = $this->pm->prop('high_season')['price'];
-		$site_id = Order::getSiteID($info['terminal']);
+		$site_id = Order::getSiteID($info['terminal'])->value;
 		$latest = Price::latestPrice($this->priceGrid[$site_id][1][$parking_type]);
-		$now = new DateTime();
 
 		$contents = array();
 		foreach ($this->priceGrid[$site_id][1][$parking_type] as $k => $v) {
@@ -58,11 +55,11 @@ class Page implements IParkingmanagement
 				$v2 = $this->priceGrid[$site_id][1][$parking_type][$latest] + (($k - $latest) * $this->priceGrid[$site_id][1][$parking_type]['jour_supplementaire']);
 				$v = !empty($v) ? $v : $v2;
 			}
-			$contents[] .= '<tr><th class="align-middle text-center" scope="row">' . $k . '</th>';
-			$contents[] .= '<td class="align-middle text-center">' . $v . '€' . '</td>';
+			$contents[] = '<tr><th class="align-middle text-center" scope="row">' . $k . '</th>';
+			$contents[] = '<td class="align-middle text-center">' . $v . '€' . '</td>';
 			if ($high_season !== '0')
-				$contents[] .= '<td class="align-middle text-center">' . ($v + $high_season) . '€' . '</td>';
-			$contents[] .= '</tr>';
+				$contents[] = '<td class="align-middle text-center">' . ($v + $high_season) . '€' . '</td>';
+			$contents[] = '</tr>';
 		}
 		return Html::_div(array('class' => $div_class),
 			Html::_div(
@@ -86,7 +83,6 @@ class Page implements IParkingmanagement
 
 	private function options(array $options): string
 	{
-		try {
 			return Html::_div(
 				array('class' => 'col mt-5'),
 				'<h3 class="option">' . esc_html__("Options price", 'parking-management') . '</h3>',
@@ -105,9 +101,5 @@ class Page implements IParkingmanagement
 					),
 				)
 			);
-		} catch (Exception $ex) {
-
-		}
-		return '';
 	}
 }

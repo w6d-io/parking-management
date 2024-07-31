@@ -4,21 +4,68 @@ namespace Booking;
 
 use DateTime;
 use Exception;
+use InvalidArgumentException;
 use ParkingManagement\database\database;
+use ParkingManagement\Logger;
+use ParkingManagement\Payment;
+use ParkingManagement\PaymentID;
 use ParkingManagement\Price;
 use PDO;
 
+enum OrderStatus: int
+{
+	case PENDING = 0;
+	case CONFIRMED = 1;
+	case PAID = 2;
+	case COMPLETED = 3;
+}
+
+enum AirPort: int
+{
+	case ORLY = 1;
+	case ROISSY = 2;
+	case ZAVENTEM = 3;
+}
+
+enum VehicleType: int
+{
+	case CAR = 1;
+	case MOTORCYCLE = 2;
+	case TRUCK = 3;
+
+	public static function fromInt(int $value): ?self
+	{
+		foreach (self::cases() as $case) {
+			if ($case->value === $value) {
+				return $case;
+			}
+		}
+		throw new InvalidArgumentException("Invalid value for VehicleType enum: $value");
+	}
+}
+
+enum ParkingType: int
+{
+	case OUTSIDE = 0;
+	case INSIDE = 1;
+
+	public static function fromInt(int $value): ?self
+	{
+		foreach (self::cases() as $case) {
+			if ($case->value === $value) {
+				return $case;
+			}
+		}
+		throw new InvalidArgumentException("Invalid value for ParkingType enum: $value");
+	}
+}
+
 class Order
 {
-
 	private string $terminal;
 	private int $site_id;
 	private array $data;
 	private bool|PDO $conn;
-	public const ORLY = 1;
-	public const ROISSY = 2;
-	public const ZAVENTEM = 3;
-
 	public const PhoneCountry = array(
 		1 => array('id' => 1, 'initial' => 'FR', 'pays' => 'France', 'prefix' => '0033', 'size' => 13, 'min' => '0', 'before' => '0'),
 		2 => array('id' => 2, 'initial' => 'BE', 'pays' => 'Belgium', 'prefix' => '0032', 'size' => 13, 'min' => '0', 'before' => ''),
@@ -36,17 +83,16 @@ class Order
 	{
 		$pm = getParkingManagementInstance();
 		if (!$conn = database::connect()) {
-			database::getError();
+			Logger::error("member.database.connect", database::getError());
 			return;
 		}
 		$this->conn = $conn;
 		$info = $pm->prop('info');
-		if (empty($info)) {
+		if (empty($info))
 			throw new Exception('Parking management info property is empty.');
-		}
 		$this->terminal = $info['terminal'];
-		$this->site_id = self::getSiteID($info['terminal']);
-		$this->data = array_merge($_GET, $_POST);
+		$this->site_id = self::getSiteID($info['terminal'])->value;
+		$this->data = $_POST;
 		date_default_timezone_set('Europe/Paris');
 	}
 
@@ -55,17 +101,20 @@ class Order
 	 */
 	public function create(string $member_id): int
 	{
+		if (!$member_id)
+			throw new Exception("order creation failed");
+		if ($order_id = $this->isExists($member_id))
+			return $order_id;
 		$query = "SELECT `grille_tarifaire` FROM `tbl_remplissage` WHERE `date` = ?";
+		$date = substr($this->getData('depart'), 0, 10);
 		$req = $this->conn->prepare($query);
-		$req->execute(array(substr($this->getData('navette'), 0, 10)));
+		$req->execute(array($date));
 		$row = $req->fetch(PDO::FETCH_ASSOC);
 
 		$unserialize = unserialize($row['grille_tarifaire']);
 
 		$price_grid = $unserialize[$this->site_id];
 
-		if (!$member_id)
-			throw new Exception("order creation failed");
 		$billing = implode(" ", array(ucwords($this->getData('nom')), ucwords($this->getData('prenom')))) . "\n";
 		$billing .=
 			implode(
@@ -81,8 +130,10 @@ class Order
 			);
 		$billing .= ',  ' . mb_strtoupper(self::PhoneCountry[$this->getData('pays')]['pays'], 'UTF-8');
 		$start = substr($this->getData('depart'), 0, 10);
-		$start_hour = substr($this->getData('depart'), 11, 5);
 		$end = substr($this->getData('retour'), 0, 10);
+		$start = DateTime::createFromFormat('Y-m-d', $start);
+		$end = DateTime::createFromFormat('Y-m-d', $end);
+		$start_hour = substr($this->getData('depart'), 11, 5);
 		$end_hour = substr($this->getData('retour'), 11, 5);
 
 
@@ -91,7 +142,7 @@ class Order
 				str_replace('+', '00', $this->getData('tel_port'))
 			)
 		);
-		$referer = parse_url($_SESSION['HTTP_REFERER']);
+		$referer = parse_url($_SERVER['HTTP_REFERER']);
 		$referer_host = array_key_exists('host', $referer) ? $referer['host'] : NULL;
 		$price = Price::getPrice($this->data);
 		$params = array(
@@ -102,31 +153,34 @@ class Order
 			'membre_id' => $member_id,
 			'telephone' => $this->formatPhone($this->getData('tel_port')),
 			'facturation' => $billing,
-			'depart' => $start,
+			'depart' => $start->format('Y-m-d'),
 			'depart_heure' => $start_hour,
-			'arrivee' => $end,
+			'arrivee' => $end->format('Y-m-d'),
 			'arrivee_heure' => $end_hour,
-			'nb_jour' => self::nbRealDay($start, $end),
-			'nb_jour_offert' => 0,
+			'nb_jour' => $price['nb_jour'],
+			'nb_jour_offert' => '0',
 			'nb_personne' => serialize(array(
-				'aller' => $this->getData('nb_pax')
-			, 'retour' => $this->getData('nb_pax')
-			)),
+					'aller' => $this->getData('nb_pax'),
+					'retour' => $this->getData('nb_pax')
+				)
+			),
 			'destination_id' => $this->getData('destination_id'),
 			'terminal' => serialize($this->getData('terminal')),
 			'remarque' => '',
 			'total' => $price['total'],
-			'grille_tarifaire' => $price_grid,
+			'grille_tarifaire' => serialize($price_grid),
 			'tva' => 20,
 			'tva_transport' => 10,
 			'coupon_id' => 0,
-			'recherche' => utf8_decode($search),
-			'status' => 1,
+			'recherche' => mb_convert_encoding($search, 'ISO-8859-1', 'UTF-8'),
+			'status' => Payment::validateOnPayment() && Payment::isEnabled() ? OrderStatus::PENDING->value : OrderStatus::CONFIRMED->value,
 			'nb_retard' => 0,
 			'ip' => $_SERVER['REMOTE_ADDR'],
 			'host' => $_SERVER['HTTP_USER_AGENT'],
 			'referer' => $referer_host
 		);
+		Logger::info("order.create", ['params' => $params]);
+
 		$query = "
 		INSERT INTO `tbl_commande`
 		(
@@ -155,30 +209,84 @@ class Order
 		$id = $this->conn->lastInsertId();
 		if (!$id)
 			throw new Exception("order creation failed");
+		Logger::info("order.create", ['id' => $id]);
 		$query = 'UPDATE `tbl_commande` SET remarque = :remarque, facture_id = :facture_id WHERE `id_commande` = :id';
 		$req = $this->conn->prepare($query);
 		if (!$req->execute(array(
 			'id' => $id,
-			'remarque' => "Commande Parking " . $this->terminal . " / Destination : " . utf8_decode($this->getData('destination')) . " / Reference : " . $id,
+			'remarque' => "Commande Parking " . $this->terminal . " / Destination : " . mb_convert_encoding($this->getData('destination'), 'ISO-8859-1', 'UTF-8') . " / Reference : " . $id,
 			'facture_id' => $this->getBillID($id)
 		)))
 			throw new Exception("order update failed");
 		return (int)$id;
 	}
 
+	/**
+	 * @throws Exception
+	 */
+	public function read(int $order_id): array
+	{
+		$query = 'SELECT `resauuid`, `site_id`, `parking_id`,  `date`, `membre_id`
+		    , `telephone`, `facture_id`, `facturation`, `depart`, `depart_heure`, `arrivee`
+		    , `arrivee_heure`, `nb_jour`, `nb_jour_offert`, `nb_personne`
+		    , `destination_id`, `terminal`, `remarque`, `total`, `grille_tarifaire`, `tva`
+		    , `tva_transport`, `coupon_id`, `recherche`, `status`
+		    , `nb_retard`
+		    , `ip`, `host`, `referer` FROM `tbl_commande` WHERE `id_commande` = :id';
+		$req = $this->conn->prepare($query);
+		if (!$req->execute(array('id' => $order_id)))
+			throw new Exception("order read failed");
+		return $req->fetch(PDO::FETCH_ASSOC);
+	}
+
+	/**
+	 * @throws Exception
+	 */
+	public function update_payment(int $order_id, string $payment_date, float $amount, PaymentID $payment_id): void
+	{
+//		$payment_date = date('Y-m-d H:i:s', $payment_date);
+		$bill_id = $this->getBillID($order_id);
+		$date = date('Y-m-d H:i:s');
+		$query = "UPDATE `tbl_commande` SET
+                          `facture_id` = :bill_id,
+                          `paye` = :paid,
+                          `date_paiement` = :payment_date,
+                          `paiement_id` = :paiement_id,
+                          `status` = :status,
+                          `date` = :date
+                      WHERE
+                          `id_commande` = :order_id";
+		$req = $this->conn->prepare($query);
+		if (!$req->execute(array(
+			'bill_id' => $bill_id,
+			'paid' => $amount,
+			'payment_date' => $payment_date,
+			'paiement_id' => $payment_id->value,
+			'status' => OrderStatus::PAID->value,
+			'date' => $date,
+			'order_id' => $order_id
+		)))
+			throw new Exception("payment order update failed");
+
+	}
+
 	public function isExists(string $member_id): int
 	{
+
 		$start = substr($this->getData('depart'), 0, 10);
 		$start_hour = substr($this->getData('depart'), 11, 5);
 		$end = substr($this->getData('retour'), 0, 10);
 		$end_hour = substr($this->getData('retour'), 11, 5);
+		$start = DateTime::createFromFormat('Y-m-d', $start);
+		$end = DateTime::createFromFormat('Y-m-d', $end);
+
 		$query = "SELECT `id_commande` FROM `tbl_commande` WHERE `membre_id` = :member_id AND `depart` = :depart AND `depart_heure` = :depart_heure AND `arrivee` = :arrivee AND `arrivee_heure` = :arrivee_heure";
 		$req = $this->conn->prepare($query);
 		$req->execute(array(
-			'membre_id' => $member_id,
-			'depart' => $start,
+			'member_id' => $member_id,
+			'depart' => $start->format('Y-m-d'),
 			'depart_heure' => $start_hour,
-			'arrivee' => $end,
+			'arrivee' => $end->format('Y-m-d'),
 			'arrivee_heure' => $end_hour
 		));
 		if ($row = $req->fetch(PDO::FETCH_ASSOC)) {
@@ -205,7 +313,7 @@ class Order
 				return $row['facture_id'];
 		}
 
-		$site = $this->terminal;
+		$site = strtoupper($this->terminal);
 		$query = "SELECT max(`facture_id`) AS facture_id FROM `tbl_commande` WHERE `facture_id` LIKE '$site%'";
 		$req = $this->conn->prepare($query);
 		$req->execute();
@@ -215,12 +323,10 @@ class Order
 
 	public static function nbRealDay($start, $end): int
 	{
-
-		$start = DateTime::createFromFormat('d/m/Y', $start);
-		$end = DateTime::createFromFormat('d/m/Y', $end);
+		$start = DateTime::createFromFormat('Y-m-d', $start);
+		$end = DateTime::createFromFormat('Y-m-d', $end);
 		$interval = $start->diff($end);
-
-		return $interval->days + 1;
+		return ($interval->days + 1);
 
 	}
 
@@ -229,12 +335,12 @@ class Order
 		return !empty($phone) ? str_replace('+', '00', str_replace('+330', '+33', $phone)) : NULL;
 	}
 
-	public static function getSiteID($terminal): int
+	public static function getSiteID($terminal): AirPort
 	{
 		return match (strtolower($terminal)) {
-			"roissy" => self::ROISSY,
-			"zaventem" => self::ZAVENTEM,
-			default => self::ORLY,
+			"roissy" => AirPort::ROISSY,
+			"zaventem" => AirPort::ZAVENTEM,
+			default => AirPort::ORLY,
 		};
 	}
 }

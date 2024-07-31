@@ -5,19 +5,20 @@ namespace ParkingManagement\API;
 use Booking\Order;
 use Exception;
 use ParkingManagement\database\database;
+use ParkingManagement\Logger;
 use PDO;
 use WP_Error;
 use WP_REST_Controller;
 use WP_REST_Response;
 use WP_REST_Server;
 
-class Destination extends WP_REST_Controller
+class Destination extends API
 {
-	public function __construct($namespace, $version)
+	protected $rest_base = '/destination';
+
+	public function __construct()
 	{
-		$this->namespace = $namespace . $version;
-		$this->version = $version;
-		$this->rest_base = '/destination';
+		add_action('rest_api_init', array($this, 'register_routes'));
 	}
 
 	public function register_routes(): void
@@ -63,6 +64,7 @@ class Destination extends WP_REST_Controller
 			}
 			return rest_ensure_response($data);
 		} catch (Exception $e) {
+			Logger::error("destination.get_item", ['request'=>$request,'error'=>$e->getMessage()]);
 			return new WP_Error('error', $e->getMessage());
 		}
 	}

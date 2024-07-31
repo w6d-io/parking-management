@@ -1,9 +1,9 @@
 .title {
-	line-height: 25px;
-	font-family: "Century Gothic", "Arial Black", Arial;
-	color: #036faf;
-	font-weight: bold;
-	font-size: 1.333em; /* 16px */
+	line-height: 25px !important;
+	font-family: "Century Gothic", "Arial Black", Arial, serif;
+	color: #036faf !important;
+	font-weight: bold !important;
+	font-size: 1.333em !important; /* 16px */
 	margin-bottom: 15px;
 	margin-top: 15px;
 	border-bottom: none;
@@ -19,7 +19,7 @@ form#reservation legend {
 }
 
 form#reservation div fieldset {
-	background: rgba(255,245,238,0.8);
+	background: rgba(255, 245, 238, 0.8);
 	padding: 0 10px;
 	-webkit-border-radius: 6px;
 	-moz-border-radius: 6px;
@@ -88,7 +88,7 @@ form#reservation input[type=radio]:checked + label {
 ** CGV
  */
 
-form#reservation div.cgv  {
+form#reservation div.cgv {
 	margin: 20px 0;
 }
 
@@ -101,8 +101,7 @@ form#reservation div.cgv label {
 ** Total
  */
 
-form#reservation .total
-{
+form#reservation .total {
 	color: #fff;
 	background-color: #036faf;
 	padding: 10px;
@@ -133,4 +132,32 @@ form#reservation .total span {
 label.error {
 	color: crimson;
 	font-weight: 800;
+}
+
+
+/*
+** spinner
+ */
+.spinner-container {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	align-items: center;
+	justify-content: center;
+	background: rgba(255, 255, 255, 0.8);
+	z-index: 1050; /* Make sure it is above other elements */
+	display: none; /* Initially hidden */
+}
+
+/*
+** high-season calendar
+ */
+.calendar > .days-grid > .day.high-season {
+	background-color: #fad390;  /* TODO move into a var */
+	border: 1px solid var(--color-border-locked);
+}
+.calendar > .days-grid > .locked.high-season {
+	background-color: initial;
 }

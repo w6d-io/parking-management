@@ -325,3 +325,20 @@ label.error {
 	background-repeat: no-repeat !important;
 	margin-top: 0 !important;
 }
+
+/*
+** page list dialog
+ */
+
+button.pages-list {
+	border-bottom-right-radius: 0;
+	border-top-right-radius: 0;
+}
+li.page {
+	cursor: pointer;
+}
+@media (min-width: 576px) {
+	.modal-dialog {
+		max-height: 650px;
+	}
+}

@@ -6,4 +6,5 @@ $vendorDir = dirname(__DIR__);
 $baseDir = dirname($vendorDir);
 
 return array(
+    'Payplug\\' => array($vendorDir . '/payplug/payplug-php/lib'),
 );

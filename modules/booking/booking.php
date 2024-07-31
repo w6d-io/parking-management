@@ -57,7 +57,8 @@ class Booking implements IShortcode, IParkingManagement
 					)
 				)
 			),
-			$form->dialog_booking_confirmation($this->pm)
+			$form->dialog_booking_confirmation($this->pm),
+			$form->spinner(),
 		);
 	}
 
@@ -70,7 +71,7 @@ class Booking implements IShortcode, IParkingManagement
 					Html::_form('quote', 'quote', 'post', '', array(),
 						$home_form->hidden($this->pm),
 						Html::_div(array('class' => 'row row-cols-3'),
-								$home_form->quote($this->pm),
+							$home_form->quote($this->pm),
 						)
 					)
 				)
@@ -81,22 +82,30 @@ class Booking implements IShortcode, IParkingManagement
 	public function record(): void
 	{
 		$post = array_merge($_GET, $_POST);
+		$page = home_url();
 		try {
 			$member = new Member();
 			$member_id = $member->isMemberExists($post['email']);
 			if (!$member_id)
 				$member_id = $member->create();
 			$order = new Order();
-			$order_id = $order->isExists($member_id);
-			if (!$order_id)
-				$order_id = $order->create($member_id);
+			$order_id = $order->create($member_id);
 			$vehicle = new Vehicle();
 			$vehicle->create($order_id);
 
-		} catch (Exception|PDOException $e) {
-			if ($post && array_key_exists('DEBUG', $post) && $post['DEBUG'] === 1) {
-				print_log($e->getMessage(), false);
+			if (Payment::isEnabled()) {
+				$_GET['order_id'] = $order_id;
+				$payment = new Payment($this->pm);
+				$payment->redirect();
+				$form = $this->pm->prop('form');
+				if ($form['validation_page']['value'] != '')
+					$page = $form['validation_page']['value'];
 			}
+			wp_redirect($page . '?order_id=' . $order_id);
+			exit(0);
+
+		} catch (Exception|PDOException $e) {
+			Logger::error("booking.record", $e->getMessage());
 			return;
 		}
 	}

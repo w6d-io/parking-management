@@ -1,6 +1,7 @@
 <?php
 //defined('_PKMGMT') or die('Restricted access');
 
+require_once PKMGMT_PLUGIN_DIR . DS . "includes" . DS . "logs.php";
 require_once PKMGMT_PLUGIN_DIR . DS . "includes" . DS . "interfaces.php";
 require_once PKMGMT_PLUGIN_DIR . DS . "includes" . DS . "capabilities.php";
 require_once PKMGMT_PLUGIN_DIR . DS . "includes" . DS . "dates_range.php";
@@ -29,12 +30,13 @@ class PKMGMT
 	 */
 	public static function load_modules(): void
 	{
+		self::load_module('api');
+		self::load_module('payment');
 		self::load_module('booked');
 		self::load_module('booking');
 		self::load_module('database');
 		self::load_module('price');
 		self::load_module('high_season');
-		self::load_module('api');
 	}
 
 	/**
@@ -128,12 +130,13 @@ function pkmgmt_upgrade(): void
 	PKMGMT::update_option('version', $new_version);
 }
 
-add_action('activate_' . PKMGMT_PLUGIN_BASENAME, 'pkmgmt_install', 10, 0);
+add_action('activate_' . PKMGMT_PLUGIN_BASENAME, 'pkmgmt_install', 9, 0);
 
 
 /**
  * Callback tied to plugin activation action hook. Attempts to create
  * initial user dataset.
+ * @throws Exception
  */
 function pkmgmt_install(): void
 {

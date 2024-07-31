@@ -2,6 +2,7 @@
 
 namespace ParkingManagement;
 
+use Exception;
 use WP_Error;
 
 class ParkingManagement
@@ -9,7 +10,7 @@ class ParkingManagement
 
 	const post_type = 'parking_management';
 
-	const properties_keys = array('info', 'database', 'payment', 'form', 'booked_dates','high_season', 'sms', 'response');
+	const properties_keys = array('info', 'database', 'payment', 'form', 'booked_dates', 'high_season', 'sms', 'response');
 	private static ParkingManagement|null $current = null;
 
 	public int $id;
@@ -18,9 +19,6 @@ class ParkingManagement
 	public string $locale = 'en-US';
 
 	private array $properties = array();
-
-	private mixed $hash = '';
-
 
 	public function __construct($post = null)
 	{
@@ -33,7 +31,7 @@ class ParkingManagement
 			$this->locale = get_post_meta($post->ID, 'pkmgmt_locale', true);
 
 			$this->construct_properties();
-			$this->upgrade();
+//			$this->upgrade();
 		} else {
 			$this->construct_properties();
 		}
@@ -88,23 +86,18 @@ class ParkingManagement
 		}
 
 		$this->properties = $properties;
-
 		foreach ($properties as $name => $val) {
 			$properties[$name] = apply_filters(
 				"pkmgmt_parking_management_property_$name",
 				$val, $this
 			);
 		}
-
 		$this->properties = $properties;
-
 		$properties = (array)apply_filters(
 			'pkmgmt_parking_management_properties',
 			$properties, $this
 		);
-
 		$this->properties = $properties;
-
 	}
 
 	/**
@@ -207,17 +200,17 @@ class ParkingManagement
 	 * @param string $name Property name.
 	 * @return array|string|null Property value. Null if property does not exist.
 	 */
-	private function retrieve_property(string $name): array|string|null
+	private function retrieve_property(string $prop): array|string|null
 	{
 		$property = null;
 
 		if (!$this->initial()) {
 			$post_id = $this->id;
 
-			if (metadata_exists('post', $post_id, 'pkmgmt_' . $name)) {
-				$property = get_post_meta($post_id, 'pkmgmt_' . $name, true);
-			} else if (metadata_exists('post', $post_id, $name)) {
-				$property = get_post_meta($post_id, $name, true);
+			if (metadata_exists('post', $post_id, 'pkmgmt_' . $prop)) {
+				$property = get_post_meta($post_id, 'pkmgmt_' . $prop, true);
+			} else if (metadata_exists('post', $post_id, $prop)) {
+				$property = get_post_meta($post_id, $prop, true);
 			}
 		}
 		return $property;
@@ -273,22 +266,25 @@ class ParkingManagement
 		return $this->id;
 	}
 
+//	/**
+//	 * Upgrades this contact form properties.
+//	 */
+//	private function upgrade(): void
+//	{
+//		$mail = $this->prop('mail');
+//
+//		if (is_array($mail)
+//			and !isset($mail['recipient'])) {
+//			$mail['recipient'] = get_option('admin_email');
+//		}
+//
+//		$this->properties['mail'] = $mail;
+//
+//	}
+
 	/**
-	 * Upgrades this contact form properties.
+	 * @throws Exception
 	 */
-	private function upgrade(): void
-	{
-		$mail = $this->prop('mail');
-
-		if (is_array($mail)
-			and !isset($mail['recipient'])) {
-			$mail['recipient'] = get_option('admin_email');
-		}
-
-		$this->properties['mail'] = $mail;
-
-	}
-
 	public function save(): WP_Error|int
 	{
 		global $wpdb;
@@ -327,8 +323,10 @@ class ParkingManagement
 			}
 
 			do_action('pkmgmt_after_save', $this);
+		} else {
+			error_log(var_export(["save", 'Could not save post'],true));
+			throw new Exception("Could not save post");
 		}
-
 		return $post_id;
 	}
 

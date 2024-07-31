@@ -3,27 +3,26 @@
 namespace ParkingManagement\API;
 
 use Exception;
+use ParkingManagement\Logger;
 use ParkingManagement\Price;
 use WP_Error;
-use WP_HTTP_Response;
-use WP_REST_Controller;
 use WP_REST_Response;
 use WP_REST_Request;
 use WP_REST_Server;
 
-class Prices extends WP_REST_Controller
+class PriceAPI extends API
 {
 
-	public function __construct($namespace, $version)
+	private const rest_base = '/prices';
+
+	public function __construct()
 	{
-		$this->namespace = $namespace . $version;
-		$this->version = $version;
-		$this->rest_base = '/prices';
+		add_action('rest_api_init', array($this, 'register_routes'));
 	}
 
 	public function register_routes(): void
 	{
-		register_rest_route($this->namespace, $this->rest_base, array(
+		register_rest_route($this->namespace, self::rest_base, array(
 				array(
 					'methods' => WP_REST_Server::READABLE,
 					'callback' => array($this, 'get_item'),
@@ -62,16 +61,23 @@ class Prices extends WP_REST_Controller
 	/**
 	 * Retrieves one item from the collection.
 	 *
-	 * @since 4.7.0
-	 *
 	 * @param WP_REST_Request $request Full details about the request.
 	 * @return WP_REST_Response|WP_Error Response object on success, or WP_Error object on failure.
+	 * @since 4.7.0
+	 *
 	 */
 	public function get_item($request): WP_Error|WP_REST_Response
 	{
+		Logger::info("price.api.get_item", ['request' =>
+			[
+				'params' => $request->get_params(),
+				'method' => $request->get_method(),
+			]
+		]);
 		try {
 			$data = Price::getPrice($request);
 		} catch (Exception $e) {
+			Logger::error("price.api.get_item", $e->getMessage());
 			return new WP_Error('error', $e->getMessage());
 		}
 		return rest_ensure_response($data);

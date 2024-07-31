@@ -39,7 +39,8 @@ class HomeForm
 			array(
 				'locale' => $pm->locale,
 				'home_url' => home_url(),
-				'site_id' => Order::getSiteID($properties['info']['terminal']),
+				'home_form_css' => pkmgmt_plugin_url('modules/booking/css/home_form.css'),
+				'site_id' => Order::getSiteID($properties['info']['terminal'])->value,
 				'properties' => $properties,
 			)
 		);
@@ -54,10 +55,10 @@ class HomeForm
 	{
 		$info = $pm->prop('info');
 		$contents = array();
-		$contents[] .= Html::_index('hidden', 'pkmgmt_action', 'pkmgmt_action', array('value' => 'home-form'));
-		$contents[] .= Html::_index('hidden', 'type_id', 'type_id', array('value' => '1'));
-		$contents[] .= Html::_index('hidden', 'site_id', 'site_id', array('value' => Order::getSiteID($info['terminal'])));
-		$contents[] .= Html::_index('hidden', 'aeroport', 'aeroport', array('value' => Order::getSiteID($info['terminal'])));
+		$contents[] = Html::_index('hidden', 'pkmgmt_action', 'pkmgmt_action', array('value' => 'home-form'));
+		$contents[] = Html::_index('hidden', 'type_id', 'type_id', array('value' => '1'));
+		$contents[] = Html::_index('hidden', 'site_id', 'site_id', array('value' => Order::getSiteID($info['terminal'])->value));
+		$contents[] = Html::_index('hidden', 'aeroport', 'aeroport', array('value' => Order::getSiteID($info['terminal'])->value));
 		return implode("", $contents);
 
 	}

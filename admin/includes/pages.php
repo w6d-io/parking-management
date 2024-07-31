@@ -63,6 +63,8 @@ class Pages
 
 		echo '</div>';
 		echo '</form>';
+		self::dialog_page_list();
+
 	}
 
 	private static function config_form_hidden(string $page, int $id): void
@@ -133,6 +135,12 @@ class Pages
 			'shortcode-high-season',
 			esc_html__("Copy and paste this code into your page to include high-season message.", 'parking-management'),
 			"[parking-management type='high-season']"
+		);
+		echo self::_shortcode_field(
+			'shortcode-payment-random',
+			'shortcode-payment-random',
+			esc_html__("Copy and paste this code into your page to include a random enabled payment form.", 'parking-management'),
+			"[parking-management type='payment']"
 		);
 		echo self::_shortcode_field(
 			'shortcode-payment-paypal',
@@ -210,6 +218,19 @@ class Pages
 		);
 	}
 
+	private static function _field_url($id, $div_class, $name, $label_content, $value): string
+	{
+		return Html::_div(array('class' => $div_class),
+			Html::_label($id, $label_content),
+			'<br/>',
+			Html::_index("text", $id, $name, array(
+				'class' => 'wide',
+				'size' => 80,
+				'value' => $value
+			))
+		);
+	}
+
 	private static function _field_password($id, $div_class, $name, $label_content, $value): string
 	{
 		return Html::_div(array('class' => $div_class),
@@ -229,10 +250,10 @@ class Pages
 			return Html::_div(array('class' => $div_class), "bad values type");
 		}
 		$contents = array();
-		$contents[] .= '<span>' . $span_content . '</span>';
-		$contents[] .= '<br/>';
+		$contents[] = '<span>' . $span_content . '</span>';
+		$contents[] = '<br/>';
 		foreach ($values as $key => $value) {
-			$contents[] .= Html::_div(
+			$contents[] = Html::_div(
 				array('class' => 'form-check form-switch  '),
 				Html::_checkbox($id, $name, array('class' => $id . ' form-check-input'), $key, $value),
 			);
@@ -266,21 +287,59 @@ class Pages
 		);
 	}
 
+	private static function _field_page($id, $div_class, $name, $label_content, $value): string
+	{
+		return Html::_div(array('class' => $div_class),
+			Html::_label($id, $label_content),
+			'<br/>',
+			Html::_div(array('class' => 'input-group mb-3'),
+				Html::_div(array('class' => 'input-group-prepend'),
+					'<button type="button" class="btn btn-outline-primary pages-list " data-bs-toggle="modal" data-bs-target="#dialog-pages-list">' . esc_html__('Browse page', 'parking-management') . '</button>'
+				),
+				Html::_index("text", $id, $name, array(
+					'class' => 'form-control pages-list',
+					'size' => 80,
+					'value' => $value
+				))
+			)
+		);
+	}
+
 	private static function _field_payment($id, $div_class, $label_content, $name, $payment): string
 	{
-
 		$contents = array();
-		foreach ($payment['properties'] as $key => $value) {
-			if (in_array($key, array("password", "secret", "secret_key", "signature", "configuration_package")))
-				$contents[] .= self::_field_password($id . '-' . $key, $div_class . " form-control", $name . '[properties]' . '[' . $key . ']', $key, $value);
-			else
-				$contents[] .= self::_field($id . '-' . $key, $div_class . " form-control", $name . '[properties]' . '[' . $key . ']', $key, $value);
+		$contents[] = '<div class="form-control">';
+		$contents[] = Html::_checkbox($id, $name, array(), 'enabled', $payment['enabled']);
+		if (array_key_exists('active-test', $payment)) {
+			$contents[] = Html::_checkbox($id, $name, array(), 'active-test', $payment['active-test']);
+		}
+		if (array_key_exists('redirect-to-provider', $payment)) {
+			$contents[] = Html::_checkbox($id, $name, array(), 'redirect-to-provider', $payment['redirect-to-provider']);
+		}
+		$contents[] = '</div>';
+		foreach ($payment['properties'] as $key => $params) {
+			$contents[] = Html::_index('hidden', $id . '-' . $key . '-' . $params['title'], $name . '[properties]' . '[' . $key . '][title]', array('value' => $params['title']));
+			$contents[] = Html::_index('hidden', $id . '-' . $key . '-' . $params['type'], $name . '[properties]' . '[' . $key . '][type]', array('value' => $params['type']));
+			$contents[] = match ($params['type']) {
+				'password' => self::_field_password(
+					$id . '-' . $key,
+					$div_class . " form-control",
+					$name . '[properties]' . '[' . $key . '][value]',
+					$params['title'],
+					$params['value']),
+				'text' => self::_field(
+					$id . '-' . $key,
+					$div_class . " form-control",
+					$name . '[properties]' . '[' . $key . '][value]',
+					$params['title'],
+					$params['value']),
+				'url' => self::_field_url($id . '-' . $key, $div_class . " form-control", $name . '[properties]' . '[' . $key . '][value]', $params['title'], $params['value']),
+				'page' => self::_field_page($id . '-' . $key, $div_class . " form-control", $name . '[properties]' . '[' . $key . '][value]', $params['title'], $params['value']),
+				default => ''
+			};
 		}
 		return Html::_fieldset(
 			'<legend>' . $label_content . '</legend>',
-			'<div class="form-control">',
-			Html::_checkbox($id, $name, array(), 'enabled', $payment['enabled']),
-			'</div>',
 			...$contents
 		);
 	}
@@ -332,11 +391,25 @@ class Pages
 		echo '<div class="' . $box['id'] . '-fields">';
 		echo self::_field('info-terminal', 'info_field', 'pkmgmt-info[terminal]', esc_html__('Terminal', 'parking-management'), $info['terminal']);
 		echo '</div>';
+
+
 		echo '<div class="' . $box['id'] . '-fields">';
+
+		echo '<div class="row">';
+		echo '<div class="col">';
 		echo self::_field_checkbox('info-vehicle-type', 'info_field', 'pkmgmt-info[vehicle_type]', esc_html__('Vehicle Type supported', 'parking-management'), $info['vehicle_type']);
 		echo '</div>';
-		echo '<div class="' . $box['id'] . '-fields">';
+		echo '<div class="col">';
 		echo self::_field_checkbox('info-type', 'info_field', 'pkmgmt-info[type]', esc_html__('Vehicle storage mode', 'parking-management'), $info['type']);
+		echo '</div>';
+		echo '</div>';
+
+		echo '<div class="row">';
+		echo '<div class="col">';
+		echo self::_field_checkbox('info-logs', 'info_field', 'pkmgmt-info[logs]', 'Logs', $info['logs']);
+		echo '</div>';
+		echo '</div>';
+
 		echo '</div>';
 	}
 
@@ -361,21 +434,25 @@ class Pages
 
 	public static function payment_box($payment, $box): void
 	{
+		echo Html::_div(
+			array('class' => 'form-check form-switch m-4'),
+			Html::_checkbox('valid-booking-on-payment', 'pkmgmt-payment', array('class' => 'valid-booking-on-payment form-check-input'), 'valid-booking-on-payment', $payment['valid-booking-on-payment']),
+		);
 		echo '<div class="tabs">';
 		echo '<ul class="tab-links">';
-		echo '<li class="active"><a href="#payment-paypal-tab">Paypal</a></li>';
-		echo '<li><a href="#payment-payplug-tab">Payplug</a></li>';
+		echo '<li class="active"><a href="#payment-payplug-tab">Payplug</a></li>';
 		echo '<li><a href="#payment-mypos-tab">MyPOS</a></li>';
+		echo '<li><a href="#payment-paypal-tab">Paypal</a></li>';
 		echo '</ul>';
 		echo '<div class="tab-content">';
-		echo '<div id="payment-paypal-tab" class="tab active">';
-		echo self::_field_payment($box['id'] . '-paypal', $box['id'] . '_field', 'Paypal', 'pkmgmt-payment[paypal]', $payment['paypal']);
-		echo '</div>';
 		echo '<div id="payment-payplug-tab" class="tab">';
-		echo self::_field_payment($box['id'] . '-payplug', $box['id'] . '_field', 'Payplug', 'pkmgmt-payment[payplug]', $payment['payplug']);
+		echo self::_field_payment($box['id'] . '-payplug', $box['id'] . '_field', 'Payplug', 'pkmgmt-payment[providers][payplug]', $payment['providers']['payplug']);
 		echo '</div>';
 		echo '<div id="payment-mypos-tab" class="tab">';
-		echo self::_field_payment($box['id'] . '-mypos', $box['id'] . '_field', 'MyPOS', 'pkmgmt-payment[mypos]', $payment['mypos']);
+		echo self::_field_payment($box['id'] . '-mypos', $box['id'] . '_field', 'MyPOS', 'pkmgmt-payment[providers][mypos]', $payment['providers']['mypos']);
+		echo '</div>';
+		echo '<div id="payment-paypal-tab" class="tab active">';
+		echo self::_field_payment($box['id'] . '-paypal', $box['id'] . '_field', 'Paypal', 'pkmgmt-payment[providers][paypal]', $payment['providers']['paypal']);
 		echo '</div>';
 		echo '</div>';
 		echo '</div>';
@@ -387,7 +464,13 @@ class Pages
 		echo self::_field_checkbox('form-booking', 'form_field', 'pkmgmt-form[booking]', esc_html__('Booking', 'parking-management'), $form['booking']);
 		echo '</div>';
 		echo '<div class="' . $box['id'] . '-fields">';
-		echo self::_field('form-indicatif', 'form_field', 'pkmgmt-form[indicatif]', esc_html__('Indicative', 'parking-management'), $form['indicatif']);
+		echo self::_field('form-indicative', 'form_field', 'pkmgmt-form[indicative]', esc_html__('Indicative', 'parking-management'), $form['indicative']);
+		echo '</div>';
+
+		echo '<div class="' . $box['id'] . '-fields">';
+		echo Html::_index('hidden', 'form-validation-page-title', 'pkmgmt-form[validation_page][title]', array('value' => $form['validation_page']['title']));
+
+		echo self::_field_page('form-validation-page', "form-control", 'pkmgmt-form[validation_page][value]', $form['validation_page']['title'], $form['validation_page']['value']);
 		echo '</div>';
 
 		echo '<div class="' . $box['id'] . '-fields">';
@@ -488,6 +571,31 @@ class Pages
 		echo '<div class="' . $box['id'] . '-fields">';
 		echo self::_field_textarea('sms-template', 'sms_field', 'pkmgmt-sms[template]', esc_html__('Template', 'parking-management'), $sms_box['template'], array('cols' => "0"));
 		echo '</div>';
+	}
+
+	public static function dialog_page_list(): void
+	{
+		$contents = array();
+		$contents[] = '<div id="dialog-pages-list" class="modal fade" tabindex="-1" aria-labelledby="pageList" aria-hidden="true">';
+		$contents[] = '<div class="modal-dialog modal-lg modal-dialog-centered">';
+		$contents[] = '<div class="modal-content">';
+		$contents[] = '<div class="modal-header">';
+		$contents[] = '<h1 class="modal-title fs-5" id="pageList">' . esc_html__("Select a page", 'parking-management') . '</h1>';
+		$contents[] = '<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>';
+		$contents[] = '</div>';
+		$contents[] = '<div class="modal-body">';
+		$contents[] = '<ul id="pageList" class="list-group overflow-auto">';
+		$pages = get_pages();
+		foreach ($pages as $page) {
+			$contents[] = '<li class="page list-group-item list-group-item-action" data-url="' . get_page_link($page->ID) . '">' . $page->post_title . '</li>';
+		}
+
+		$contents[] = '</ul>';
+		$contents[] = '</div>';
+		$contents[] = '</div>';
+		$contents[] = '</div>';
+		$contents[] = '</div>';
+		echo implode(PHP_EOL, $contents);
 	}
 
 }

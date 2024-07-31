@@ -75,15 +75,15 @@ class Html
 	{
 		$args = array_merge(array('value' => '1'), $args);
 		$contents = array();
-		$contents[] .= Html::_index('hidden', '', $name . '[' . $key . ']', array('value' => '0'));
-		$contents[] .= Html::_index("checkbox", $id . '-' . $key, $name . '[' . $key . ']',
+		$contents[] = Html::_index('hidden', '', $name . '[' . $key . ']', array('value' => '0'));
+		$contents[] = Html::_index("checkbox", $id . '-' . $key, $name . '[' . $key . ']',
 			$args,
 			false,
 			false,
 			$value == '1'
 		);
-		$contents[] .= Html::_label_with_attr(array('class' => 'form-check-label'), $id . '-' . $key, $key);
-		$contents[] .= '<br/>';
+		$contents[] = Html::_label_with_attr(array('class' => 'form-check-label'), $id . '-' . $key, $key);
+		$contents[] = '<br/>';
 
 		return implode(PHP_EOL, $contents);
 	}

@@ -4,6 +4,7 @@ namespace Booking;
 
 use Exception;
 use ParkingManagement\database\database;
+use ParkingManagement\Logger;
 use ParkingManagement\Price;
 use PDO;
 
@@ -16,7 +17,7 @@ class Vehicle
 	public function __construct()
 	{
 		if (!$conn = database::connect()) {
-			database::getError();
+			Logger::error("member.database.connect", database::getError());
 			return;
 		}
 		$this->conn = $conn;
@@ -30,6 +31,8 @@ class Vehicle
 	{
 		if (!$order_id)
 			throw new Exception("vehicle creation failed: order_id required");
+		if ($vehicule_id = $this->isExists($order_id))
+			return $vehicule_id;
 		$price = Price::getPrice($this->data);
 		$params = array(
 			'commande_id' => $order_id
@@ -56,15 +59,31 @@ class Vehicle
 INSERT INTO `tbl_vehicule`(`commande_id`, `type_id`, `parking_type`, `options`, `marque`, `modele`, `immatriculation`, `nb_personne`, `tarif`, `status`, `commentaire`)
 VALUES (:commande_id, :type_id, :parking_type, :options, :marque, :modele, :immatriculation, :nb_personne, :tarif, :status, :commentaire)";
 		$req = $this->conn->prepare($query);
-		if(!$req->execute($params))
-		{
-			if ($this->getData('DEBUG') === '1') {
-				print_log($this->conn->errorInfo(), false);
-			}
+		Logger::info("vehicule.create", ['params' => $params]);
+		if (!$req->execute($params)) {
+			Logger::error("vehicule.create", ['error' => $this->conn->errorInfo()]);
 			throw new Exception("vehicle creation failed");
 		}
 		return (int)$this->conn->lastInsertId();
 	}
+
+	public function isExists(string $order_id): int
+	{
+
+		$query = "SELECT `id_vehicule` FROM `tbl_vehicule`
+                     WHERE
+                	`commande_id` = :order_id";
+		$req = $this->conn->prepare($query);
+		$req->execute(array(
+			'order_id' => $order_id,
+		));
+		if ($row = $req->fetch(PDO::FETCH_ASSOC)) {
+			if ($row['id_vehicule'] != '')
+				return (int)$row['id_vehicule'];
+		}
+		return 0;
+	}
+
 
 	private function getData(string|null $field = null)
 	{

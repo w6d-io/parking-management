@@ -2,6 +2,7 @@
 
 namespace ParkingManagement\database;
 
+use ParkingManagement\Logger;
 use PDO;
 use PDOException;
 
@@ -12,6 +13,7 @@ class database {
 
 	private static array $error;
 
+	// TODO: Add a test connection
 	public static function connect(): bool|PDO
 	{
 		$pm = getParkingManagementInstance();
@@ -20,6 +22,7 @@ class database {
 				'code' => '0001',
 				'message' => 'ParkingManagement\database requires PDO object'
 			);
+			Logger::error("database.connect", self::$error);
 			return false;
 		}
 		if (isset(self::$_conn)) {
@@ -38,6 +41,7 @@ class database {
 				'code' => '0002',
 				'message' => 'Database configuration error',
 			);
+			Logger::error("database.connect", self::$error);
 			return false;
 		}
 		try {
@@ -49,6 +53,8 @@ class database {
 				'code' => '0003',
 				'message' => $e->getMessage(),
 			);
+			Logger::error("database.connect", self::$error);
+
 			return false;
 		}
 		return self::$_conn;

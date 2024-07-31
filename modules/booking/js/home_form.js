@@ -1,20 +1,54 @@
 document.addEventListener('DOMContentLoaded', function () {
 
 	const DateTime = easepick.DateTime;
-	const bookedDates = [
-		'2024-06-02',
-		['2024-06-18', '2024-06-20'],
-		'2024-06-25',
-		'2024-06-28',
-	].map(d => {
-		if (d instanceof Array) {
-			const start = new DateTime(d[0], 'YYYY-MM-DD');
-			const end = new DateTime(d[1], 'YYYY-MM-DD');
-			return [start, end];
+	let highSeason = [];
+	$.ajax({
+		type: 'GET',
+		url: '/wp-json/pkmgmt/v1/high-season',
+		dataType: 'json',
+		async: false,
+		error: function (e, f, g) {
+			console.error("get high season failed", f);
+		},
+		success: function (data) {
+			if (data instanceof Array)
+			{
+				highSeason = data.map(d => {
+					if (d instanceof Array) {
+						const start = new DateTime(d[0], 'YYYY-MM-DD');
+						const end = new DateTime(d[1], 'YYYY-MM-DD');
+						return [start, end];
+					}
+					return new DateTime(d, 'YYYY-MM-DD');
+				});
+			}
 		}
-		return new DateTime(d, 'YYYY-MM-DD');
 	});
-	function easepickCreate(startDateInput, endDateInput, calendars, callback) {
+	let bookedDates = [];
+	$.ajax({
+		type: 'GET',
+		url: '/wp-json/pkmgmt/v1/booked',
+		dataType: 'json',
+		async: false,
+		error: function (e, f, g) {
+			console.error("get booked failed", f);
+		},
+		success: function (data) {
+			if (data instanceof Array)
+			{
+				bookedDates = data.map(d => {
+					if (d instanceof Array) {
+						const start = new DateTime(d[0], 'YYYY-MM-DD');
+						const end = new DateTime(d[1], 'YYYY-MM-DD');
+						return [start, end];
+					}
+					return new DateTime(d, 'YYYY-MM-DD');
+				});
+			}
+		}
+	});
+
+	function easepickCreate(startDateInput, endDateInput, calendars, callback, format = 'YYYY-MM-DD') {
 		new easepick.create({
 			element: startDateInput,
 			lang: 'fr-FR',
@@ -24,12 +58,20 @@ document.addEventListener('DOMContentLoaded', function () {
 			plugins: ['RangePlugin', 'LockPlugin'],
 			css: [
 				'https://cdn.jsdelivr.net/npm/@easepick/bundle@1.2.1/dist/index.css',
+				external_object.home_form_css,
 			],
-			format: 'DD/MM/YYYY',
+			format: format,
 			zIndex: 50,
 			setup(picker) {
 				picker.on('select', () => {
 					callback();
+				});
+				picker.on('view', (evt) => {
+					const {view, date, target} = evt.detail;
+					if ( view === 'CalendarDay' && date.inArray(highSeason, '[]') ) {
+						target.classList.add('high-season');
+					}
+					// target.append();
 				});
 			},
 			RangePlugin: {
@@ -39,11 +81,7 @@ document.addEventListener('DOMContentLoaded', function () {
 			LockPlugin: {
 				minDate: new Date(),
 				inseparable: false,
-				filter(date, picked) {
-					if (picked.length === 1) {
-						const incl = date.isBefore(picked[0]) ? '[)' : '(]';
-						return !picked[0].isSame(date, 'day') && date.inArray(bookedDates, incl);
-					}
+				filter(date) {
 					return date.inArray(bookedDates, '[]');
 				},
 			}
@@ -84,19 +122,15 @@ document.addEventListener('DOMContentLoaded', function () {
 				console.error("get price", e, f, g);
 			},
 			success: function (data) {
-				console.log("data",data);
-
 				if (data.toolong === 0) {
 					if (data.complet === 0) {
 						const total = parseInt(!isNaN(parseFloat(data.total)) ? data.total : '0');
 						$('#submit').html('<i class="fa fa-jet-fighter"></i> '+'Your reservation for ' + total + ' €');
 
 					} else {
-						console.log(data.complet);
 						$('#submit').html('<i class="fa-solid fa-hand-point-up"></i> Votre devis en 2 click');
 					}
 				} else {
-					console.log(data.toolong);
 					$('#submit').html('<i class="fa-solid fa-hand-point-up"></i> Votre devis en 2 click');
 				}
 			}

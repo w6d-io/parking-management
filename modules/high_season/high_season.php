@@ -4,8 +4,11 @@ namespace ParkingManagement;
 
 use DateTime;
 use Exception;
+use ParkingManagement\API\HighSeasonApi;
 use ParkingManagement\interfaces\IParkingmanagement;
 use ParkingManagement\interfaces\IShortcode;
+
+include_once PKMGMT_PLUGIN_MODULES_DIR . DS . 'high_season' . DS . 'api.php';
 
 class HighSeason implements IShortcode, IParkingmanagement
 {
@@ -41,10 +44,10 @@ class HighSeason implements IShortcode, IParkingmanagement
 				);
 
 		} catch (Exception $e) {
-			if (array_key_exists('DEBUG', $_GET) && $_GET['DEBUG'] == '1') {
-				print_log($e->getMessage(), false);
-			}
+			Logger::error("database.connect", $e->getMessage());
 		}
 		return '';
 	}
 }
+
+new HighSeasonAPI();

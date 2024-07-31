@@ -1,0 +1,10 @@
+/*
+** high-season calendar
+ */
+.calendar > .days-grid > .day.high-season {
+	background-color: #fad390;
+	border: 1px solid var(--color-border-locked);
+}
+.calendar > .days-grid > .locked.high-season {
+	background-color: initial;
+}

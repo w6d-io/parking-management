@@ -2,13 +2,17 @@
 
 namespace ParkingManagement;
 
+use Booking\AirPort;
 use Booking\Order;
 use DateTime;
 use Exception;
+use ParkingManagement\API\BookedAPI;
 use ParkingManagement\database\database;
 use ParkingManagement\interfaces\IParkingmanagement;
 use ParkingManagement\interfaces\IShortcode;
 use PDO;
+
+include_once PKMGMT_PLUGIN_MODULES_DIR . DS . 'booked' . DS . 'api.php';
 
 class Booked implements IShortcode, IParkingManagement
 {
@@ -28,7 +32,7 @@ class Booked implements IShortcode, IParkingManagement
 	/**
 	 * @throws Exception
 	 */
-	public static function getMaxLot($start, $end, $parking_id = Order::ORLY, $field = NULL): array
+	public static function getMaxLot($start, $end, $parking_id = AirPort::ORLY, $field = NULL): array
 	{
 		$conn = database::connect();
 		if (!$conn)
@@ -36,18 +40,18 @@ class Booked implements IShortcode, IParkingManagement
 		$field = !empty($field) ? 'employe' : 'client';
 		$maxLot = array();
 		$nbDays = Order::nbRealDay($start, $end);
-		$start = DateTime::createFromFormat('d/m/Y', $start);
-		$end = DateTime::createFromFormat('d/m/Y', $end);
+		$start = DateTime::createFromFormat('Y-m-d', $start);
+		$end = DateTime::createFromFormat('Y-m-d', $end);
 
 		$query = "SELECT `$field` FROM `tbl_remplissage` WHERE `date` >= :du AND `date` < DATE_ADD(:au, INTERVAL 1 DAY) ORDER BY `date`";
 		$req = $conn->prepare($query);
 		if (!$req->execute(['du' => $start->format('Y-m-d'), 'au' => $end->format('Y-m-d')])) {
-			print_log($conn->errorInfo(), false);
+			Logger::error("booked.getMaxLot", ['errorInfo' => $conn->errorInfo()]);
 			throw new Exception("Error executing query");
 		}
 		while ($row = $req->fetch(PDO::FETCH_ASSOC)) {
 			$deserialized = unserialize($row[$field]);
-			$maxLot[] = $deserialized[$parking_id];
+			$maxLot[] = $deserialized[$parking_id->value];
 		}
 		return (count($maxLot) > 0) ? $maxLot : range(0, $nbDays);
 	}
@@ -55,24 +59,24 @@ class Booked implements IShortcode, IParkingManagement
 	/**
 	 * @throws Exception
 	 */
-	public static function usedLot($start, $end = NULL, $parking_id = Order::ORLY): array
+	public static function usedLot($start, $end = NULL, $parking_id = AirPort::ORLY): array
 	{
 		$conn = database::connect();
 		if (!$conn)
 			throw new Exception("Database connection failed");
-		$start = DateTime::createFromFormat('d/m/Y', $start);
-		$end = !empty($end) ? DateTime::createFromFormat('d/m/Y', $end) : DateTime::createFromFormat('d/m/Y', $start);
+		$start = DateTime::createFromFormat('Y-m-d', $start);
+		$end = !empty($end) ? DateTime::createFromFormat('Y-m-d', $end) : DateTime::createFromFormat('Y-m-d', $start);
 
 		$used = array();
 		$query = "SELECT `date`, `utilisee` FROM `tbl_remplissage` WHERE `date` >= :du AND `date` <= :au";
 		$req = $conn->prepare($query);
 		if (!$req->execute(['du' => $start->format('Y-m-d'), 'au' => $end->format('Y-m-d')])) {
-			print_log($conn->errorInfo(), false);
+			Logger::error("booked.usedLot", ['errorInfo' => $conn->errorInfo()]);
 			throw new Exception("Error executing query");
 		}
 		while ($row = $req->fetch(PDO::FETCH_ASSOC)) {
 			$deserialized = unserialize($row['utilisee']);
-			$used[$row['date']] = abs($deserialized[$parking_id]);
+			$used[$row['date']] = abs($deserialized[$parking_id->value]);
 		}
 		ksort($used);
 		$used = array_values($used);
@@ -96,11 +100,11 @@ class Booked implements IShortcode, IParkingManagement
 				);
 
 		} catch (Exception $e) {
-			if (array_key_exists('DEBUG', $_GET) && $_GET['DEBUG'] == '1') {
-				print_log($e->getMessage(), false);
-			}
+			Logger::error("booked.HTMLMessage", $e->getMessage());
 		}
 		return '';
 	}
 
 }
+
+new BookedAPI();

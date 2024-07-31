@@ -2,6 +2,8 @@
 
 namespace ParkingManagement;
 
+use JetBrains\PhpStorm\NoReturn;
+
 class Controller
 {
 	public function __construct()
@@ -14,16 +16,14 @@ class Controller
 		$post = array_merge($_GET, $_POST);
 
 		if (!empty($post) && array_key_exists('pkmgmt_action', $post) && (!str_starts_with($_SERVER['REQUEST_URI'], '/wp-json/pkmgmt')) ) {
-			$post = array_merge($_POST, $_GET);
-			if (array_key_exists('DEBUG', $post) && $post['DEBUG'] === '1') {
-				print_log($post, false);
-			}
+			Logger::info("controller.init", $post);
 			switch ($post['pkmgmt_action']) {
 				case 'booking':
 					$this->booking_record();
+					break;
 				case 'home-form':
 					$this->home_form_redirect();
-
+					break;
 			}
 		}
 	}
@@ -32,18 +32,17 @@ class Controller
 	{
 		$pm = getParkingManagementInstance();
 		if (!$pm) {
-			console_log("controller.booking_record", "failed to find parking management instance");
+			Logger::error("controller.booking_record", "failed to find parking management instance");
 			return;
 		}
-
+		$booking = new Booking($pm);
+		$booking->record();
+		exit(0);
 	}
-	private function home_form_redirect(): void
+	#[NoReturn] private function home_form_redirect(): void
 	{
 		$post = array_merge($_GET, $_POST);
-//		print_log($post, false);
-
 		$url = sprintf(home_url()."/reservation?depart=%s 00:00&retour=%s 00:00", $post['depart'], $post['retour']);
-//		print_log($url, false);
 		wp_redirect($url);
 		exit(0);
 	}

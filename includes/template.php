@@ -28,15 +28,20 @@ class Template
 			'RCS' => '',
 			'email' => '',
 			'terminal' => '',
-			'vehicle_type' => array(
+			'vehicle_type' => [
 				'car' => 0,
 				'truck' => 0,
 				'motorcycle' => 0,
-			),
-			'type' => array(
+			],
+			'type' => [
 				'ext' => 0,
 				'int' => 0
-			)
+			],
+			'logs' => [
+				'database' => '0',
+				'file' => '1',
+				'retention' => '30',
+			]
 		);
 	}
 
@@ -53,40 +58,114 @@ class Template
 
 	private static function payment(): array
 	{
-		return array(
-			'paypal' => array(
-				'name'=> 'paypal',
-				'enabled' => "0",
-				'properties' => array(
-					'email' => '',
-					'login' => '',
-					'password' => '',
-					'signature' => '',
-					'notification_url' => '',
-					'ipn' => ''
-				)
-			),
-			'payplug' => array(
-				'name'=> 'payplug',
-				'enabled' => "0",
-				'properties' => array(
-					'secret_key' => '',
-					'public_key' => '',
-					'secret_key_test' => '',
-					'public_key_test' => '',
-					'notification_url' => '',
-					'ipn' => ''
-				)
-			),
-			'mypos' => array(
-				'name'=> 'mypos',
-				'enabled' => "0",
-				'properties' => array(
-					'configuration_package' => '',
-					'notification_url' => '',
-				)
-			)
-		);
+		return [
+			'valid-booking-on-payment' => '0',
+			'providers' => [
+				'payplug' => [
+					'name' => 'payplug',
+					'enabled' => "0",
+					'redirect-to-provider' => '0',
+					'active-test' => '0',
+					'properties' => [
+						'secret_key' => [
+							'title' => 'Secret Key',
+							'type' => 'password',
+							'value' => ''
+						],
+						'public_key' => [
+							'title' => 'Public Key',
+							'type' => 'text',
+							'value' => ''
+						],
+						'secret_key_test' => [
+							'title' => 'Secret Test Key',
+							'type' => 'password',
+							'value' => ''
+						],
+						'public_key_test' => [
+							'title' => 'Public Test Key',
+							'type' => 'text',
+							'value' => ''
+						],
+						'success_page' => [
+							'title' => 'Success Page',
+							'type' => 'page',
+							'value' => ''
+						],
+						'cancel_page' => [
+							'title' => 'Cancel Page',
+							'type' => 'page',
+							'value' => ''
+						],
+						'notification_url' => [
+							'title' => 'Notification URL',
+							'type' => 'url',
+							'value' => ''
+						],
+					]
+				],
+				'mypos' => [
+					'name' => 'mypos',
+					'enabled' => "0",
+					'active-test' => '0',
+					'properties' => [
+						'configuration_package' => [
+							'title' => 'Configuration Package',
+							'type' => 'password',
+							'value' => ''
+						],
+						'success_page' => [
+							'title' => 'Success Page',
+							'type' => 'page',
+							'value' => ''
+						],
+						'cancel_page' => [
+							'title' => 'Cancel Page',
+							'type' => 'page',
+							'value' => ''
+						],
+						'notification_url' => [
+							'title' => 'Notification URL',
+							'type' => 'url',
+							'value' => ''
+						],
+					]
+				],
+				'paypal' => [
+					'name' => 'paypal',
+					'enabled' => "0",
+					'redirect-to-provider' => '0',
+					'active-test' => '0',
+					'properties' => [
+						'email' => [
+							'title' => 'Email',
+							'type' => 'email',
+							'value' => ''
+						],
+						'login' => [
+							'title' => 'Login',
+							'type' => 'text',
+							'value' => ''
+						],
+						'password' => [
+							'title' => 'Password',
+							'type' => 'password',
+							'value' => ''
+						],
+						'signature' => [
+							'title' => 'Signature',
+							'type' => 'password',
+							'value' => ''
+						],
+						'notification_url' => [
+							'title' => 'Notification URL',
+							'type' => 'url',
+							'value' => ''
+						],
+					]
+				],
+			]
+		];
 	}
 
 	private static function form(): array
@@ -94,7 +173,6 @@ class Template
 		return array(
 			'booking' => array(
 				'terms_and_conditions' => '0',
-				'valid_on_payment' => '0',
 				'dialog_confirmation' => '0',
 			),
 			'options' => array(
@@ -130,6 +208,10 @@ class Template
 				),
 			),
 			'indicative' => '',
+			'validation_page' => [
+				'title' => 'Validation Page',
+				'value' => ''
+			],
 		);
 	}
 
