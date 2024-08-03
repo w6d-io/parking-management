@@ -126,32 +126,6 @@ function print_log(mixed $object, bool $out = true): void
 		exit(1);
 }
 
-/**
- * Print the object into the console log
- *
- * @param string $title
- * @param mixed $object
- * @return void
- */
-function console_log(string $title, mixed $object): void
-{
-	$data = json_encode($object);
-	echo '<script>console.log("' . $title . '", ' . "'" . $data . "'" . ')</script>';
-}
-
-/**
- * Print the object into the console error
- *
- * @param string $title
- * @param mixed $object
- * @return void
- */
-function console_error(string $title, mixed $object): void
-{
-	$data = json_encode($object);
-	echo '<script>console.error("' . $title . '", "' . $data . '")</script>';
-}
-
 function get_post_id_by_post_type(string $post_type): int
 {
 	$post_ids = get_posts(array(
@@ -191,7 +165,7 @@ function generatePassword($length = 6): string
 	return $password;
 }
 
-// Simplifier une chaine
+// Simplify a string
 function slug($to_slug, $separator = '-'): array|string|null
 {
 	$to_slug = strip_tags(html_entity_decode($to_slug));
@@ -279,6 +253,15 @@ function replacePlaceholders($string, $replacements): string
 		$string = str_replace("{" . $key . "}", $value, $string);
 	}
 	return $string;
+}
+
+function replacementData(string $context, array $data): array
+{
+	$rep = [];
+	foreach ($data as $key => $value) {
+		$rep["{$context}_".$key] = $value;
+	}
+	return $rep;
 }
 
 function sanitize_svg($svg)

@@ -25,7 +25,6 @@ class Admin
 
 		// CSS and Javascript
 		add_action('admin_enqueue_scripts', array($this, 'enqueue_scripts'));
-//		add_action('admin_footer', array('ParkingManagement\Admin\Pages', 'dialog_page_list'));
 
 	}
 
@@ -38,7 +37,7 @@ class Admin
 		wp_enqueue_style('parking-management-admin', pkmgmt_plugin_url('admin/css/admin.css'));
 		wp_enqueue_style('parking-management-admin-rtl', pkmgmt_plugin_url('admin/css/admin-rtl.css'));
 		wp_enqueue_style('font-awesome', 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css', array(), '6.0.0-beta3');
-		wp_enqueue_style('bootstrap', 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css', array('admin-menu','forms'), '5.3.3');
+		wp_enqueue_style('bootstrap', 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css', array('admin-menu', 'forms'), '5.3.3');
 		wp_enqueue_style('parking-management-jquery-ui', 'https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css');
 		wp_enqueue_style('parking-management-easepick', 'https://cdn.jsdelivr.net/npm/@easepick/bundle@1.2.1/dist/index.css');
 
@@ -53,13 +52,14 @@ class Admin
 			'parking-management-admin',
 			pkmgmt_plugin_url('admin/js/admin.js'),
 			array(
+				'bootstrap',
 				'parking-management-jquery',
 				'parking-management-jquery-ui',
 				'parking-management-jquery-validate',
 				'parking-management-additional-methods',
 				'parking-management-easepick',
 				'parking-management-luxon',
-				),
+			),
 			PKMGMT_VERSION);
 	}
 
@@ -127,6 +127,12 @@ class Admin
 		if (!current_user_can('pkmgmt_edit', $id))
 			wp_die(__("You are not allowed to edit this page.", 'parking-management'));
 
+		$data = array();
+
+		foreach (ParkingManagement::properties_available as $property => $config) {
+			$data[$property] =$_POST['pkmgmt-'.$property] ?? Template::get_default($property);
+		}
+
 		$args = array_merge(
 			$_REQUEST,
 			array(
@@ -134,16 +140,8 @@ class Admin
 				'title' => $_POST['pkmgmt-title'] ?? null,
 				'name' => $_POST['pkmgmt-name'] ?? null,
 				'locale' => $_POST['pkmgmt-locale'] ?? null,
-
-				'info' => $_POST['pkmgmt-info'] ?? Template::get_default(),
-				'database' => $_POST['pkmgmt-database'] ?? Template::get_default('database'),
-				'payment' => $_POST['pkmgmt-payment'] ?? Template::get_default('payment'),
-				'form' => $_POST['pkmgmt-form'] ?? Template::get_default('form'),
-				'booked_dates' => $_POST['pkmgmt-booked_dates'] ?? Template::get_default('booked_dates'),
-				'high_season' => $_POST['pkmgmt-high_season'] ?? Template::get_default('high_season'),
-				'sms' => $_POST['pkmgmt-sms'] ?? Template::get_default('sms'),
-				'response' => $_POST['pkmgmt-response'] ?? Template::get_default('response'),
-			)
+			),
+			$data
 		);
 		$args = wp_unslash($args);
 
@@ -167,13 +165,12 @@ class Admin
 		}
 
 		$properties = array();
-		foreach (ParkingManagement::properties_keys as $prop) {
+		foreach (ParkingManagement::properties_available as $prop => $config) {
 			if (null !== $args[$prop]) {
 				$properties[$prop] = $args[$prop];
 			}
 		}
 		$pm->set_properties($properties);
-
 		$pm->save();
 		return $pm;
 	}
@@ -215,63 +212,16 @@ class Admin
 	private static function meta_box(): void
 	{
 		// MetaBox
-		add_meta_box(
-			'info',
-			__('Information', 'parking-management'),
-			array('ParkingManagement\Admin\Pages', 'info_box'),
-			null,
-			'info',
-			'core'
-		);
-		add_meta_box(
-			'database',
-			__('Database', 'parking-management'),
-			array('ParkingManagement\Admin\Pages', 'database_box'),
-			null,
-			'database',
-			'core'
-		);
-		add_meta_box(
-			'payment',
-			__('Payment', 'parking-management'),
-			array('ParkingManagement\Admin\Pages', 'payment_box'),
-			null,
-			'payment',
-			'core'
-		);
-		add_meta_box(
-			'form',
-			__('Form Options', 'parking-management'),
-			array('ParkingManagement\Admin\Pages', 'form_box'),
-			null,
-			'form',
-			'core'
-		);
-		add_meta_box(
-			'booked_dates',
-			__('Booked dates', 'parking-management'),
-			array('ParkingManagement\Admin\Pages', 'booked_dates_box'),
-			null,
-			'booked_dates',
-			'core'
-		);
-		add_meta_box(
-			'high_season',
-			__('High season dates', 'parking-management'),
-			array('ParkingManagement\Admin\Pages', 'high_season_box'),
-			null,
-			'high_season',
-			'core'
-		);
-		add_meta_box(
-			'sms',
-			__('SMS', 'parking-management'),
-			array('ParkingManagement\Admin\Pages', 'sms_box'),
-			null,
-			'sms',
-			'core'
-		);
-
+		foreach (ParkingManagement::properties_available as $prop => $config) {
+			add_meta_box(
+				$prop,
+				__($config['title'], 'parking-management'),
+				['ParkingManagement\Admin\Pages', $prop.'_box'],
+				null,
+				$prop,
+				'core'
+			);
+		}
 	}
 }
 

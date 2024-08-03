@@ -65,6 +65,14 @@ class Order
 	private string $terminal;
 	private int $site_id;
 	private array $data;
+
+	private array $order;
+
+	public function getOrder(): array
+	{
+		return $this->order;
+	}
+
 	private bool|PDO $conn;
 	public const PhoneCountry = array(
 		1 => array('id' => 1, 'initial' => 'FR', 'pays' => 'France', 'prefix' => '0033', 'size' => 13, 'min' => '0', 'before' => '0'),
@@ -145,7 +153,7 @@ class Order
 		$referer = parse_url($_SERVER['HTTP_REFERER']);
 		$referer_host = array_key_exists('host', $referer) ? $referer['host'] : NULL;
 		$price = Price::getPrice($this->data);
-		$params = array(
+		$this->order = array(
 			'resauuid' => uniqid(),
 			'site_id' => $this->site_id,
 			'parking_id' => $this->site_id,
@@ -179,7 +187,7 @@ class Order
 			'host' => $_SERVER['HTTP_USER_AGENT'],
 			'referer' => $referer_host
 		);
-		Logger::info("order.create", ['params' => $params]);
+		Logger::info("order.create", ['params' => $this->order]);
 
 		$query = "
 		INSERT INTO `tbl_commande`
@@ -204,7 +212,7 @@ class Order
 		)
 		";
 		$req = $this->conn->prepare($query);
-		if (!$req->execute($params))
+		if (!$req->execute($this->order))
 			throw new Exception("order creation failed");
 		$id = $this->conn->lastInsertId();
 		if (!$id)
@@ -212,10 +220,13 @@ class Order
 		Logger::info("order.create", ['id' => $id]);
 		$query = 'UPDATE `tbl_commande` SET remarque = :remarque, facture_id = :facture_id WHERE `id_commande` = :id';
 		$req = $this->conn->prepare($query);
+		$this->order['id'] = (int)$id;
+		$this->order['remarque'] = "Commande Parking " . $this->terminal . " / Destination : " . mb_convert_encoding($this->getData('destination'), 'ISO-8859-1', 'UTF-8') . " / Reference : " . $id;
+		$this->order['facture_id'] = $this->getBillID($id);
 		if (!$req->execute(array(
 			'id' => $id,
-			'remarque' => "Commande Parking " . $this->terminal . " / Destination : " . mb_convert_encoding($this->getData('destination'), 'ISO-8859-1', 'UTF-8') . " / Reference : " . $id,
-			'facture_id' => $this->getBillID($id)
+			'remarque' => $this->order['remarque'],
+			'facture_id' => $this->order['facture_id']
 		)))
 			throw new Exception("order update failed");
 		return (int)$id;
@@ -305,6 +316,7 @@ class Order
 
 	private function getBillID($id)
 	{
+
 		$query = "SELECT `facture_id` FROM `tbl_commande` WHERE `id_commande` = :id";
 		$req = $this->conn->prepare($query);
 		$req->execute(array('id' => $id));
@@ -314,11 +326,11 @@ class Order
 		}
 
 		$site = strtoupper($this->terminal);
-		$query = "SELECT max(`facture_id`) AS facture_id FROM `tbl_commande` WHERE `facture_id` LIKE '$site%'";
+		$query = "SELECT count(*) AS num FROM `tbl_commande` WHERE `facture_id` LIKE '$site%'";
 		$req = $this->conn->prepare($query);
 		$req->execute();
 		$row = $req->fetch(PDO::FETCH_ASSOC);
-		return ($site . str_pad((int)(substr($row['facture_id'], 3)) + 1, 9, 0, STR_PAD_LEFT));
+		return ($site . str_pad((int)($row['num']) + 1, 9, 0, STR_PAD_LEFT));
 	}
 
 	public static function nbRealDay($start, $end): int

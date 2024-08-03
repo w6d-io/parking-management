@@ -37,6 +37,7 @@ class PKMGMT
 		self::load_module('database');
 		self::load_module('price');
 		self::load_module('high_season');
+		self::load_module('notification');
 	}
 
 	/**

@@ -215,8 +215,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
 	// Phone lib
 	const indicative = external_object.properties.form.indicative ? external_object.properties.form.indicative : "fr";
-	const tel_input = document.querySelector('#tel_port');
-	const iti = window.intlTelInput(tel_input, {
+	const mobileInput = document.querySelector('#mobile');
+	const iti = window.intlTelInput(mobileInput, {
 		utilsScript: "https://cdn.jsdelivr.net/npm/intl-tel-input@23.1.0/build/js/utils.js",
 		formatOnDisplay: false,
 		separateDialCode: false,
@@ -235,6 +235,9 @@ document.addEventListener('DOMContentLoaded', function () {
 		preferredCountries: [indicative]
 	});
 
+	$('#mobile').on('change', function () {
+		$('#tel_port').val(iti.getNumber());
+	})
 	// Confirmation dialog
 	let dialogConfirm;
 	if (external_object.properties.form.booking.dialog_confirmation === '1') {

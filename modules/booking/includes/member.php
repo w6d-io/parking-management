@@ -22,6 +22,12 @@ class Member
 {
 	private PDO $conn;
 
+	private array $member;
+
+	public function getMember(): array
+	{
+		return $this->member;
+	}
 	public function __construct()
 	{
 		if (!$conn = database::connect()) {
@@ -57,7 +63,7 @@ class Member
 		$password = generatePassword(8);
 		$sql = "INSERT INTO `tbl_membre` ( `id_membre`, `status`, `date`, `email`, `password`, `reseau_id`, `nom`, `prenom`, `code_postal`, `ville`, `pays`, `tel_fixe`, `tel_port`, `tva`, `url`, `afficher` ) VALUES (NULL, :status, :date, :email, :password, :reseau, :nom, :prenom, :code_postal, :ville, :pays, :tel_fixe, :tel_port, :tva, :url, :afficher)";
 		$req = $this->conn->prepare($sql);
-		if (!$req->execute(array(
+		$this->member = [
 			'status' => MemberStatus::CUSTOMER,
 			'date' => date('Y-m-d'),
 			'email' => strtolower($post['email']),
@@ -73,7 +79,8 @@ class Member
 			'tva' => '',
 			'url' => slug($post['prenom'] . ' ' . $post['nom'] . ' ' . $post['ville']),
 			'afficher' => 1
-		))) {
+		];
+		if (!$req->execute($this->member)) {
 			Logger::error("member.create", ['errorInfo' => $this->conn->errorInfo()]);
 			throw new Exception("failed to create member");
 		}

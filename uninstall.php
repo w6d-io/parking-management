@@ -30,7 +30,7 @@ function pkmgmt_delete_plugin(): void
 
 	foreach ($posts as $post) {
 		wp_delete_post($post->ID, true);
-		foreach (ParkingManagement::properties_keys as $prop) {
+		foreach (ParkingManagement::properties_available as $prop => $config) {
 			delete_post_meta($post->ID, 'pkmgmt_' . $prop);
 		}
 	}

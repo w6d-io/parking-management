@@ -10,7 +10,17 @@ class ParkingManagement
 
 	const post_type = 'parking_management';
 
-	const properties_keys = array('info', 'database', 'payment', 'form', 'booked_dates', 'high_season', 'sms', 'response');
+	const properties_available = array(
+		'info' => ['title' => 'Information'],
+		'database' => ['title' => 'Database'],
+		'payment' => ['title' => 'Payment'],
+		'form' => ['title' => 'Form Options'],
+		'booked_dates' => ['title' => 'Booked dates'],
+		'high_season' => ['title'=>'High season'],
+		'notification' => ['title'=>'Notification'],
+//		'mail' => ['title'=>'Mail'],
+//		'sms' => ['title'=>'SMS'],
+	);
 	private static ParkingManagement|null $current = null;
 
 	public int $id;
@@ -23,18 +33,13 @@ class ParkingManagement
 	public function __construct($post = null)
 	{
 		$post = get_post($post);
-		if ($post
-			and self::post_type === get_post_type($post)) {
+		if ($post and self::post_type === get_post_type($post)) {
 			$this->id = $post->ID;
 			$this->name = $post->post_name;
 			$this->title = $post->post_title;
 			$this->locale = get_post_meta($post->ID, 'pkmgmt_locale', true);
-
-			$this->construct_properties();
-//			$this->upgrade();
-		} else {
-			$this->construct_properties();
 		}
+		$this->construct_properties();
 
 		do_action('pkmgmt_parking_management', $this);
 
@@ -51,17 +56,10 @@ class ParkingManagement
 
 	private function construct_properties(): void
 	{
-		$builtin_properties = array(
-			'info' => Template::get_default(),
-			'database' => Template::get_default('database'),
-			'payment' => Template::get_default('payment'),
-			'form' => Template::get_default('form'),
-			'booked_dates' => Template::get_default('booked_dates'),
-			'high_season' => Template::get_default('high_season'),
-			'sms' => Template::get_default('sms'),
-			'response' => Template::get_default('response'),
-		);
-
+		$builtin_properties = array();
+		foreach (self::properties_available as $property => $config) {
+			$builtin_properties[$property] = Template::get_default($property);
+		}
 		$properties = apply_filters(
 			'pkmgmt_pre_construct_parking_management_properties',
 			$builtin_properties, $this
@@ -197,7 +195,7 @@ class ParkingManagement
 	/**
 	 * Retrieves parking management property of the specified name from the database.
 	 *
-	 * @param string $name Property name.
+	 * @param string $prop Property name.
 	 * @return array|string|null Property value. Null if property does not exist.
 	 */
 	private function retrieve_property(string $prop): array|string|null
@@ -250,7 +248,7 @@ class ParkingManagement
 		$defaults = $this->get_properties();
 
 		$properties = wp_parse_args($properties, $defaults);
-		$properties = array_intersect_key($properties, $defaults);
+//		$properties = array_intersect_key($properties, $defaults);
 
 		$this->properties = $properties;
 	}
@@ -266,28 +264,11 @@ class ParkingManagement
 		return $this->id;
 	}
 
-//	/**
-//	 * Upgrades this contact form properties.
-//	 */
-//	private function upgrade(): void
-//	{
-//		$mail = $this->prop('mail');
-//
-//		if (is_array($mail)
-//			and !isset($mail['recipient'])) {
-//			$mail['recipient'] = get_option('admin_email');
-//		}
-//
-//		$this->properties['mail'] = $mail;
-//
-//	}
-
 	/**
 	 * @throws Exception
 	 */
 	public function save(): WP_Error|int
 	{
-		global $wpdb;
 		$title = wp_slash($this->title);
 		$props = wp_slash($this->get_properties());
 
@@ -324,7 +305,7 @@ class ParkingManagement
 
 			do_action('pkmgmt_after_save', $this);
 		} else {
-			error_log(var_export(["save", 'Could not save post'],true));
+			error_log(var_export(["save", 'Could not save post'], true));
 			throw new Exception("Could not save post");
 		}
 		return $post_id;

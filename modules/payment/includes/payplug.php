@@ -68,7 +68,7 @@ class Payplug implements IPayment
 				'secretKey' => $secretKey
 			));
 			$success_url = $provider['properties']['success_page']['value'];
-			$cancel_url = $provider['properties']['cancel_page']['value'];
+			$cancel_url = $provider['properties']['cancel_page']['value'] . '?order_id=' . $this->order_id;
 			$notify_url = home_url() . "/wp-json/pkmgmt/v1/payplug/ipn";
 			if ($provider['properties']['notification_url']['value'] !== '')
 				$notify_url = $provider['properties']['notification_url']['value'];

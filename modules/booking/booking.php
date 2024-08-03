@@ -10,6 +10,7 @@ use Booking\Vehicle;
 use Exception;
 use ParkingManagement\interfaces\IParkingmanagement;
 use ParkingManagement\interfaces\IShortcode;
+use Mail;
 use PDOException;
 
 require_once PKMGMT_PLUGIN_MODULES_DIR . DS . "booking" . DS . "includes" . DS . "form.php";
@@ -109,5 +110,4 @@ class Booking implements IShortcode, IParkingManagement
 			return;
 		}
 	}
-
 }

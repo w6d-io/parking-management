@@ -3,6 +3,7 @@
 namespace ParkingManagement;
 
 use DateTime;
+use DateTimeZone;
 use Exception;
 use IntlDateFormatter;
 
@@ -79,19 +80,25 @@ class DatesRange
 	{
 		if (empty($date) || empty($date['message']))
 			return "";
+
+		$date['start'] = self::convertDate($date['start']);
+		$date['end'] = self::convertDate($date['end']);
+		return replacePlaceholders($date['message'], $date);
+	}
+
+	public static function convertDate(string $date, $fromFormat = 'Y-m-d', $toFormat= 'd MMMM y', $locale = 'fr_FR'): string
+	{
 		$formatter = new IntlDateFormatter(
 			$locale,
 			IntlDateFormatter::FULL,
 			IntlDateFormatter::FULL,
 			'Europe/Paris',
 			IntlDateFormatter::GREGORIAN,
-			'd MMMM y'
+			$toFormat,
 		);
-		$date['start'] = DateTime::createFromFormat('Y-m-d', $date['start']);
-		$date['start'] = $formatter->format($date['start']);
-		$date['end'] = DateTime::createFromFormat('Y-m-d', $date['end']);
-		$date['end'] = $formatter->format($date['end']);
-		return replacePlaceholders($date['message'], $date);
+		$zone = new DateTimeZone("Europe/Paris");
+		$date = DateTime::createFromFormat($fromFormat, $date, $zone);
+		return $formatter->format($date);
 	}
 
 	private static function compareDate($a, $b): int

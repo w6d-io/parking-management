@@ -5,6 +5,7 @@ namespace ParkingManagement;
 use Booking\AirPort;
 use Booking\Order;
 use DateTime;
+use DateTimeZone;
 use Exception;
 use ParkingManagement\API\BookedAPI;
 use ParkingManagement\database\database;
@@ -86,7 +87,8 @@ class Booked implements IShortcode, IParkingManagement
 	private static function HTMLMessage(ParkingManagement $pm) : string
 	{
 		try {
-			$date = new DateTime();
+			$zone = new DateTimeZone("Europe/Paris");
+			$date = new DateTime( 'now', $zone);
 			$booked = DatesRange::getDateRange($date->format('Y-m-d'), $pm->prop('booked_dates'));
 			$message = DatesRange::getMessage($booked, $pm->locale);
 			if (empty($message)) {

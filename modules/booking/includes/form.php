@@ -289,12 +289,13 @@ class Form
 					),
 				),
 				self::_row_field('mobile input-group align-items-center',
+					Html::_index('hidden', 'tel_port', 'tel_port', []),
 					Html::_label_with_attr(
-						array('class' => 'tel_port col-sm-3'),
-						'tel_port',
+						array('class' => 'mobile col-sm-3'),
+						'mobile',
 						esc_html__('Mobile phone', 'parking-management')
 					),
-					Html::_index('tel', 'tel_port', 'tel_port',
+					Html::_index('tel', 'mobile', 'mobile',
 						array(
 							'class' => 'mobile regular required col-5 border rounded py-2 form-control',
 							'value' => $post['tel_port'] ?? '',

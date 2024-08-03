@@ -130,6 +130,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 	// tabs
 
+	// payment
 	$('.tab-links a').on('click', function (e) {
 		e.preventDefault();
 		const currentAttrValue = $(this).attr('href');
@@ -142,6 +143,31 @@ document.addEventListener('DOMContentLoaded', function () {
 		$('.tab-links li').removeClass('active');
 		$(this).parent('li').addClass('active');
 	});
+
+	// mail template
+	const mailButtons = $('#nav-mail-tab button');
+	mailButtons.each(function() {
+		var tabTrigger = new bootstrap.Tab(this);
+		$(this).on('click', function(event) {
+			event.preventDefault();
+			tabTrigger.show();
+		})
+		;
+
+	});
+	const notificationMailButtons = $('#nav-notification-tab button');
+	notificationMailButtons.each(function() {
+		var tabTrigger = new bootstrap.Tab(this);
+
+		$(this).on('click', function(event) {
+			event.preventDefault();
+			tabTrigger.show();
+		})
+		;
+	});
+
+	bootstrap.Tab.getInstance(mailButtons[0]).show();
+	bootstrap.Tab.getInstance(notificationMailButtons[0]).show();
 
 	// Initialize the first tab
 	$('.tab-links li:first-child a').trigger('click');

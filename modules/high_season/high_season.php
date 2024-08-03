@@ -3,6 +3,7 @@
 namespace ParkingManagement;
 
 use DateTime;
+use DateTimeZone;
 use Exception;
 use ParkingManagement\API\HighSeasonApi;
 use ParkingManagement\interfaces\IParkingmanagement;
@@ -30,7 +31,8 @@ class HighSeason implements IShortcode, IParkingmanagement
 			$high_season = $pm->prop('high_season');
 			if (!array_key_exists('dates', $high_season))
 				return '';
-			$date = new DateTime();
+			$zone = new DateTimeZone("Europe/Paris");
+			$date = new DateTime( 'now', $zone);
 			$hs = DatesRange::getDateRange($date->format('Y-m-d'), $high_season['dates']);
 			$message = DatesRange::getMessage($hs, $pm->locale);
 			if (empty($message)) {

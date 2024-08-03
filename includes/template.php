@@ -13,8 +13,7 @@ class Template
 			'form' => $template = self::form(),
 			'booked_dates' => $template = self::booked_dates(),
 			'high_season' => $template = self::high_season(),
-			'sms' => $template = self::sms(),
-			'response' => $template = self::response(),
+			'notification' => $template = self::notification(),
 			default => $template = null
 		};
 		return apply_filters('pkmgmt_default_template', $template, $prop);
@@ -228,20 +227,52 @@ class Template
 		);
 	}
 
-	private static function sms(): array
+	private static function notification(): array
 	{
-		return array(
-			'type' => 'AWS',
-			'user' => '',
-			'password' => '',
-			'sender' => '',
-			'template' => ''
-		);
+		return [
+			'mail' => [
+				'host' => [
+					'title' => 'Host',
+					'type' => 'text',
+					'value' => ''
+				],
+				'login' => [
+					'title' => 'Login',
+					'type' => 'text',
+					'value' => ''
+				],
+				'password' => [
+					'title' => 'Password',
+					'type' => 'password',
+					'value' => ''
+				],
+				'sender' => [
+					'title' => 'Sender',
+					'type' => 'email',
+					'value' => ''
+				],
+				'templates' => [
+					'confirmation' => [
+						'title' => 'Confirmation',
+						'type' => 'textarea',
+						'value' => ''
+					],
+					'cancellation' => [
+						'title' => 'Cancellation',
+						'type' => 'textarea',
+						'value' => ''
+					],
+				]
+			],
+			'sms' => [
+				'type' => 'AWS',
+				'user' => '',
+				'password' => '',
+				'sender' => '',
+				'template' => ''
+			]
+		];
 	}
 
-	private static function response(): array
-	{
-		return array();
-	}
 }
 

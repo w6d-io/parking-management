@@ -2,6 +2,7 @@
 
 namespace ParkingManagement\Admin;
 
+use ParagonIE\Sodium\Core\Curve25519\H;
 use ParkingManagement\Html;
 use ParkingManagement\ParkingManagement;
 
@@ -52,14 +53,8 @@ class Pages
 		echo '<div id="poststuff" class="metabox-holder">';
 		self::config_form_header($pm);
 
-		$payment_args = $pm->prop('payment');
-		do_meta_boxes(null, 'info', $pm->prop('info'));
-		do_meta_boxes(null, 'database', $pm->prop('database'));
-		do_meta_boxes(null, 'payment', $payment_args);
-		do_meta_boxes(null, 'form', $pm->prop('form'));
-		do_meta_boxes(null, 'booked_dates', $pm->prop('booked_dates'));
-		do_meta_boxes(null, 'high_season', $pm->prop('high_season'));
-		do_meta_boxes(null, 'sms', $pm->prop('sms'));
+		foreach (ParkingManagement::properties_available as $property => $config)
+			do_meta_boxes(null, $property, $pm->prop($property));
 
 		echo '</div>';
 		echo '</form>';
@@ -135,6 +130,18 @@ class Pages
 			'shortcode-high-season',
 			esc_html__("Copy and paste this code into your page to include high-season message.", 'parking-management'),
 			"[parking-management type='high-season']"
+		);
+		echo self::_shortcode_field(
+			'shortcode-notification-confirmation',
+			'shortcode-notification-confirmation',
+			esc_html__("Copy and paste this code into your page where you want a notification confirmation after an order.", 'parking-management'),
+			"[parking-management type='notification' action='confirmation']"
+		);
+		echo self::_shortcode_field(
+			'shortcode-notification-cancellation',
+			'shortcode-notification-cancellation',
+			esc_html__("Copy and paste this code into your page where you want a notification cancellation after an order.", 'parking-management'),
+			"[parking-management type='notification' action='cancellation']"
 		);
 		echo self::_shortcode_field(
 			'shortcode-payment-random',
@@ -543,10 +550,124 @@ class Pages
 		echo '</div>';
 	}
 
-	public static function sms_box($sms_box, $box): void
+	public static function notification_box($notification, $box): void
+	{
+
+		echo '<div class="' . $box['id'] . '-fields">';
+		echo '<nav>';
+		echo '<div class="nav nav-tabs" id="nav-notification-tab" role="tablist">';
+
+		echo Html::_button(
+			array(
+				'class' => 'nav-link',
+				'id' => 'nav-notification-mail-tab',
+				'data-bs-toggle' => 'tab',
+				'data-bs-target' => '#nav-notification-mail',
+				'type' => 'button',
+				'role' => 'tab',
+				'aria-controls' => 'nav-notification-mail',
+			), 'Mail'
+		);
+		echo Html::_button(
+			array(
+				'class' => 'nav-link',
+				'id' => 'nav-notification-sms-tab',
+				'data-bs-toggle' => 'tab',
+				'data-bs-target' => '#nav-notification-sms',
+				'type' => 'button',
+				'role' => 'tab',
+				'aria-controls' => 'nav-notification-sms',
+			), 'SMS'
+		);
+
+		echo '</div>';
+		echo '</nav>';
+
+		echo '<div class="tab-content" id="nav-notification-tab-content">';
+
+		echo '<div class="tab-pane fade" id="nav-notification-mail" role="tabpanel" aria-labelledby="nav-notification-mail-tab" tabindex="0">';
+		self::mail_box($notification['mail'], $box);
+		echo '</div>';
+		echo '<div class="tab-pane fade" id="nav-notification-sms" role="tabpanel" aria-labelledby="nav-notification-sms-tab" tabindex="0">';
+		self::sms_box($notification['sms'], $box);
+		echo '</div>';
+
+		echo '</div>';
+		echo '</div>';
+	}
+
+	private static function mail_box($mail, $box): void
+	{
+		echo Html::_div(array('class' => $box['id'] . '-fields'),
+			Html::_index('hidden', 'mail-host-title', 'pkmgmt-notification[mail][host][title]', array('value' => $mail['host']['title'])),
+			Html::_index('hidden', 'mail-host-type', 'pkmgmt-notification[mail][host][type]', array('value' => $mail['host']['type'])),
+			self::_field('mail-host', 'mail-field', 'pkmgmt-notification[mail][host][value]', $mail['host']['title'], $mail['host']['value'])
+		);
+		echo Html::_div(array('class' => $box['id'] . '-fields'),
+			Html::_index('hidden', 'mail-login-title', 'pkmgmt-notification[mail][login][title]', array('value' => $mail['login']['title'])),
+			Html::_index('hidden', 'mail-login-type', 'pkmgmt-notification[mail][login][type]', array('value' => $mail['login']['type'])),
+			self::_field('mail-login', 'mail-field', 'pkmgmt-notification[mail][login][value]', $mail['login']['title'], $mail['login']['value'])
+		);
+		echo Html::_div(array('class' => $box['id'] . '-fields'),
+			Html::_index('hidden', 'mail-password-title', 'pkmgmt-notification[mail][password][title]', array('value' => $mail['password']['title'])),
+			Html::_index('hidden', 'mail-password-type', 'pkmgmt-notification[mail][password][type]', array('value' => $mail['password']['type'])),
+			self::_field_password('mail-login', 'mail-field', 'pkmgmt-notification[mail][password][value]', $mail['password']['title'], $mail['password']['value']),
+		);
+		echo Html::_div(array('class' => $box['id'] . '-fields'),
+			Html::_index('hidden', 'mail-sender-title', 'pkmgmt-notification[mail][sender][title]', array('value' => $mail['sender']['title'])),
+			Html::_index('hidden', 'mail-sender-type', 'pkmgmt-notification[mail][sender][type]', array('value' => $mail['sender']['type'])),
+			Html::_div(array('class' => 'mail-field'),
+				Html::_label('mail-sender', $mail['sender']['title']),
+				'<br/>',
+				Html::_index("email", 'mail-sender', 'pkmgmt-notification[mail][sender][value]', array(
+					'class' => 'wide',
+					'size' => 80,
+					'value' => $mail['sender']['value']
+				))
+			),
+		);
+		if (empty($mail['templates'])) return;
+		echo '<div class="' . $box['id'] . '-fields">';
+		echo Html::_label('nav-mail-tab', 'Templates');
+		echo '<nav>';
+		echo '<div class="nav nav-tabs" id="nav-mail-tab" role="tablist">';
+		foreach ($mail['templates'] as $id => $template) {
+			echo Html::_button(array(
+				'class' => 'nav-link',
+				'id' => 'nav-mail-' . $id . '-tab',
+				'data-bs-toggle' => 'tab',
+				'data-bs-target' => '#nav-mail-' . $id,
+				'type' => 'button',
+				'role' => 'tab',
+				'aria-controls' => 'nav-mail-' . $id,
+			),
+				$template['title']
+			);
+		}
+		echo '</div>';
+		echo '</nav>';
+		echo '<div class="tab-content" id="nav-mail-tab-content">';
+		foreach ($mail['templates'] as $id => $template) {
+			echo '<div class="tab-pane fade" id="nav-mail-' . $id . '" role="tabpanel" aria-labelledby="nav-mail-' . $id . '-tab" tabindex="0">';
+			echo Html::_index('hidden', 'mail-templates-' . $id . '-title', 'pkmgmt-notification[mail][templates][' . $id . '][title]', array('value' => $mail['templates'][$id]['title']));
+			echo Html::_index('hidden', 'mail-templates-' . $id . '-type', 'pkmgmt-notification[mail][templates][' . $id . '][type]', array('value' => $mail['templates'][$id]['type']));
+			wp_editor($template['value'], 'mail-' . $id . '-value', [
+				'textarea_name' => 'pkmgmt-notification[mail][templates][' . $id . '][value]',
+				'textarea_rows' => 30,
+				'tabindex' => "0",
+				'teeny' => true,
+				'media_buttons' => false,
+			]);
+			echo '</div>';
+		}
+		echo '</div>';
+		echo '</div>';
+	}
+
+	private static function sms_box($sms, $box): void
 	{
 		echo '<div class="' . $box['id'] . '-fields">';
-		echo self::_field_select('sms-type', 'sms_field', 'pkmgmt-sms[type]', esc_html__('Type', 'parking-management'),
+		echo self::_field_select('sms-type', 'sms_field', 'pkmgmt-notification[sms][type]', esc_html__('Type', 'parking-management'),
 			array(
 				array(
 					'value' => 'AWS',
@@ -557,19 +678,19 @@ class Pages
 					'label' => 'OVH',
 				)
 			),
-			$sms_box['type']);
+			$sms['type']);
 		echo '</div>';
 		echo '<div class="' . $box['id'] . '-fields">';
-		echo self::_field('sms-user', 'sms_field', 'pkmgmt-sms[user]', esc_html__('Username', 'parking-management'), $sms_box['user']);
+		echo self::_field('sms-user', 'sms_field', 'pkmgmt-notification[sms][user]', esc_html__('Username', 'parking-management'), $sms['user']);
 		echo '</div>';
 		echo '<div class="' . $box['id'] . '-fields">';
-		echo self::_field_password('sms-password', 'sms_field', 'pkmgmt-sms[password]', esc_html__('Password', 'parking-management'), $sms_box['password']);
+		echo self::_field_password('sms-password', 'sms_field', 'pkmgmt-notification[sms][password]', esc_html__('Password', 'parking-management'), $sms['password']);
 		echo '</div>';
 		echo '<div class="' . $box['id'] . '-fields">';
-		echo self::_field('sms-sender', 'sms_field', 'pkmgmt-sms[sender]', esc_html__('Sender', 'parking-management'), $sms_box['sender']);
+		echo self::_field('sms-sender', 'sms_field', 'pkmgmt-notification[sms][sender]', esc_html__('Sender', 'parking-management'), $sms['sender']);
 		echo '</div>';
 		echo '<div class="' . $box['id'] . '-fields">';
-		echo self::_field_textarea('sms-template', 'sms_field', 'pkmgmt-sms[template]', esc_html__('Template', 'parking-management'), $sms_box['template'], array('cols' => "0"));
+		echo self::_field_textarea('sms-template', 'sms_field', 'pkmgmt-notification[sms][template]', esc_html__('Template', 'parking-management'), $sms['template'], array('cols' => "0"));
 		echo '</div>';
 	}
 

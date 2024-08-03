@@ -9,8 +9,8 @@ class Html
 	{
 		$result = '';
 		foreach ($attr as $key => $value) {
-			if (in_array($key, ['id', 'name', 'type']))
-				continue;
+//			if (in_array($key, ['id', 'name', 'type']))
+//				continue;
 			$result .= $key . '="' . $value . '" ';
 		}
 		return trim($result);
@@ -29,6 +29,14 @@ class Html
 	public static function _div($args, ...$contents): string
 	{
 		return '<div ' . self::array_to_html_attribute($args) . '>' . implode("\n", $contents) . '</div>';
+	}
+	public static function _button($args, ...$contents): string
+	{
+		return '<button ' . self::array_to_html_attribute($args) . '>' . implode("\n", $contents) . '</button>';
+	}
+	public static function _nav($args, ...$contents): string
+	{
+		return '<nav ' . self::array_to_html_attribute($args) . '>' . implode("\n", $contents) . '</nav>';
 	}
 	public static function _ul($args, ...$contents): string
 	{
@@ -92,6 +100,7 @@ class Html
 	{
 		return '<input type="radio" ' . self::array_to_html_attribute($args) . ' id="' . $id . '" name="' . $name . '" value="' . $value . '"' . ($checked ? ' checked' : '') . '/>';
 	}
+
 
 	public static function _select(string $id, string $name, array $args, array $options, string $value): string
 	{
