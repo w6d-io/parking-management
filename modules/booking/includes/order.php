@@ -5,7 +5,9 @@ namespace Booking;
 use DateTime;
 use Exception;
 use InvalidArgumentException;
+use ParkingManagement\Booked;
 use ParkingManagement\database\database;
+use ParkingManagement\DatesRange;
 use ParkingManagement\Logger;
 use ParkingManagement\Payment;
 use ParkingManagement\PaymentID;
@@ -113,6 +115,7 @@ class Order
 			throw new Exception("order creation failed");
 		if ($order_id = $this->isExists($member_id))
 			return $order_id;
+
 		$query = "SELECT `grille_tarifaire` FROM `tbl_remplissage` WHERE `date` = ?";
 		$date = substr($this->getData('depart'), 0, 10);
 		$req = $this->conn->prepare($query);
@@ -139,11 +142,18 @@ class Order
 		$billing .= ',  ' . mb_strtoupper(self::PhoneCountry[$this->getData('pays')]['pays'], 'UTF-8');
 		$start = substr($this->getData('depart'), 0, 10);
 		$end = substr($this->getData('retour'), 0, 10);
+		if (Booked::is($start)) {
+			$price['complet'] = 1;
+			throw new Exception(__("Car park is full on ", 'parking-management') . DatesRange::convertDate($start));
+		}
 		$start = DateTime::createFromFormat('Y-m-d', $start);
 		$end = DateTime::createFromFormat('Y-m-d', $end);
 		$start_hour = substr($this->getData('depart'), 11, 5);
 		$end_hour = substr($this->getData('retour'), 11, 5);
-
+		if (Booked::is($start) || Booked::is($end)) {
+			$price['complet'] = 1;
+			return 0;
+		}
 
 		$search = implode(" ",
 			array(ucwords($this->getData('prenom')), ucwords($this->getData('nom')), ucwords($this->getData('email')),
@@ -213,10 +223,10 @@ class Order
 		";
 		$req = $this->conn->prepare($query);
 		if (!$req->execute($this->order))
-			throw new Exception("order creation failed");
+			throw new Exception(__("order creation failed", 'parking-management'));
 		$id = $this->conn->lastInsertId();
 		if (!$id)
-			throw new Exception("order creation failed");
+			throw new Exception(__("order creation failed", 'parking-management'));
 		Logger::info("order.create", ['id' => $id]);
 		$query = 'UPDATE `tbl_commande` SET remarque = :remarque, facture_id = :facture_id WHERE `id_commande` = :id';
 		$req = $this->conn->prepare($query);
@@ -228,7 +238,7 @@ class Order
 			'remarque' => $this->order['remarque'],
 			'facture_id' => $this->order['facture_id']
 		)))
-			throw new Exception("order update failed");
+			throw new Exception(__("order creation failed", 'parking-management'));
 		return (int)$id;
 	}
 

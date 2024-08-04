@@ -41,27 +41,44 @@ class Booking implements IShortcode, IParkingManagement
 	private function shortcode_form(): string
 	{
 		$form = new Form($this->pm);
-		return Html::_div(array('class' => 'form container-md col-xl-6 mt-5'),
-			Html::_div(array('class' => 'row'),
-				Html::_div(array('class' => 'col-12'),
-					Html::_form('reservation', 'reservation', 'post', '', array(),
-						Html::_div(array('class' => 'row'),
-							Html::_div(array('class' => 'col-12'),
-								$form->personal_information($this->pm),
-								$form->trip_information($this->pm)
-							),
-							$form->cancellation_insurance($this->pm),
-							$form->cgv($this->pm),
-							$form->total(),
-							$form->submit($this->pm),
+		return $this->message() .
+			Html::_div(array('class' => 'form container-md col-xl-6 mt-5'),
+				Html::_div(array('class' => 'row'),
+					Html::_div(array('class' => 'col-12'),
+						Html::_form('reservation', 'reservation', 'post', '', array(),
+							Html::_div(array('class' => 'row'),
+								Html::_div(array('class' => 'col-12'),
+									$form->personal_information($this->pm),
+									$form->trip_information($this->pm)
+								),
+								$form->cancellation_insurance($this->pm),
+								$form->cgv($this->pm),
+								$form->total(),
+								$form->submit($this->pm),
+							)
 						)
 					)
-				)
-			),
-			$form->dialog_booking_confirmation($this->pm),
-			$form->spinner(),
-		);
+				),
+				$form->dialog_booking_confirmation($this->pm),
+			)
+			. $form->spinner();
 	}
+
+	private function message(): string
+	{
+		$post = array_merge($_GET, $_POST);
+		if (array_key_exists("message", $post)) {
+			foreach ($post['message'] as $key => $value) {
+				return match ($key) {
+					'error' => Html::_alert('danger', $value),
+					'info' => Html::_alert('info', $value),
+					default => ''
+				};
+			}
+		}
+		return '';
+	}
+
 
 	private function shortcode_home_form(): string
 	{
@@ -82,6 +99,7 @@ class Booking implements IShortcode, IParkingManagement
 
 	public function record(): void
 	{
+		global $current_shortcode_page;
 		$post = array_merge($_GET, $_POST);
 		$page = home_url();
 		try {
@@ -107,6 +125,8 @@ class Booking implements IShortcode, IParkingManagement
 
 		} catch (Exception|PDOException $e) {
 			Logger::error("booking.record", $e->getMessage());
+
+			wp_redirect($current_shortcode_page . '?' . http_build_query($post) . '&message[error]=' . $e->getMessage());
 			return;
 		}
 	}
