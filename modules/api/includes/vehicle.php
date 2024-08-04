@@ -46,7 +46,7 @@ class Vehicle extends API
 		try {
 			$conn = database::connect();
 			if (!$conn)
-				return new WP_Error("database_connection", __("Database connection failed."));
+				return new WP_Error("database_connection", __("Database connection failed.", 'parking-management'));
 			$data = array();
 			$query = "SELECT `tbl_modele`.`id_modele`, `tbl_modele`.`titre`, `tbl_marque`.`titre` as `marque` FROM `tbl_modele` LEFT JOIN `tbl_marque` ON `tbl_marque`.`id_marque` = `tbl_modele`.`marque_id` WHERE (`tbl_modele`.`titre` LiKE :term OR `tbl_modele`.`titre` LiKE :term2) ORDER BY `tbl_marque`.`titre` ASC, `tbl_modele`.`titre` ASC";
 			$req = $conn->prepare($query);
@@ -55,7 +55,7 @@ class Vehicle extends API
 					'term2' => "%" . slug($request['term']) . "%"
 				]
 			)) {
-				return new WP_Error("database_error", __("Database error."));
+				return new WP_Error("database_error", __("Database error.", 'parking-management'));
 			}
 			while ($row = $req->fetch(PDO::FETCH_ASSOC)) {
 				$data[] = array(

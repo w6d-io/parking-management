@@ -153,8 +153,8 @@ function pkmgmt_install(): void
 
 	$pm = ParkingManagement::get_template(
 		array(
-			'title' => sprintf(__('Parking %d', 'parking-management'), 1),
-			'name' => sprintf(__('Parking %d', 'parking-management'), 1)
+			'title' => sprintf('Parking %d', 1),
+			'name' => sprintf('Parking %d', 1)
 		)
 	);
 	$pm->save();

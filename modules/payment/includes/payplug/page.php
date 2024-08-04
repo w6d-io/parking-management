@@ -25,10 +25,10 @@ class Page
 				Html::_div(array('class' => 'row'),
 					Html::_div(array('class' => 'col-md-12'),
 						Html::_div(array('class' => 'form-group'),
-							'<h3 class="text-center"><i class="fa-regular fa-credit-card"></i> ' . esc_html__("Last step: payment") . '</h3>',
+							'<h3 class="text-center"><i class="fa-regular fa-credit-card"></i> ' . esc_html__("Last step: payment", 'parking-management') . '</h3>',
 						),
 						'<p class="text-center">',
-						esc_html__('Amount of the reservation :') . $amount . ' €',
+						esc_html__('Amount of the reservation :', 'parking-management') . $amount . ' €',
 						'</p>',
 						Html::_form('payplug-form', 'payplug-form', 'post', '',
 							array(

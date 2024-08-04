@@ -88,16 +88,20 @@ class Page implements IParkingmanagement
 				'<h3 class="option">' . esc_html__("Options price", 'parking-management') . '</h3>',
 				Html::_ul(array('class' => 'list-group list-group-flush'),
 					Html::_li(array('class' => 'list-group-item'),
-						esc_html__("Shuffle with more than 4 persons") . " <strong>{$options['shuttle']['price']} € / " . esc_html__("person", 'parking-management') . "</strong>"
+						esc_html__("Shuffle with more than 4 persons", 'parking-management') . " <strong>{$options['shuttle']['price']} € / "
+						. esc_html__("person", 'parking-management') . "</strong>"
 					),
 					Html::_li(array('class' => 'list-group-item'),
-						esc_html__("Days late") . " <strong>{$options['late']['price']} € / " . esc_html__("person", 'parking-management') . "</strong>"
+						esc_html__("Days late", 'parking-management') . " <strong>{$options['late']['price']} € / "
+						. esc_html__("person", 'parking-management') . "</strong>"
 					),
 					Html::_li(array('class' => 'list-group-item'),
-						esc_html__("Holidays (on leave and/or return)") . " <strong>{$options['holiday']['price']} € / " . esc_html__("person", 'parking-management') . "</strong>"
+						esc_html__("Holidays (on leave and/or return)", 'parking-management') . " <strong>{$options['holiday']['price']} € / "
+						. esc_html__("person", 'parking-management') . "</strong>"
 					),
 					Html::_li(array('class' => 'list-group-item'),
-						esc_html__("Things forgotten in the vehicle") . " <strong>{$options['forgetting']['price']} € / " . esc_html__("person", 'parking-management') . "</strong>"
+						esc_html__("Things forgotten in the vehicle", 'parking-management') . " <strong>{$options['forgetting']['price']} € / "
+						. esc_html__("person", 'parking-management') . "</strong>"
 					),
 				)
 			);

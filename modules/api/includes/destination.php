@@ -48,12 +48,12 @@ class Destination extends API
 		try {
 			$conn = database::connect();
 			if (!$conn)
-				return new WP_Error("database_connection_failed", __("Database connection failed."));
+				return new WP_Error("database_connection_failed", __("Database connection failed.", 'parking-management'));
 			$data = array();
 			$query = "SELECT `id_destination`, `iata`, `titre`, `pays` FROM `tbl_destination` WHERE `iata` LiKE :term OR `oaci` LiKE :term OR `titre` LiKE :term ORDER BY `pays` ASC, `titre` ASC";
 			$req = $conn->prepare($query);
 			if (!$req->execute(array('term' => "%".$request['term'] . "%"))) {
-				return new WP_Error("database_error", __("Database error."));
+				return new WP_Error("database_error", __("Database error.", 'parking-management'));
 			}
 			while ($row = $req->fetch(PDO::FETCH_ASSOC)) {
 				$data[] = array(

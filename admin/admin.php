@@ -80,8 +80,8 @@ class Admin
 		);
 
 		$management = add_submenu_page('pkmgmt',
-			__('Configure Site', 'parking-management'),
-			__('Configure Site', 'parking-management'),
+			__('Configuration', 'parking-management'),
+			__('Configuration', 'parking-management'),
 			"pkmgmt_read",
 			"pkmgmt",
 			array('ParkingManagement\Admin\Pages', 'management')

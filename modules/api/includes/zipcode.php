@@ -48,12 +48,12 @@ class Zipcode extends API
 		try {
 			$conn = database::connect();
 			if (!$conn)
-				return new WP_Error("database_connection_failed", __("Database connection failed."));
+				return new WP_Error("database_connection_failed", __("Database connection failed.", 'parking-management'));
 			$data = array();
 			$query = "SELECT `id_code_postal`, `pays_id`, `code_postal`, `ville` FROM `tbl_code_postal` WHERE `code_postal` LIKE ? ORDER BY `pays_id` ASC, `code_postal` ASC";
 			$req = $conn->prepare($query);
 			if (!$req->execute(array(addslashes($request['term']) . "%"))) {
-				return new WP_Error("database_error", __("Database error."));
+				return new WP_Error("database_error", __("Database error.", 'parking-management'));
 			}
 			while ($row = $req->fetch(PDO::FETCH_ASSOC)) {
 				$data[] = array(

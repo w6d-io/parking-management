@@ -317,7 +317,7 @@ class ParkingManagement
 		$title = trim($title);
 
 		if ('' === $title) {
-			$title = __('Untitled', 'contact-form-7');
+			$title = __('Untitled', 'parking-management');
 		}
 
 		$this->title = $title;
@@ -329,7 +329,7 @@ class ParkingManagement
 		$name = trim($name);
 
 		if ('' === $name) {
-			$name = __('Untitled', 'contact-form-7');
+			$name = __('Untitled', 'parking-management');
 		}
 
 		$this->name = $name;

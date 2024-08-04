@@ -98,7 +98,7 @@ class PayplugAPI extends API
 
 		return new WP_Error(
 			"record-payment-status",
-			__('record payment status not recorded', 'parking-management'),
+			__('payment status not recorded', 'parking-management'),
 			array('status' => WP_Http::BAD_REQUEST)
 		);
 	}

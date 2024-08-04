@@ -1,0 +1,405 @@
+# Copyright (C) 2024 David ALEXANDRE
+# This file is distributed under the GPL2 license.
+msgid ""
+msgstr ""
+"Project-Id-Version: Parking management 3.0.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/parking-management\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2024-08-04T19:16:21+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.10.0\n"
+"X-Domain: parking-management\n"
+
+#. Plugin Name of the plugin
+#: wp-parking-management.php
+msgid "Parking management"
+msgstr ""
+
+#. Description of the plugin
+#: wp-parking-management.php
+msgid "Plugin to manage park booking"
+msgstr ""
+
+#. Author of the plugin
+#: wp-parking-management.php
+msgid "David ALEXANDRE"
+msgstr ""
+
+#: admin/admin.php:73
+#: admin/includes/pages.php:15
+#: includes/parking-management.php:108
+#: includes/parking-management.php:109
+msgid "Parking Management"
+msgstr ""
+
+#: admin/admin.php:74
+msgid "Car park"
+msgstr ""
+
+#: admin/admin.php:83
+#: admin/admin.php:84
+msgid "Configuration"
+msgstr ""
+
+#: admin/admin.php:128
+msgid "You are not allowed to edit this page."
+msgstr ""
+
+#: admin/includes/pages.php:37
+msgid "Configuration saved."
+msgstr ""
+
+#: admin/includes/pages.php:87
+msgid "Title"
+msgstr ""
+
+#: admin/includes/pages.php:95
+#: admin/includes/pages.php:426
+#: modules/booking/includes/form.php:248
+msgid "Name"
+msgstr ""
+
+#: admin/includes/pages.php:107
+msgid "Copy and paste this code into your page to include booking form."
+msgstr ""
+
+#: admin/includes/pages.php:113
+msgid "Copy and paste this code into your page to include home booking form."
+msgstr ""
+
+#: admin/includes/pages.php:119
+msgid "Copy and paste this code into your page to include price table."
+msgstr ""
+
+#: admin/includes/pages.php:125
+msgid "Copy and paste this code into your page to include booked message."
+msgstr ""
+
+#: admin/includes/pages.php:131
+msgid "Copy and paste this code into your page to include high-season message."
+msgstr ""
+
+#: admin/includes/pages.php:137
+msgid "Copy and paste this code into your page where you want a notification confirmation after an order."
+msgstr ""
+
+#: admin/includes/pages.php:143
+msgid "Copy and paste this code into your page where you want a notification cancellation after an order."
+msgstr ""
+
+#: admin/includes/pages.php:149
+msgid "Copy and paste this code into your page to include a random enabled payment form."
+msgstr ""
+
+#: admin/includes/pages.php:155
+msgid "Copy and paste this code into your page to include paypal payment form."
+msgstr ""
+
+#: admin/includes/pages.php:161
+msgid "Copy and paste this code into your page to include payplug payment form."
+msgstr ""
+
+#: admin/includes/pages.php:167
+msgid "Copy and paste this code into your page to include mypos payment form."
+msgstr ""
+
+#: admin/includes/pages.php:174
+msgid "Save"
+msgstr ""
+
+#: admin/includes/pages.php:304
+msgid "Browse page"
+msgstr ""
+
+#: admin/includes/pages.php:387
+msgid "Address"
+msgstr ""
+
+#: admin/includes/pages.php:390
+msgid "Mobile"
+msgstr ""
+
+#: admin/includes/pages.php:393
+msgid "RCS"
+msgstr ""
+
+#: admin/includes/pages.php:396
+#: modules/booking/includes/form.php:311
+#: modules/booking/includes/form.php:640
+msgid "Email"
+msgstr ""
+
+#: admin/includes/pages.php:399
+msgid "Terminal"
+msgstr ""
+
+#: admin/includes/pages.php:407
+msgid "Vehicle Type supported"
+msgstr ""
+
+#: admin/includes/pages.php:410
+msgid "Vehicle storage mode"
+msgstr ""
+
+#: admin/includes/pages.php:429
+msgid "Host"
+msgstr ""
+
+#: admin/includes/pages.php:432
+msgid "Port"
+msgstr ""
+
+#: admin/includes/pages.php:435
+#: admin/includes/pages.php:684
+msgid "Username"
+msgstr ""
+
+#: admin/includes/pages.php:438
+#: admin/includes/pages.php:687
+msgid "Password"
+msgstr ""
+
+#: admin/includes/pages.php:471
+msgid "Booking"
+msgstr ""
+
+#: admin/includes/pages.php:474
+msgid "Indicative"
+msgstr ""
+
+#: admin/includes/pages.php:499
+#: admin/includes/pages.php:531
+msgid "Add a date"
+msgstr ""
+
+#: admin/includes/pages.php:670
+msgid "Type"
+msgstr ""
+
+#: admin/includes/pages.php:690
+msgid "Sender"
+msgstr ""
+
+#: admin/includes/pages.php:693
+msgid "Template"
+msgstr ""
+
+#: admin/includes/pages.php:704
+msgid "Select a page"
+msgstr ""
+
+#: includes/parking-management.php:157
+#: includes/parking-management.php:160
+#: includes/parking-management.php:320
+#: includes/parking-management.php:332
+msgid "Untitled"
+msgstr ""
+
+#: includes/shortcode.php:19
+msgid "Error: not a Parking Management shortcode"
+msgstr ""
+
+#: modules/api/includes/destination.php:51
+#: modules/api/includes/vehicle.php:49
+#: modules/api/includes/zipcode.php:51
+msgid "Database connection failed."
+msgstr ""
+
+#: modules/api/includes/destination.php:56
+#: modules/api/includes/vehicle.php:58
+#: modules/api/includes/zipcode.php:56
+msgid "Database error."
+msgstr ""
+
+#: modules/booked/api.php:39
+#: modules/high_season/api.php:37
+msgid "failed to get config"
+msgstr ""
+
+#: modules/booking/includes/form.php:73
+msgid "Outside"
+msgstr ""
+
+#: modules/booking/includes/form.php:79
+msgid "Inside"
+msgstr ""
+
+#: modules/booking/includes/form.php:246
+msgid "Personal Information"
+msgstr ""
+
+#: modules/booking/includes/form.php:259
+msgid "Firstname"
+msgstr ""
+
+#: modules/booking/includes/form.php:269
+msgid "Zip code"
+msgstr ""
+
+#: modules/booking/includes/form.php:300
+msgid "Mobile phone"
+msgstr ""
+
+#: modules/booking/includes/form.php:324
+msgid "Type of vehicle"
+msgstr ""
+
+#: modules/booking/includes/form.php:339
+msgid "Car model"
+msgstr ""
+
+#: modules/booking/includes/form.php:356
+msgid "Immatriculation"
+msgstr ""
+
+#: modules/booking/includes/form.php:369
+msgid "Car Park"
+msgstr ""
+
+#: modules/booking/includes/form.php:393
+msgid "Trip Information"
+msgstr ""
+
+#: modules/booking/includes/form.php:396
+msgid "Destination"
+msgstr ""
+
+#: modules/booking/includes/form.php:439
+msgid "Terminal departure"
+msgstr ""
+
+#: modules/booking/includes/form.php:455
+msgid "Terminal return"
+msgstr ""
+
+#: modules/booking/includes/form.php:473
+#: modules/booking/includes/form.php:631
+#: modules/booking/includes/home_form.php:75
+msgid "Dropping off at"
+msgstr ""
+
+#: modules/booking/includes/form.php:490
+#: modules/booking/includes/form.php:635
+#: modules/booking/includes/home_form.php:92
+msgid "Landing at the airport"
+msgstr ""
+
+#: modules/booking/includes/form.php:503
+msgid "Number of pax"
+msgstr ""
+
+#: modules/booking/includes/form.php:590
+msgid "Order amount"
+msgstr ""
+
+#: modules/booking/includes/form.php:609
+msgid "Validate your order"
+msgstr ""
+
+#: modules/booking/includes/form.php:627
+msgid "Confirmation"
+msgstr ""
+
+#: modules/booking/includes/form.php:648
+msgid "Confirm your order"
+msgstr ""
+
+#: modules/booking/includes/form.php:664
+msgid "I hereby subscribe to the cancellation insurance for "
+msgstr ""
+
+#: modules/booking/includes/form.php:690
+msgid "Loading..."
+msgstr ""
+
+#: modules/booking/includes/order.php:147
+msgid "Car park is full on "
+msgstr ""
+
+#: modules/booking/includes/order.php:226
+#: modules/booking/includes/order.php:229
+#: modules/booking/includes/order.php:241
+msgid "order creation failed"
+msgstr ""
+
+#: modules/notification/notification.php:50
+msgid "Summary of your order"
+msgstr ""
+
+#: modules/notification/notification.php:63
+msgid "Order cancelled"
+msgstr ""
+
+#: modules/payment/includes/mypos/api.php:66
+#: modules/payment/includes/payplug/api.php:67
+msgid "failed to get parking management instance"
+msgstr ""
+
+#: modules/payment/includes/mypos/page.php:42
+#: modules/payment/includes/payplug/page.php:28
+msgid "Last step: payment"
+msgstr ""
+
+#: modules/payment/includes/mypos/page.php:53
+#: modules/payment/includes/payplug/page.php:38
+msgid "Checkout"
+msgstr ""
+
+#: modules/payment/includes/payplug/api.php:101
+msgid "payment status not recorded"
+msgstr ""
+
+#: modules/payment/includes/payplug/page.php:31
+msgid "Amount of the reservation :"
+msgstr ""
+
+#: modules/price/includes/page.php:37
+msgid "Outside lots"
+msgstr ""
+
+#: modules/price/includes/page.php:38
+msgid "Inside lots"
+msgstr ""
+
+#: modules/price/includes/page.php:71
+msgid "Number of days"
+msgstr ""
+
+#: modules/price/includes/page.php:72
+msgid "Price"
+msgstr ""
+
+#: modules/price/includes/page.php:73
+msgid "High Season Price"
+msgstr ""
+
+#: modules/price/includes/page.php:88
+msgid "Options price"
+msgstr ""
+
+#: modules/price/includes/page.php:91
+msgid "Shuffle with more than 4 persons"
+msgstr ""
+
+#: modules/price/includes/page.php:92
+#: modules/price/includes/page.php:96
+#: modules/price/includes/page.php:100
+#: modules/price/includes/page.php:104
+msgid "person"
+msgstr ""
+
+#: modules/price/includes/page.php:95
+msgid "Days late"
+msgstr ""
+
+#: modules/price/includes/page.php:99
+msgid "Holidays (on leave and/or return)"
+msgstr ""
+
+#: modules/price/includes/page.php:103
+msgid "Things forgotten in the vehicle"
+msgstr ""
