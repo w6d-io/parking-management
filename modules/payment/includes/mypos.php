@@ -81,7 +81,7 @@ class MyPos implements IPayment
 			$cart->add("Reservation du {$data['order']['depart']} au {$data['order']['arrivee']}", 1, $data['order']['total']);
 
 
-			$success_url = $provider['properties']['success_page']['value'];
+			$success_url = $provider['properties']['success_page']['value'] . '?from=provider&order_id=' . $this->order_id;
 			$cancel_url = $provider['properties']['cancel_page']['value'] . '?order_id=' . $this->order_id;
 			$notify_url = home_url() . "/wp-json/pkmgmt/v1/mypos/ipn";
 			if ($provider['properties']['notification_url']['value'] !== '')

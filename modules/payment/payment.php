@@ -47,7 +47,7 @@ class Payment implements IShortcode, IParkingManagement
 	{
 		$this->pm = $pm;
 		$providers = $this->getEnabledProvider();
-		if ( empty($providers) )
+		if (empty($providers))
 			return;
 		$key = array_rand($providers);
 		$this->provider = $providers[$key];
@@ -56,16 +56,17 @@ class Payment implements IShortcode, IParkingManagement
 	public function shortcode(string $type): string
 	{
 
-		if ($type === '')
-			$type = $this->provider;
-		if (!in_array($type, $this->getSupportedProvider()))
+		if (!array_key_exists('order_id', $_GET) || !is_numeric($_GET['order_id'])
+			|| (in_array($_GET['from'], $_GET) && $_GET['from'] === 'provider')
+		)
 			return '';
-		$this->provider = $type;
-		if (!array_key_exists('order_id', $_GET) || !is_numeric($_GET['order_id']))
+		if ($type !== '')
+			$this->provider = $type;
+		if (!in_array($this->provider, $this->getSupportedProvider()))
 			return '';
-		return match ($type) {
-			'payplug', 'mypos'=> $this->run_provider(),
-			default => sprintf('[parking-management type="payment" payment_provider="%s"]', $type)
+		return match ($this->provider) {
+			'payplug', 'mypos' => $this->run_provider(),
+			default => sprintf('[parking-management type="payment" payment_provider="%s"]', $this->provider)
 		};
 
 	}
