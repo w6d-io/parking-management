@@ -138,5 +138,27 @@ class Html
 		return '<form id="' . $id . '" name="' . $name . '" method="' . $method . '" action="' . $action . '">' . implode(PHP_EOL, $contents) . '</form>';
 	}
 
+	public static function _alert($type, $message): string
+	{
+		$span_id = match ($type) {
+			'success' => 'check-circle',
+			'danger','error','warning' => 'exclamation-triangle',
+			default => 'info'
+		};
+		return inline_svg(PKMGMT_PLUGIN_DIR . DS . "images" . DS . "notify.svg").
+			self::_div(['class' => 'alert alert-' . $type . ' d-flex align-items-center alert-dismissible fade show', 'role'=>'alert'],
+			'<svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="'.lcfirst($type).':"><use xlink:href="#'.$span_id.'-fill"/></svg>',
+			self::_div([],
+				$message,
+			),
+			self::_button([
+				'type' => 'button',
+				'class' => 'btn-close',
+				'data-bs-dismiss' => 'alert',
+				'aria-label' => 'Close',
+				],
+			)
+		);
+	}
 
 }
