@@ -8,14 +8,17 @@ use ParkingManagement\Payment;
 use ParkingManagement\Price;
 use ParkingManagement\interfaces\IShortcode;
 
+$current_shortcode_page = "";
 function pkmgmt_parking_management_shortcode_func(array $atts, $content = null, $code = ''): string
 {
+	global $wp, $current_shortcode_page;
 	if (is_feed()) {
 		return '[parking-management]';
 	}
 	if ('parking-management' !== $code) {
 		return esc_html__('Error: not a Parking Management shortcode', 'parking-management');
 	}
+
 	$atts = shortcode_atts(
 		array(
 			'type' => 'form', // type supported form, home-form, payment, price, booked
@@ -23,7 +26,7 @@ function pkmgmt_parking_management_shortcode_func(array $atts, $content = null, 
 			'action' => '', // action supported confirmation, cancellation
 		), $atts, 'parking-management'
 	);
-
+	$current_shortcode_page = home_url(add_query_arg(array(), $wp->request));
 	$type = trim(array_key_exists('type', $atts) ? $atts['type'] : '');
 	$payment_provider = trim(array_key_exists('payment_provider', $atts) ? $atts['payment_provider'] : '');
 	$action = trim(array_key_exists('action', $atts) ? $atts['action'] : '');
