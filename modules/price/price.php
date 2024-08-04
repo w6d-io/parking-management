@@ -68,19 +68,29 @@ class Price implements IShortcode, IParkingmanagement
 			$percentage[] = !empty($usedLot[$k]) ? $v / $usedLot[$k] : 0;
 		}
 		$price = array(
+			'du' => !empty($start) ? $start : NULL,
+			'au' => !empty($end) ? $end : NULL,
 			'complet' => 0,
 			'toolong' => 0,
+			'holiday' => 0,
+			'high_season' => 0,
+			'total' => 0,
+			'total_reel' => 0,
+			'timing' => 0,
 			'max' => max($maxLot),
 			'utilise' => $maxUsedLot,
 			'nb_jour_reel' => $realNumberOfDay,
 			'nb_jour' => $numberOfDay,
 			'pourcentage' => max($percentage),
+			'nb_vehicule' => 1,
 			'promo' => 0,
-			'options' => array()
+			'options' => array(),
 		);
-		$price['du'] = !empty($start) ? $start : NULL;
-		$price['au'] = !empty($end) ? $end : NULL;
-		$price['nb_vehicule'] = 1;
+		if (Booked::is($start) || Booked::is($end)) {
+			$price['complet'] = 1;
+			return $price;
+		}
+
 		$type_id = $instance->getData($data, 'type_id');
 		$type_id = !empty($type_id) && is_numeric($type_id) ? $type_id : '1';
 		if (!is_numeric($type_id))
@@ -104,12 +114,18 @@ class Price implements IShortcode, IParkingmanagement
 			$total += ($numberOfDay - $latest) * $priceGrid[$site_id][$type_id->value][$parking_type->value]['jour_supplementaire'];
 		}
 		$price['total'] = $price['total_reel'] = $total;
-		if (self::isHoliday($start))
+		if (self::isHoliday($start)) {
+			$price['holiday'] = 1;
 			$price['total'] += self::get_extra_price($form['options']['holiday']);
-		if (self::isHoliday($end))
+		}
+		if (self::isHoliday($end)) {
+			$price['holiday'] = 1;
 			$price['total'] += self::get_extra_price($form['options']['holiday']);
-		if (self::isHighSeason($start) || self::isHighSeason($end))
+		}
+		if (HighSeason::is($start) || HighSeason::is($end)) {
+			$price['high_season'] = 1;
 			$price['total'] += $high_season['price'];
+		}
 		$nb_pax = $instance->getData($data, 'nb_pax');
 		if (!empty($nb_pax) && $nb_pax > 4)
 			$price['total'] += ($nb_pax - 4) * self::get_extra_price($form['options']['shuttle']);
@@ -140,16 +156,6 @@ class Price implements IShortcode, IParkingmanagement
 		return false;
 	}
 
-	public static function isHighSeason($date): bool
-	{
-		$pm = getParkingManagementInstance();
-		if (!$pm)
-			return false;
-		$high_season = $pm->prop('high_season');
-		if (!array_key_exists('dates', $high_season))
-			return false;
-		return DatesRange::isContain($date, $high_season['dates']);
-	}
 	/**
 	 * @throws Exception
 	 */
