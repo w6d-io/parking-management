@@ -198,6 +198,7 @@ class Form
 		wp_enqueue_style('parking-management-jquery-ui', 'https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css');
 		wp_enqueue_style('parking-management-intl-tel-input', 'https://cdn.jsdelivr.net/npm/intl-tel-input@23.1.0/build/css/intlTelInput.css');
 
+		wp_enqueue_script('bootstrap', 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js', array(), false, true);
 		wp_enqueue_script('parking-management-jquery', 'https://code.jquery.com/jquery-3.6.0.min.js');
 		wp_enqueue_script('parking-management-jquery-ui', 'https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js', array('parking-management-jquery'));
 		wp_enqueue_script('parking-management-jquery-validate', 'https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js', array('parking-management-jquery'));
@@ -208,6 +209,7 @@ class Form
 			'parking-management-booking',
 			pkmgmt_plugin_url('modules/booking/js/form.js'),
 			array(
+				'bootstrap',
 				'parking-management-jquery',
 				'parking-management-jquery-ui',
 				'parking-management-jquery-validate',
@@ -289,7 +291,9 @@ class Form
 					),
 				),
 				self::_row_field('mobile input-group align-items-center',
-					Html::_index('hidden', 'tel_port', 'tel_port', []),
+					Html::_index('hidden', 'tel_port', 'tel_port', [
+						'value' => $post['tel_port'] ?? '',
+					]),
 					Html::_label_with_attr(
 						array('class' => 'mobile col-sm-3'),
 						'mobile',
@@ -576,7 +580,7 @@ EOT;
 		return Html::_div(
 			array(),
 			Html::_index('hidden', 'total_amount', 'total_amount',
-				array('value' => '0')
+				array('value' => $post['total_amount'] ?? '0')
 			),
 			Html::_div(
 				array(
@@ -680,7 +684,7 @@ EOT;
 
 	public function spinner(): string
 	{
-		return Html::_div(array('class' => 'spinner-container', 'id' => 'spinner-container'),
+		return Html::_div(array('class' => 'justify-content-center spinner-container', 'id' => 'spinner-container'),
 			Html::_div(array('class' => 'spinner-border text-primary', 'role'=>'status'),
 				Html::_span(array('class' => 'sr-only'),
 					__('Loading...', 'parking-management')

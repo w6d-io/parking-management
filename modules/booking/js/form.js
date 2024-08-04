@@ -256,6 +256,7 @@ document.addEventListener('DOMContentLoaded', function () {
 		});
 		$('#confirmation').validate({
 			submitHandler: function (form) {
+				$('#spinner-container').css('display', 'flex');
 				$.each($('#reservation').serializeArray(), function (i, field) {
 					$('<input>').attr({
 						type: 'hidden',
@@ -263,7 +264,6 @@ document.addEventListener('DOMContentLoaded', function () {
 						value: field.value
 					}).appendTo(form);
 				})
-				$('#spinner-container').show();
 				form.submit();
 			}
 		})
@@ -343,7 +343,7 @@ document.addEventListener('DOMContentLoaded', function () {
 				);
 				dialogConfirm.dialog("open");
 			} else {
-				$('#spinner-container').show();
+				$('#spinner-container').css('display', 'flex');
 				this.submit();
 			}
 		}
