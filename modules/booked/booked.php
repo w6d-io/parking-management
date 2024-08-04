@@ -94,17 +94,23 @@ class Booked implements IShortcode, IParkingManagement
 			if (empty($message)) {
 				return '';
 			}
-			return inline_svg(PKMGMT_PLUGIN_DIR . DS . "images" . DS . "notify.svg")
-				.Html::_div(
-					array('class'=>'alert alert-warning d-flex align-items-center', 'role'=>'alert'),
-					'<svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Warning:"><use xlink:href="#exclamation-triangle-fill"/></svg>',
-					Html::_div(array(), $message)
-				);
+			return Html::_alert('warning', $message);
 
 		} catch (Exception $e) {
 			Logger::error("booked.HTMLMessage", $e->getMessage());
 		}
 		return '';
+	}
+
+	public static function is($date): bool
+	{
+		$pm = getParkingManagementInstance();
+		if (!$pm)
+			return false;
+		$booked_dates = $pm->prop('booked_dates');
+		if (!array_key_exists('dates', $booked_dates))
+			return false;
+		return DatesRange::isContain($date, $booked_dates['dates']);
 	}
 
 }
