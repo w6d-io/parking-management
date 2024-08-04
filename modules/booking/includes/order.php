@@ -269,6 +269,7 @@ class Order
 		$bill_id = $this->getBillID($order_id);
 		$date = date('Y-m-d H:i:s');
 		$query = "UPDATE `tbl_commande` SET
+                          `annulation` = 0,
                           `facture_id` = :bill_id,
                           `paye` = :paid,
                           `date_paiement` = :payment_date,
@@ -288,6 +289,47 @@ class Order
 			'order_id' => $order_id
 		)))
 			throw new Exception("payment order update failed");
+
+	}
+
+	/**
+	 * @throws Exception
+	 */
+	public function confirmed(int $order_id): void
+	{
+		$query = "UPDATE `tbl_commande` SET
+                          `annulation` = 0,
+                          `status` = :status
+                      WHERE
+                          `status` = 0
+                          AND
+                          `id_commande` = :order_id";
+		$req = $this->conn->prepare($query);
+		if (!$req->execute(array(
+			'order_id' => $order_id,
+			'status' => OrderStatus::CONFIRMED->value,
+		)))
+			throw new Exception("order confirmation failed");
+
+	}
+
+	/**
+	 * @throws Exception
+	 */
+	public function cancel(int $order_id): void
+	{
+		$query = "UPDATE `tbl_commande` SET
+                          `annulation` = 1
+                      WHERE
+                          `status` != :status
+                          AND
+                          `id_commande` = :order_id";
+		$req = $this->conn->prepare($query);
+		if (!$req->execute(array(
+			'order_id' => $order_id,
+			'status' => OrderStatus::CONFIRMED->value,
+		)))
+			throw new Exception("order cancellation failed");
 
 	}
 

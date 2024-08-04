@@ -26,32 +26,44 @@ class Notification implements IShortcode
 	{
 		if (!array_key_exists('order_id', $_GET) || !is_numeric($_GET['order_id']))
 			return '';
+		if (Payment::validateOnPayment() && (!array_key_exists('from', $_GET) || $_GET['from'] != 'provider'))
+			return '';
 		try {
 			$data = $this->getData();
 		} catch (Exception $e) {
 			Logger::error("notification.getData", $e->getMessage());
 			return '';
 		}
-
+		$order = new Order;
 		return match ($type) {
-			'confirmation' => $this->confirmation($data),
-			'cancellation' => $this->cancellation($data),
+			'confirmation' => $this->confirmation($data, $order),
+			'cancellation' => $this->cancellation($data, $order),
 			default => ''
 		};
 	}
 
-	private function confirmation(array $data): string
+	private function confirmation(array $data,Order $order): string
 	{
+		try {
+		$order->confirmed($_GET['order_id']);
 		$mail = $this->pm->prop('notification')['mail'];
 		$this->mail($data, esc_html__('Summary of your order', 'parking-management'), $mail['templates']['confirmation']['value']);
 		$this->sms($data);
+		} catch (Exception $e) {
+			Logger::error("notification.confirmation", $e->getMessage());
+		}
 		return '';
 	}
 
-	private function cancellation(array $data): string
+	private function cancellation(array $data, Order $order): string
 	{
-		$mail = $this->pm->prop('notification')['mail'];
-		$this->mail($data, esc_html__('Order cancelled', 'parking-management'), $mail['templates']['cancellation']['value']);
+		try {
+			$order->cancel($_GET['order_id']);
+			$mail = $this->pm->prop('notification')['mail'];
+			$this->mail($data, esc_html__('Order cancelled', 'parking-management'), $mail['templates']['cancellation']['value']);
+		} catch (Exception $e) {
+			Logger::error("notification.cancellation", $e->getMessage());
+		}
 		return '';
 	}
 

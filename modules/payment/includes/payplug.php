@@ -67,19 +67,19 @@ class Payplug implements IPayment
 			\Payplug\Payplug::init(array(
 				'secretKey' => $secretKey
 			));
-			$success_url = $provider['properties']['success_page']['value'] . "?from=provider&oder_id=" . $this->order_id;
+			$success_url = $provider['properties']['success_page']['value'] . "?from=provider&order_id=" . $this->order_id;
 			$cancel_url = $provider['properties']['cancel_page']['value'] . '?order_id=' . $this->order_id;
 			$notify_url = home_url() . "/wp-json/pkmgmt/v1/payplug/ipn";
 			if ($provider['properties']['notification_url']['value'] !== '')
 				$notify_url = $provider['properties']['notification_url']['value'];
 			$payload = array(
 				'title' => ' ',
-				'first_name' => $data['post']['prenom'],
-				'last_name' => $data['post']['nom'],
-				'email' => $data['post']['email'],
+				'first_name' => $data['post']['prenom'] ?? $data['member']['prenom'],
+				'last_name' => $data['post']['nom'] ?? $data['member']['nom'],
+				'email' => $data['post']['email'] ?? $data['member']['email'],
 				'address1' => 'n/c',
-				'postcode' => $data['post']['code_postal'] ?? ' ',
-				'city' => $data['post']['ville'] ?? ' ',
+				'postcode' => $data['post']['code_postal'] ?? ($data['member']['code_postal'] ?? ' '),
+				'city' => $data['post']['ville'] ?? ($data['member']['ville'] ?? ' '),
 				'country' => 'FR',
 				'language' => "fr"
 			);

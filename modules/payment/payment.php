@@ -57,7 +57,7 @@ class Payment implements IShortcode, IParkingManagement
 	{
 
 		if (!array_key_exists('order_id', $_GET) || !is_numeric($_GET['order_id'])
-			|| (in_array($_GET['from'], $_GET) && $_GET['from'] === 'provider')
+			|| (array_key_exists('from', $_GET) && $_GET['from'] === 'provider')
 		)
 			return '';
 		if ($type !== '')
