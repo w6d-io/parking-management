@@ -40,8 +40,6 @@ jobs:
         id: build_var
         run: |
           echo "REPO_NAME=$(basename $GITHUB_REPOSITORY)" >> $GITHUB_ENV
-          version=$(grep "define('PKMGMT_VERSION'" "$php_file" | sed -E "s/.*define\('PKMGMT_VERSION',\s*'([^']+)'.*/\1/")
-          echo "PKMGMT_VERSION=$version" >> $GITHUB_ENV
 
       - name: Create temporary directory
         run: mkdir -p temp/${{ env.REPO_NAME }}
@@ -52,7 +50,7 @@ jobs:
       - name: Create ZIP Archive
         run: |
           cd temp/
-          zip -r ../${{ env.REPO_NAME }}-${{ env.PKMGMT_VERSION }}.zip .
+          zip -r ../${{ env.REPO_NAME }}.zip .
 
       - name: Create GitHub Release
         id: create_release
@@ -72,6 +70,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ${{ env.REPO_NAME }}-${{ env.PKMGMT_VERSION }}.zip
-          asset_name: ${{ env.REPO_NAME }}-${{ env.PKMGMT_VERSION }}.zip
+          asset_path: ${{ env.REPO_NAME }}.zip
+          asset_name: ${{ env.REPO_NAME }}.zip
           asset_content_type: application/zip

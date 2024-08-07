@@ -130,7 +130,7 @@ function pkmgmt_upgrade(): void
 	}
 	if (version_compare($old_version, '3.0.0', '<')) {
 		pkmgmt_migrate_2_to_3();
-	} else {
+	} elseif (version_compare($old_version, '3.1.0', '<')) {
 		pkmgmt_migrate_3_0_to_3_1();
 	}
 
