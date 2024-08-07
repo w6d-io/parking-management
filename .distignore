@@ -1,0 +1,9 @@
+/.wordpress-org
+/logs/
+/.github/
+/.git
+/.idea
+
+/composer.*
+.distignore
+.gitignore
