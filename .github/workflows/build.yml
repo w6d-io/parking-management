@@ -34,9 +34,20 @@ jobs:
         run: sudo apt-get install zip -y
 
       - name: Extract repository name
-        id: build_var
+        id: build_env
         run: |
+          TAG_NAME=${GITHUB_REF#refs/tags/}
+          CLEAN_TAG_NAME=${TAG_NAME#v}
+          echo "TAG_NAME=$CLEAN_TAG_NAME" >> $GITHUB_ENV
           echo "REPO_NAME=$(basename $GITHUB_REPOSITORY)" >> $GITHUB_ENV
+
+      - name: Update version in define.php
+        run: |
+          sed -i "s/define('PKMGMT_VERSION', '[^']*');/define('PKMGMT_VERSION', '${{ env.TAG_NAME }}');/" define.php
+
+      - name: Update version in wp-parking-management.php
+        run: |
+          sed -i "s/ \* Version: .*/ \* Version: ${{ env.TAG_NAME }}/" wp-parking-management.php
 
       - name: Create temporary directory
         run: mkdir -p temp/${{ env.REPO_NAME }}
