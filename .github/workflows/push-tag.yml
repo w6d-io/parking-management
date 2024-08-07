@@ -1,0 +1,31 @@
+name: Push a new tag
+
+on:
+  pull_request:
+    types:
+      - closed
+
+jobs:
+  push_tag:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Generate tag
+        id: generate_tag
+        uses: K-Phoen/semver-release-action@master
+        with:
+          release_branch: main
+          release_strategy: none
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Push tag
+        uses: actions-ecosystem/action-push-tag@v1
+        with:
+          tag: ${{ steps.generate_tag.outputs.tag }}
+          message: '${{ steps.generate_tag.outputs.tag }}: PR #${{ github.event.pull_request.number }} ${{ github.event.pull_request.title }}'
