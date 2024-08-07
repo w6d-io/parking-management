@@ -20,7 +20,9 @@ if (is_admin()) {
 	require_once PKMGMT_PLUGIN_DIR . DS . "includes" . DS . "controller.php";
 }
 
+use ParkingManagement\Logger;
 use ParkingManagement\ParkingManagement;
+use ParkingManagement\Template;
 
 class PKMGMT
 {
@@ -126,9 +128,107 @@ function pkmgmt_upgrade(): void
 	if (version_compare($old_version, $new_version, '==')) {
 		return;
 	}
+	if (version_compare($old_version, '3.0.0', '<')) {
+		pkmgmt_migrate_2_to_3();
+	} else {
+		pkmgmt_migrate_3_0_to_3_1();
+	}
 
 	do_action('pkmgmt_upgrade', $old_version, $new_version);
 	PKMGMT::update_option('version', $new_version);
+}
+
+function pkmgmt_migrate_2_to_3(): void
+{
+	global $wpdb;
+	$post_id = get_post_id_by_post_type('pkmgmt');
+	if (!$post_id)
+		return;
+	$post = get_post($post_id);
+	wp_update_post(array(
+		'ID' => $post_id,
+		'post_type' => ParkingManagement::post_type,
+		'post_status' => 'publish',
+		'post_title' => $post->post_title,
+		'post_name' => $post->post_name,
+	));
+	$pm = ParkingManagement::get_template([
+		'title' => $post->post_title,
+		'name' => $post->post_name,
+	]);
+	$pm->id = $post_id;
+	$properties = $pm->get_properties();
+	if (metadata_exists('post', $post_id, '_info')) {
+		$prop = get_post_meta($post_id, '_info', true);
+		$properties['info']['address'] = $prop['adresse'];
+		$properties['info']['mobile'] = $prop['telephone'];
+		$properties['info']['RCS'] = $prop['RCS'];
+		$properties['info']['email'] = $prop['email'];
+		$properties['info']['terminal'] = $prop['terminal'];
+		$properties['info']['vehicle_type']['car'] = '1';
+		$properties['info']['vehicle_type']['truck'] = '1';
+		$properties['info']['type']['ext'] = $prop['type']['ext'];
+		$properties['info']['type']['int'] = $prop['type']['int'];
+		$properties['form']['booking']['dialog_confirmation'] = $prop['gestion']['autovalid'] === '1' ? '0' : '1';
+		$properties['form']['booking']['terms_and_conditions'] = $prop['cg'];
+		$properties['form']['booking']['options']['holiday']['enabled'] = $prop['frais']['ferie'];
+		$properties['form']['booking']['options']['night_extra_charge']['enabled'] = $prop['frais']['nuit'];
+		$properties['form']['indicative'] = $prop['indicatif'];
+	}
+	if (metadata_exists('post', $post_id, '_database')) {
+		$prop = get_post_meta($post_id, '_database', true);
+		$properties['database']['name'] = $prop['dbname'];
+		$properties['database']['host'] = $prop['dbhost'];
+		$properties['database']['port'] = $prop['dbport'];
+		$properties['database']['user'] = $prop['dbuser'];
+		$properties['database']['password'] = $prop['dbpassword'];
+
+	}
+	if (metadata_exists('post', $post_id, '_divers')) {
+		$prop = get_post_meta($post_id, '_divers', true);
+		if (strtoupper($prop['smstype']) === 'OVH') {
+			$properties['notification']['sms']['type'] = 'OVH';
+			$properties['notification']['sms']['user'] = $prop['smsuser'];
+			$properties['notification']['sms']['password'] = $prop['smspasswd'];
+			$properties['notification']['sms']['sender'] = $prop['smssender'];
+			$properties['notification']['sms']['template'] = $prop['smsmessage'];
+		}
+	}
+	if (metadata_exists('post', $post_id, '_response')) {
+		$prop = get_post_meta($post_id, '_response', true);
+		$properties['notification']['mail']['templates']['confirmation']['value'] = $prop;
+	}
+
+	$pm->set_properties($properties);
+	try {
+		$pm->save();
+		foreach (['_info', '_database', '_divers', '_response', '_paypal','_template','_name', '_locale'] as $prop) {
+			delete_post_meta($pm->id(), $prop);
+		};
+	} catch (Exception $e) {
+		error_log("migration.save: " . $e->getMessage());
+	}
+}
+
+function pkmgmt_migrate_3_0_to_3_1(): void
+{
+	$pm = getParkingManagementInstance();
+	if (!$pm)
+		return;
+	$props = $pm->get_properties();
+	$sms = $pm->retrieve_property('sms');
+	if (!empty($sms)) {
+		$props['notification'] = Template::get_default('notification');
+		$props['notification']['sms'] = $sms;
+		delete_post_meta($pm->id, 'pkmgmt_sms');
+	}
+
+	$pm->set_properties($props);
+	try {
+		$pm->save();
+	} catch (Exception $e) {
+		Logger::error("migrate.3.0.to.3.1", $e->getMessage());
+	}
 }
 
 add_action('activate_' . PKMGMT_PLUGIN_BASENAME, 'pkmgmt_install', 9, 0);

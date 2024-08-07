@@ -21,16 +21,6 @@ function pkmgmt_switch_locale(string $locale, callable $callback, ...$args): mix
 	}
 
 	$previous_locale = determine_locale();
-	print_log(["pkmgmt_switch_locale" => [
-		'locale' => $locale,
-		'previous_locale' => $previous_locale,
-		'available_locales' => $available_locales,
-	]]);
-	error_log(print_r(["pkmgmt_switch_locale" => [
-		'locale' => $locale,
-		'previous_locale' => $previous_locale,
-		'available_locales' => $available_locales,
-	]], true));
 	$do_switch_locale = (
 		$locale !== $previous_locale &&
 		in_array($locale, $available_locales, true) &&
@@ -72,7 +62,6 @@ function pkmgmt_load_textdomain(string $locale = 'fr_FR'): bool
 		PKMGMT_LANGUAGES_DIR . DS,
 		sprintf('%s-%s.mo', PKMGMT_TEXT_DOMAIN, $locale)
 	);
-	error_log(print_r(["load_textdomain" => ["mofile" => $mofile]], true));
 	return load_textdomain(PKMGMT_TEXT_DOMAIN, $mofile, $locale);
 }
 

@@ -47,11 +47,6 @@ class PayplugAPI extends API
 	 */
 	public function create_item($request): WP_Error|WP_REST_Response
 	{
-		error_log(var_export([
-			'body' => $request->get_body(),
-			'params' => $request->get_params(),
-			'method' => $request->get_method(),
-		], true));
 		Logger::info("payplug.api.create_item", ['request' =>
 			[
 				'body' => $request->get_body(),

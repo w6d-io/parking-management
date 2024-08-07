@@ -198,7 +198,7 @@ class ParkingManagement
 	 * @param string $prop Property name.
 	 * @return array|string|null Property value. Null if property does not exist.
 	 */
-	private function retrieve_property(string $prop): array|string|null
+	public function retrieve_property(string $prop): array|string|null
 	{
 		$property = null;
 

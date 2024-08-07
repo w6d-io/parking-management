@@ -5,7 +5,7 @@
  * Author: David ALEXANDRE
  * License: GPL2 license
  * URI: https://www.gnu.org/licenses/gpl-2.0.html
- * Version: 3.0.0
+ * Version: 3.1.0
  * Requires at least: 6.3
  * Requires PHP: 7.4
  */
@@ -16,4 +16,3 @@ if (!defined('PKMGMT_PLUGIN'))
 require_once __DIR__ . '/define.php';
 
 require_once(PKMGMT_PLUGIN_DIR . DS . "load.php");
-
