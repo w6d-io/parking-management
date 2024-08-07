@@ -4,6 +4,9 @@
 /.git
 /.idea
 node_modules/
+tests/
+temp/
 /composer.*
 .distignore
 .gitignore
+.editorconfig
