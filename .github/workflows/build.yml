@@ -1,17 +1,40 @@
-name: Build release zip
+name: Build release
 
 on:
   push:
-    branches:
-      - main
+    tags:
+      - 'v*.*.*'
+  pull_request:
+    types: [closed]
+  issues:
+    types: [closed]
+  workflow_dispatch:
 
 jobs:
-  build:
-    name: Build release zip
+  update_release_draft:
     runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run Release Drafter
+        uses: release-drafter/release-drafter@v5
+        with:
+          config-name: release-drafter.yml
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  create_release:
+    runs-on: ubuntu-latest
+    needs: update_release_draft
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Install zip
+        run: sudo apt-get install zip -y
 
       - name: Extract repository name
         id: build_var
@@ -26,13 +49,29 @@ jobs:
       - name: Copy files to temporary directory
         run: rsync -av --exclude-from='.distignore' ./ temp/${{ env.REPO_NAME }}
 
-      - name: Generate zip
+      - name: Create ZIP Archive
         run: |
           cd temp/
           zip -r ../${{ env.REPO_NAME }}-${{ env.PKMGMT_VERSION }}.zip .
 
-      - name: Upload ZIP Archive
-        uses: actions/upload-artifact@v3
+      - name: Create GitHub Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          name: project-archive
-          path: ${{ env.REPO_NAME }}-${{ env.PKMGMT_VERSION }}.zip
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          body: ${{ steps.update_release_draft.outputs.changelog }}
+          draft: false
+          prerelease: false
+
+      - name: Upload Release Asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ${{ env.REPO_NAME }}-${{ env.PKMGMT_VERSION }}.zip
+          asset_name: ${{ env.REPO_NAME }}-${{ env.PKMGMT_VERSION }}.zip
+          asset_content_type: application/zip
