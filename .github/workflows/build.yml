@@ -19,7 +19,26 @@ jobs:
           npm install
 #          npm run build
 
+      - name: Extract repository name
+        id: build_var
+        run: |
+          echo "REPO_NAME=$(basename $GITHUB_REPOSITORY)" >> $GITHUB_ENV
+          version=$(grep "define('PKMGMT_VERSION'" "$php_file" | sed -E "s/.*define\('PKMGMT_VERSION',\s*'([^']+)'.*/\1/")
+          echo "PKMGMT_VERSION=$version" >> $GITHUB_ENV
+
+      - name: Create temporary directory
+        run: mkdir -p temp/${{ env.REPO_NAME }}
+
+      - name: Copy files to temporary directory
+        run: rsync -av --exclude-from='.distignore' ./ temp/${{ env.REPO_NAME }}
+
       - name: Generate zip
-        uses: 10up/action-wordpress-plugin-build-zip@stable
-#        env:
-#          SLUG: my-super-cool-plugin # optional, remove if GitHub repo name matches SVN slug, including capitalization
+        run: |
+          cd temp/
+          zip -r ../${{ env.REPO_NAME }}-${{ env.PKMGMT_VERSION }}.zip .
+
+      - name: Upload ZIP Archive
+        uses: actions/upload-artifact@v3
+        with:
+          name: project-archive
+          path: ${{ env.REPO_NAME }}-${{ env.PKMGMT_VERSION }}.zip
