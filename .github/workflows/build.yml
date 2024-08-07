@@ -13,12 +13,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Build plugin # Remove or modify this step as needed
-        run: |
-          composer install --no-dev
-          npm install
-#          npm run build
-
       - name: Extract repository name
         id: build_var
         run: |
