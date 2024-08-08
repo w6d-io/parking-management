@@ -110,7 +110,7 @@ class Notification implements IShortcode
 		$data['order_depart_formated'] = DatesRange::convertDate($data['order_depart'] . ' ' . $data['order_depart_heure'], 'Y-m-d H:i:s', 'd MMMM y H:mm');
 		$data['order_arrivee_formated'] = DatesRange::convertDate($data['order_arrivee'] . ' ' . $data['order_arrivee_heure'], 'Y-m-d H:i:s', 'd MMMM y H:mm');
 		$data['order_id'] = $_GET['order_id'];
-		$data['membre_id'] = $order['membre_id'];
+		$data['member_id'] = $order['membre_id'];
 		$data['info_name'] = $this->pm->title;
 		$data['info_address'] = $info['address'];
 		$data['info_mobile'] = $info['mobile'];
