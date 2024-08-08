@@ -15,7 +15,6 @@ jobs:
         with:
           token: ${{ secrets.WF_TOKEN }}
 
-
       - name: Generate tag
         id: generate_tag
         uses: K-Phoen/semver-release-action@master
