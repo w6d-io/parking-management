@@ -36,7 +36,10 @@ class HighSeasonApi extends Api
 		if (!$pm)
 			return new WP_Error('error', __('failed to get config', 'parking-management'));
 		$highSeasons = $pm->prop('high_season');
-		$hs = DatesRange::getDatesRangeAPI($highSeasons['dates']);
+		if (empty($highSeasons['dates'])||!is_array($highSeasons['dates']))
+			$hs = [];
+		else
+			$hs = DatesRange::getDatesRangeAPI($highSeasons['dates']);
 		return rest_ensure_response($hs);
 	}
 }
