@@ -1,4 +1,4 @@
-name-template: 'v$NEXT_PATCH_VERSION'
+name-template: 'Release v$NEXT_PATCH_VERSION'
 tag-template: 'v$NEXT_PATCH_VERSION'
 categories:
   - title: '🚀 Features'
@@ -8,9 +8,11 @@ categories:
   - title: '🧰 Maintenance'
     label: 'maintenance'
 change-template: '- $TITLE (#$NUMBER) @$AUTHOR'
+exclude-labels:
+  - 'skip-changelog'
 template: |
   ## What’s Changed
 
   $CHANGES
 
-  **Full Changelog**: https://github.com/$OWNER/$REPOSITORY/compare/$PREVIOUS_TAG...$NEW_TAG
+  **Full Changelog**: https://github.com/$OWNER/$REPOSITORY/compare/$PREVIOUS_TAG...v$NEXT_PATCH_VERSION
