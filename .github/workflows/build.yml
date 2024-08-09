@@ -34,7 +34,7 @@ jobs:
       contents: write
       pull-requests: write
     runs-on: ubuntu-latest
-    needs: update_release_draft
+#    needs: update_release_draft
 
     steps:
       - name: Checkout
