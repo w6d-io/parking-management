@@ -111,21 +111,27 @@ class Html
 				foreach ($option as $group_name => $opts) {
 					$select .= '<optgroup label="' . $group_name . '">' . PHP_EOL;
 					foreach ($opts as $o) {
-						$select .= self::_option($o['value'], $o['label'], $o['value'] == $value) . PHP_EOL;
+						$args = [];
+						if (array_key_exists('args', $o))
+							$args = $o['args'];
+						$select .= self::_option($o['value'], $o['label'], $o['value'] == $value, $args) . PHP_EOL;
 					}
 					$select .= '</optgroup>' . PHP_EOL;
 				}
 				break;
 			} else
-				$select .= self::_option($option['value'], $option['label'], $option['value'] == $value);
+				$args = [];
+			if (array_key_exists('args', $option))
+				$args = $option['args'];
+				$select .= self::_option($option['value'], $option['label'], $option['value'] == $value, $args);
 		}
 		$select .= '</select>';
 		return $select;
 	}
 
-	private static function _option($value, $label, $checked = false): string
+	private static function _option($value, $label, $checked = false, $args = []): string
 	{
-		return '<option value="' . $value . '"' . ($checked ? 'selected' : '') . '>' . $label . '</option>';
+		return '<option '.self::array_to_html_attribute($args).' value="' . $value . '"' . ($checked ? 'selected' : '') . '>' . $label . '</option>';
 	}
 
 	public static function _textarea(string $id, string $name, $content, string $cols, string $rows): string

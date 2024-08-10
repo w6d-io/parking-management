@@ -151,8 +151,7 @@ document.addEventListener('DOMContentLoaded', function () {
 		$(this).on('click', function(event) {
 			event.preventDefault();
 			tabTrigger.show();
-		})
-		;
+		});
 
 	});
 	const notificationMailButtons = $('#nav-notification-tab button');
@@ -162,10 +161,18 @@ document.addEventListener('DOMContentLoaded', function () {
 		$(this).on('click', function(event) {
 			event.preventDefault();
 			tabTrigger.show();
-		})
-		;
+		});
 	});
 
+	// data
+
+	$('#data-from').on("change", function () {
+		$('#data-from option:selected').each( function () {
+			const tabTrigger = new bootstrap.Tab(this);
+			tabTrigger.show();
+			}
+		)
+	}).trigger('change');
 	bootstrap.Tab.getInstance(mailButtons[0]).show();
 	bootstrap.Tab.getInstance(notificationMailButtons[0]).show();
 
@@ -205,4 +212,5 @@ document.addEventListener('DOMContentLoaded', function () {
 		$('.btn-close').trigger('click');
 	})
 
+	// toggle
 });
