@@ -8,7 +8,7 @@ class Template
 	{
 		match ($prop) {
 			'info' => $template = self::info(),
-			'database' => $template = self::database(),
+			'data' => $template = self::data(),
 			'payment' => $template = self::payment(),
 			'form' => $template = self::form(),
 			'booked_dates' => $template = self::booked_dates(),
@@ -44,15 +44,25 @@ class Template
 		);
 	}
 
-	private static function database(): array
+	private static function data(): array
 	{
-		return array(
-			'name' => "",
-			'host' => "",
-			'port' => "",
-			'user' => "",
-			'password' => ""
-		);
+		return [
+			'from' => 'database',
+			'database' => [
+				'name' => "",
+				'host' => "",
+				'port' => "",
+				'user' => "",
+				'password' => ""
+			],
+			'api' => [
+				'host' => "",
+				'port' => "",
+				'user' => "",
+				'password' => ""
+			],
+
+		];
 	}
 
 	private static function payment(): array

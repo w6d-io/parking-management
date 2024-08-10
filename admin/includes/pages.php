@@ -5,6 +5,7 @@ namespace ParkingManagement\Admin;
 use ParagonIE\Sodium\Core\Curve25519\H;
 use ParkingManagement\Html;
 use ParkingManagement\ParkingManagement;
+use ParkingManagement\Template;
 
 class Pages
 {
@@ -279,7 +280,7 @@ class Pages
 		return Html::_div(array('class' => $div_class),
 			Html::_label($id, $label_content),
 			'<br/>',
-			Html::_select($id, $name, array(), $options, $value)
+			Html::_select($id, $name, [], $options, $value)
 		);
 	}
 
@@ -420,22 +421,90 @@ class Pages
 		echo '</div>';
 	}
 
-	public static function database_box($database, $box): void
+	public static function data_box($data, $box): void
 	{
 		echo '<div class="' . $box['id'] . '-fields">';
-		echo self::_field('database-name', 'database_field', 'pkmgmt-database[name]', esc_html__('Name', 'parking-management'), $database['name']);
+		echo '<div class="nav nav-tabs" id="nav-data-tab" role="tablist">';
+		echo self::_field_select('data-from', 'data_field', 'pkmgmt-data[from]', esc_html__('From', 'parking-management'),
+			[
+				[
+					'value' => 'database',
+					'label' => 'Database',
+					'args' => [
+						'id' => 'nav-data-database-tab',
+						'data-bs-toggle' => 'tab',
+						'data-bs-target' => '#nav-data-database',
+						'role' => 'tab',
+						'aria-controls' => 'nav-data-database',
+
+					]
+				],
+				[
+					'value' => 'api',
+					'label' => 'API',
+					'args' => [
+						'id' => 'nav-data-api-tab',
+						'data-bs-toggle' => 'tab',
+						'data-bs-target' => '#nav-data-api',
+						'role' => 'tab',
+						'aria-controls' => 'nav-data-api',
+
+					]
+				]
+			],
+			$data['from'],
+		);
+		echo '</div>';
+
+		echo '<div class="tab-content" id="nav-data-tab-content">';
+
+		echo '<div class="tab-pane fade" id="nav-data-database" role="tabpanel" aria-labelledby="nav-data-database-tab" tabindex="0">';
+		self::database_box($data['database'], $box);
+		echo '</div>';
+
+		echo '<div class="tab-pane fade" id="nav-data-api" role="tabpanel" aria-labelledby="nav-data-api-tab" tabindex="0">';
+		self::api_box($data['api'], $box);
+		echo '</div>';
+
+		echo '</div>';
+
+		echo '</div>';
+
+
+	}
+
+	private static function database_box($database, $box): void
+	{
+		echo '<div class="' . $box['id'] . '-fields">';
+		echo self::_field('database-name', 'database_field', 'pkmgmt-data[database][name]', esc_html__('Name', 'parking-management'), $database['name']);
 		echo '</div>';
 		echo '<div class="' . $box['id'] . '-fields">';
-		echo self::_field('database-host', 'database_field', 'pkmgmt-database[host]', esc_html__('Host', 'parking-management'), $database['host']);
+		echo self::_field('database-host', 'database_field', 'pkmgmt-data[database][host]', esc_html__('Host', 'parking-management'), $database['host']);
 		echo '</div>';
 		echo '<div class="' . $box['id'] . '-fields">';
-		echo self::_field('database-port', 'database_field', 'pkmgmt-database[port]', esc_html__('Port', 'parking-management'), $database['port']);
+		echo self::_field('database-port', 'database_field', 'pkmgmt-data[database][port]', esc_html__('Port', 'parking-management'), $database['port']);
 		echo '</div>';
 		echo '<div class="' . $box['id'] . '-fields">';
-		echo self::_field('database-user', 'database_field', 'pkmgmt-database[user]', esc_html__('Username', 'parking-management'), $database['user']);
+		echo self::_field('database-user', 'database_field', 'pkmgmt-data[database][user]', esc_html__('Username', 'parking-management'), $database['user']);
 		echo '</div>';
 		echo '<div class="' . $box['id'] . '-fields">';
-		echo self::_field_password('database-password', 'database_field', 'pkmgmt-database[password]', esc_html__('Password', 'parking-management'), $database['password']);
+		echo self::_field_password('database-password', 'database_field', 'pkmgmt-data[database][password]', esc_html__('Password', 'parking-management'), $database['password']);
+		echo '</div>';
+	}
+
+	private static function api_box($api, $box): void
+	{
+		echo '<div class="' . $box['id'] . '-fields">';
+		echo self::_field('api-host', 'api_field', 'pkmgmt-data[api][host]', esc_html__('Host', 'parking-management'), $api['host']);
+		echo '</div>';
+		echo '<div class="' . $box['id'] . '-fields">';
+		echo self::_field('api-port', 'api_field', 'pkmgmt-data[api][port]', esc_html__('Port', 'parking-management'), $api['port']);
+		echo '</div>';
+		echo '<div class="' . $box['id'] . '-fields">';
+		echo self::_field('api-user', 'api_field', 'pkmgmt-data[api][user]', esc_html__('Username', 'parking-management'), $api['user']);
+		echo '</div>';
+		echo '<div class="' . $box['id'] . '-fields">';
+		echo self::_field_password('api-password', 'api_field', 'pkmgmt-data[api][password]', esc_html__('Password', 'parking-management'), $api['password']);
 		echo '</div>';
 	}
 

@@ -12,7 +12,8 @@ class ParkingManagement
 
 	const properties_available = array(
 		'info' => ['title' => 'Information'],
-		'database' => ['title' => 'Database'],
+//		'database' => ['title' => 'Database'],
+		'data' => ['title' => 'Data'],
 		'payment' => ['title' => 'Payment'],
 		'form' => ['title' => 'Form Options'],
 		'booked_dates' => ['title' => 'Booked dates'],
