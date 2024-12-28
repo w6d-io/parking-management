@@ -4,6 +4,7 @@ namespace ParkingManagement\API;
 
 use WP_REST_Controller;
 
+include_once PKMGMT_PLUGIN_MODULES_DIR . DS . 'api' . DS . 'external.php';
 include_once PKMGMT_PLUGIN_MODULES_DIR . DS . 'api' . DS . 'includes' . DS . 'zipcode.php';
 include_once PKMGMT_PLUGIN_MODULES_DIR . DS . 'api' . DS . 'includes' . DS . 'vehicle.php';
 include_once PKMGMT_PLUGIN_MODULES_DIR . DS . 'api' . DS . 'includes' . DS . 'destination.php';
