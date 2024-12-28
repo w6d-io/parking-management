@@ -58,8 +58,11 @@ class Template
 			'api' => [
 				'host' => "",
 				'port' => "",
-				'user' => "",
-				'password' => ""
+				'username' => "",
+				'password' => "",
+				'endpoint' => [
+					'order' => ''
+				]
 			],
 
 		];

@@ -4,11 +4,15 @@ namespace Booking;
 
 use DateTime;
 use Exception;
+use GuzzleHttp\Client;
+use GuzzleHttp\Exception\GuzzleException;
 use InvalidArgumentException;
+use ParkingManagement\API\external;
 use ParkingManagement\Booked;
 use ParkingManagement\database\database;
 use ParkingManagement\DatesRange;
 use ParkingManagement\Logger;
+use ParkingManagement\ParkingManagement;
 use ParkingManagement\Payment;
 use ParkingManagement\PaymentID;
 use ParkingManagement\Price;
@@ -67,8 +71,9 @@ class Order
 	private string $terminal;
 	private int $site_id;
 	private array $data;
-
+	private array $post;
 	private array $order;
+	private ParkingManagement $pm;
 
 	public function getOrder(): array
 	{
@@ -91,18 +96,20 @@ class Order
 	 */
 	public function __construct()
 	{
-		$pm = getParkingManagementInstance();
 		if (!$conn = database::connect()) {
 			Logger::error("member.database.connect", database::getError());
 			return;
 		}
 		$this->conn = $conn;
+		$pm = getParkingManagementInstance();
+		$this->pm = $pm;
 		$info = $pm->prop('info');
+		$this->data = $pm->prop('data');
 		if (empty($info))
 			throw new Exception('Parking management info property is empty.');
 		$this->terminal = $info['terminal'];
 		$this->site_id = self::getSiteID($info['terminal'])->value;
-		$this->data = $_POST;
+		$this->post = $_POST;
 		date_default_timezone_set('Europe/Paris');
 	}
 
@@ -115,7 +122,30 @@ class Order
 			throw new Exception("order creation failed");
 		if ($order_id = $this->isExists($member_id))
 			return $order_id;
+		if (external::isAPI())
+			return $this->apiCreate($member_id);
+		return $this->dbCreate($member_id);
+	}
 
+	private function apiCreate($member_id): int
+	{
+		$this->post['member_id'] = $member_id;
+		$client = new Client();
+		$external = new external($this->pm);
+		$response = $client->request('POST', $external->endpoint('order'), [
+			'auth' => [$this->data['api']['username'], $this->data['api']['password']],
+			'json' => $this->post
+		]);
+		$body = $response->getBody();
+		return json_decode($body, true);
+
+	}
+
+	/**
+	 * @throws Exception
+	 */
+	private function dbCreate(string $member_id): int
+	{
 		$query = "SELECT `grille_tarifaire` FROM `tbl_remplissage` WHERE `date` = ?";
 		$date = substr($this->getData('depart'), 0, 10);
 		$req = $this->conn->prepare($query);
@@ -144,16 +174,12 @@ class Order
 		$end = substr($this->getData('retour'), 0, 10);
 		if (Booked::is($start)) {
 			$price['complet'] = 1;
-			throw new Exception(__("Car park is full on ", 'parking-management') . DatesRange::convertDate($start));
+			return 0;
 		}
 		$start = DateTime::createFromFormat('Y-m-d', $start);
 		$end = DateTime::createFromFormat('Y-m-d', $end);
 		$start_hour = substr($this->getData('depart'), 11, 5);
 		$end_hour = substr($this->getData('retour'), 11, 5);
-		if (Booked::is($start) || Booked::is($end)) {
-			$price['complet'] = 1;
-			return 0;
-		}
 
 		$search = implode(" ",
 			array(ucwords($this->getData('prenom')), ucwords($this->getData('nom')), ucwords($this->getData('email')),
@@ -162,7 +188,7 @@ class Order
 		);
 		$referer = parse_url($_SERVER['HTTP_REFERER']);
 		$referer_host = array_key_exists('host', $referer) ? $referer['host'] : NULL;
-		$price = Price::getPrice($this->data);
+		$price = Price::getPrice($this->post);
 		$this->order = array(
 			'resauuid' => uniqid(),
 			'site_id' => $this->site_id,
@@ -247,6 +273,26 @@ class Order
 	 */
 	public function read(int $order_id): array
 	{
+		if (external::isAPI())
+			return $this->apiRead($order_id);
+		return $this->dbRead($order_id);
+	}
+
+	private function apiRead(int $order_id): array
+	{
+		$client = new Client();
+		$response = $client->request('GET', $this->data['api']['endpoint']['order']['read'].'?id='.$order_id, [
+			'auth' => [$this->data['api']['username'], $this->data['api']['password']],
+		]);
+		$body = $response->getBody();
+		return json_decode($body, true);
+	}
+
+	/**
+	 * @throws Exception
+	 */
+	private function dbRead(int $order_id): array
+	{
 		$query = 'SELECT `resauuid`, `site_id`, `parking_id`,  `date`, `membre_id`
 		    , `telephone`, `facture_id`, `facturation`, `depart`, `depart_heure`, `arrivee`
 		    , `arrivee_heure`, `nb_jour`, `nb_jour_offert`, `nb_personne`
@@ -260,10 +306,36 @@ class Order
 		return $req->fetch(PDO::FETCH_ASSOC);
 	}
 
+	public function update_payment(int $order_id, string $payment_date, float $amount, PaymentID $payment_id): void
+	{
+		if (external::isAPI())
+			$this->api_update_payment($order_id, $payment_date, $amount, $payment_id);
+		$this->db_update_payment($order_id, $payment_date, $amount, $payment_id);
+
+	}
+
+	private function api_update_payment(int $order_id, string $payment_date, float $amount, PaymentID $payment_id): void
+	{
+		try {
+			$external = new external($this->pm);
+			$client = new Client();
+			$response = $client->request('PUT', $external->get_endpoint('order'), [
+				'auth' => [$this->data['api']['username'], $this->data['api']['password']],
+				'json' => [
+					'order_id' => $order_id,
+					'payment_date' => $payment_date,
+					'amount' => $amount,
+					'payment_id' => $payment_id->value,
+				]
+			]);
+		} catch (Exception|GuzzleException $e) {
+			Logger::error('order.update_payment', ['error' => $e->getMessage()]);
+		}
+	}
 	/**
 	 * @throws Exception
 	 */
-	public function update_payment(int $order_id, string $payment_date, float $amount, PaymentID $payment_id): void
+	private function db_update_payment(int $order_id, string $payment_date, float $amount, PaymentID $payment_id): void
 	{
 //		$payment_date = date('Y-m-d H:i:s', $payment_date);
 		$bill_id = $this->getBillID($order_id);
@@ -361,9 +433,9 @@ class Order
 
 	private function getData($field = null)
 	{
-		if (is_null($field) || !array_key_exists($field, $this->data))
+		if (is_null($field) || !array_key_exists($field, $this->post))
 			return '';
-		return $this->data[$field];
+		return $this->post[$field];
 	}
 
 	private function getBillID($id)
