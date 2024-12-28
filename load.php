@@ -216,11 +216,19 @@ function pkmgmt_migrate_3_0_to_3_1(): void
 	if (!$pm)
 		return;
 	$props = $pm->get_properties();
+	$props['notification'] = Template::get_default('notification');
 	$sms = $pm->retrieve_property('sms');
 	if (!empty($sms)) {
-		$props['notification'] = Template::get_default('notification');
 		$props['notification']['sms'] = $sms;
 		delete_post_meta($pm->id, 'pkmgmt_sms');
+	}
+	$mail = $pm->retrieve_property('mail');
+	if (!empty($mail)) {
+		$props['notification']['mail']['host'] = $mail['host'];
+		$props['notification']['mail']['login'] = $mail['login'];
+		$props['notification']['mail']['password'] = $mail['password'];
+		$props['notification']['mail']['sender'] = $mail['sender'];
+		delete_post_meta($pm->id, 'pkmgmt_mail');
 	}
 
 	$pm->set_properties($props);
