@@ -661,7 +661,7 @@ EOT;
 			return '';
 		// Cocher cette case si le client souscrit l'assurance annulation à
 		$post = array_merge($_GET, $_POST);
-		$msg = esc_html__('I hereby subscribe to the cancellation insurance for '.$form['options']['cancellation_insurance']['price'].' €', 'parking-management');
+		$msg = esc_html__('I hereby subscribe to the cancellation insurance for ', 'parking-management') .$form['options']['cancellation_insurance']['price'].' €';
 		return Html::_div(
 			array('class' => 'cancellation-insurance form-check'),
 			Html::_index('hidden', '', 'assurance_annulation', array('value' => '0')),
