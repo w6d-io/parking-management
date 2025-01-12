@@ -420,13 +420,13 @@ class Form
 								array(
 									'class' => 'col',
 								),
-								'<h1 class="title">Departure</h1>',
+								'<h1 class="title">'.esc_html__('Departure', 'parking-management').'</h1>',
 							),
 							Html::_div(
 								array(
 									'class' => 'col',
 								),
-								'<h1 class="title">Return</h1>',
+								'<h1 class="title">'.esc_html__('Return', 'parking-management').'</h1>',
 							),
 						),
 						Html::_div(
