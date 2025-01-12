@@ -404,3 +404,11 @@ msgstr ""
 #: modules/booking/includes/home_form.php:104
 msgid "Your quote in 2 clicks"
 msgstr ""
+
+#: modules/booking/includes/form.php:423
+msgid "Departure"
+msgstr ""
+
+#: modules/booking/includes/form.php:429
+msgid "Return"
+msgstr ""

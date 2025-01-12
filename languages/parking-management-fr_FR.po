@@ -404,3 +404,11 @@ msgstr "Oubli dans le véhicule"
 #: modules/booking/includes/home_form.php:104
 msgid "Your quote in 2 clicks"
 msgstr "Votre devis en 2 clicks"
+
+#: modules/booking/includes/form.php:423
+msgid "Departure"
+msgstr "Départ"
+
+#: modules/booking/includes/form.php:429
+msgid "Return"
+msgstr "Retour"
