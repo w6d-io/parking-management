@@ -34,7 +34,7 @@ class SMS {
 			'region' => 'eu-west-3', // TODO add region into admin config
 			'version' => 'latest'
 		);
-
+		Logger::info('sms.aws.debug', ["sms" => $sms, "phone" => $phone]);
 		try {
 			$SnSclient = new SnsClient($aws_cred);
 			$SnSclient->publish([

@@ -1,6 +1,19 @@
-document.addEventListener('DOMContentLoaded', function () {
+const translations = {};
+function loadTranslation(lang) {
+	$.getJSON(external_object.i18n_path + '/' + `${lang}.json`, function (data) {
+		translations[lang] = data;
+	}).fail(function () {
+		console.error(`Fail to load ${lang}.json`);
+	});
+}
 
+function translate(key, lang) {
+	return translations?.[lang]?.[key] || key;
+}
+document.addEventListener('DOMContentLoaded', function () {
+	loadTranslation(external_object.locale);
 	const DateTime = easepick.DateTime;
+
 	let highSeason = [];
 	$.ajax({
 		type: 'GET',
@@ -11,8 +24,7 @@ document.addEventListener('DOMContentLoaded', function () {
 			console.error("get high season failed", f);
 		},
 		success: function (data) {
-			if (data instanceof Array)
-			{
+			if (data instanceof Array) {
 				highSeason = data.map(d => {
 					if (d instanceof Array) {
 						const start = new DateTime(d[0], 'YYYY-MM-DD');
@@ -24,6 +36,7 @@ document.addEventListener('DOMContentLoaded', function () {
 			}
 		}
 	});
+
 	let bookedDates = [];
 	$.ajax({
 		type: 'GET',
@@ -34,8 +47,7 @@ document.addEventListener('DOMContentLoaded', function () {
 			console.error("get booked failed", f);
 		},
 		success: function (data) {
-			if (data instanceof Array)
-			{
+			if (data instanceof Array) {
 				bookedDates = data.map(d => {
 					if (d instanceof Array) {
 						const start = new DateTime(d[0], 'YYYY-MM-DD');
@@ -68,10 +80,9 @@ document.addEventListener('DOMContentLoaded', function () {
 				});
 				picker.on('view', (evt) => {
 					const {view, date, target} = evt.detail;
-					if ( view === 'CalendarDay' && date.inArray(highSeason, '[]') ) {
+					if (view === 'CalendarDay' && date.inArray(highSeason, '[]')) {
 						target.classList.add('high-season');
 					}
-					// target.append();
 				});
 			},
 			RangePlugin: {
@@ -89,7 +100,6 @@ document.addEventListener('DOMContentLoaded', function () {
 	}
 
 	function initializeDateTimePickers() {
-
 		$('#depart').each(function () {
 			easepickCreate(
 				$('#depart').get(0),
@@ -104,7 +114,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
 	initializeDateTimePickers();
 
-	// Price
 	function getPrice() {
 		if (
 			$('#depart').val().length === 0
@@ -125,17 +134,25 @@ document.addEventListener('DOMContentLoaded', function () {
 				if (data.toolong === 0) {
 					if (data.complet === 0) {
 						const total = parseInt(!isNaN(parseFloat(data.total)) ? data.total : '0');
-						$('#submit').html('<i class="fa fa-jet-fighter"></i> '+'Your reservation for ' + total + ' €');
-
+						$('#submit').html(
+							'<i class="fa fa-jet-fighter"></i> ' +
+							translate('reservation-for', external_object.locale)
+								.replace('{total}', total + ' €')
+						);
 					} else {
-						$('#submit').html('<i class="fa-solid fa-hand-point-up"></i> Votre devis en 2 click');
+						$('#submit').html(
+							'<i class="fa-solid fa-hand-point-up"></i> ' +
+							translate('quote_in_two_clicks', external_object.locale)
+						);
 					}
 				} else {
-					$('#submit').html('<i class="fa-solid fa-hand-point-up"></i> Votre devis en 2 click');
+					$('#submit').html(
+						'<i class="fa-solid fa-hand-point-up"></i> ' +
+						translate('quote_in_two_clicks', external_object.locale)
+					);
 				}
 			}
 		});
 	}
 	getPrice();
-
 });

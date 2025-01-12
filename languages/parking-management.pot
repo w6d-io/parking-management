@@ -1,15 +1,15 @@
-# Copyright (C) 2024 David ALEXANDRE
+# Copyright (C) 2025 David ALEXANDRE
 # This file is distributed under the GPL2 license.
 msgid ""
 msgstr ""
-"Project-Id-Version: Parking management 3.0.0\n"
+"Project-Id-Version: Parking management 3.1.1\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/parking-management\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2024-08-04T19:16:21+00:00\n"
+"POT-Creation-Date: 2025-01-11T20:49:18+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.10.0\n"
 "X-Domain: parking-management\n"
@@ -278,13 +278,13 @@ msgstr ""
 
 #: modules/booking/includes/form.php:473
 #: modules/booking/includes/form.php:631
-#: modules/booking/includes/home_form.php:75
+#: modules/booking/includes/home_form.php:76
 msgid "Dropping off at"
 msgstr ""
 
 #: modules/booking/includes/form.php:490
 #: modules/booking/includes/form.php:635
-#: modules/booking/includes/home_form.php:92
+#: modules/booking/includes/home_form.php:93
 msgid "Landing at the airport"
 msgstr ""
 
@@ -316,6 +316,10 @@ msgstr ""
 msgid "Loading..."
 msgstr ""
 
+#: modules/booking/includes/home_form.php:104
+msgid "Your quote in 2 clicks"
+msgstr ""
+
 #: modules/booking/includes/order.php:147
 msgid "Car park is full on "
 msgstr ""
@@ -334,8 +338,8 @@ msgstr ""
 msgid "Order cancelled"
 msgstr ""
 
-#: modules/payment/includes/mypos/api.php:66
-#: modules/payment/includes/payplug/api.php:67
+#: modules/payment/includes/mypos/api.php:61
+#: modules/payment/includes/payplug/api.php:62
 msgid "failed to get parking management instance"
 msgstr ""
 
@@ -349,7 +353,7 @@ msgstr ""
 msgid "Checkout"
 msgstr ""
 
-#: modules/payment/includes/payplug/api.php:101
+#: modules/payment/includes/payplug/api.php:96
 msgid "payment status not recorded"
 msgstr ""
 

@@ -116,10 +116,10 @@ class Booking implements IShortcode, IParkingManagement
 				$_GET['order_id'] = $order_id;
 				$payment = new Payment($this->pm);
 				$payment->redirect();
-				$form = $this->pm->prop('form');
-				if ($form['validation_page']['value'] != '')
-					$page = $form['validation_page']['value'];
 			}
+			$form = $this->pm->prop('form');
+			if ($form['validation_page']['value'] != '')
+				$page = $form['validation_page']['value'];
 			wp_redirect($page . '?order_id=' . $order_id);
 			exit(0);
 

@@ -263,13 +263,13 @@ msgstr ""
 
 #: modules/booking/includes/form.php:473
 #: modules/booking/includes/form.php:631
-#: modules/booking/includes/home_form.php:75
+#: modules/booking/includes/home_form.php:76
 msgid "Dropping off at"
 msgstr ""
 
 #: modules/booking/includes/form.php:490
 #: modules/booking/includes/form.php:635
-#: modules/booking/includes/home_form.php:92
+#: modules/booking/includes/home_form.php:93
 msgid "Landing at the airport"
 msgstr ""
 
@@ -319,8 +319,8 @@ msgstr ""
 msgid "Order cancelled"
 msgstr ""
 
-#: modules/payment/includes/mypos/api.php:66
-#: modules/payment/includes/payplug/api.php:67
+#: modules/payment/includes/mypos/api.php:61
+#: modules/payment/includes/payplug/api.php:62
 msgid "failed to get parking management instance"
 msgstr ""
 
@@ -360,7 +360,7 @@ msgstr ""
 msgid "person"
 msgstr ""
 
-#: modules/payment/includes/payplug/api.php:101
+#: modules/payment/includes/payplug/api.php:96
 msgid "payment status not recorded"
 msgstr ""
 
@@ -399,4 +399,8 @@ msgstr ""
 
 #: modules/price/includes/page.php:103
 msgid "Things forgotten in the vehicle"
+msgstr ""
+
+#: modules/booking/includes/home_form.php:104
+msgid "Your quote in 2 clicks"
 msgstr ""
