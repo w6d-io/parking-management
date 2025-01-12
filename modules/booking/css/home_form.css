@@ -8,3 +8,7 @@
 .calendar > .days-grid > .locked.high-season {
 	background-color: initial;
 }
+
+form#quote label.form-label {
+	color: #ffffff;
+}

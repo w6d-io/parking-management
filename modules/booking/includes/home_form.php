@@ -38,6 +38,7 @@ class HomeForm
 			'external_object',
 			array(
 				'locale' => $pm->locale,
+				'i18n_path' => pkmgmt_plugin_url('languages'),
 				'home_url' => home_url(),
 				'home_form_css' => pkmgmt_plugin_url('modules/booking/css/home_form.css'),
 				'site_id' => Order::getSiteID($properties['info']['terminal'])->value,
@@ -100,7 +101,7 @@ class HomeForm
 			).
 			Html::_div(
 				array('class' => 'col-12 d-flex justify-content-around pt-3'),
-				'<button id="submit" type="submit" class="btn btn-success btn-lg"><i class="fa-solid fa-hand-point-up"></i> Votre devis en 2 click</button>',
+				'<button id="submit" type="submit" class="btn btn-success btn-lg"><i class="fa-solid fa-hand-point-up"></i>', esc_html__('Your quote in 2 clicks', 'parking-management') ,'</button>',
 			);
 	}
 }
