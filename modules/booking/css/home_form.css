@@ -12,3 +12,7 @@
 form#quote label.form-label {
 	color: #ffffff;
 }
+
+form#quote input.form-control {
+	height: 42px;
+}
