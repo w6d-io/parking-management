@@ -442,7 +442,7 @@ class Form
 								),
 								Html::_select('terminal_depart', 'terminal[depart]',
 									array(
-										'class' => 'required border form-select py-2',
+										'class' => 'required border form-select esg-sorting-select py-2',
 										'tabindex' => "11",
 									),
 									self::get_terminal($pm),
@@ -458,7 +458,7 @@ class Form
 								),
 								Html::_select('terminal_arrivee', 'terminal[arrivee]',
 									array(
-										'class' => 'required border form-select py-2',
+										'class' => 'required border form-select esg-sorting-select py-2',
 										'tabindex' => "13",
 									),
 									self::get_terminal($pm),
@@ -504,7 +504,7 @@ class Form
 				self::_row_field('nb_pax',
 					self::_label('nb_pax', esc_html__('Number of pax', 'parking-management')),
 					Html::_select('nb_pax', 'nb_pax', array(
-						'class' => 'required border col-5 rounded py-2 px-3 form-select',
+						'class' => 'required border col-5 rounded py-2 px-3 form-select esg-sorting-select',
 						'tabindex' => "14",
 					),
 						array(
