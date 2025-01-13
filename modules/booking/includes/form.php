@@ -7,9 +7,11 @@ use ParkingManagement\ParkingManagement;
 
 class Form
 {
+	private ParkingManagement $pm;
 	public function __construct(ParkingManagement $pm)
 	{
-		$this->enqueue($pm);
+		$this->pm = $pm;
+		$this->enqueue();
 	}
 
 	private static function _radio_parking_type_field($div_class, $id, $name, array $elements, $value): string
@@ -189,7 +191,7 @@ class Form
 		);
 	}
 
-	private function enqueue(ParkingManagement $pm): void
+	private function enqueue(): void
 	{
 		wp_enqueue_style('parking-management-booking', pkmgmt_plugin_url('modules/booking/css/form.css'));
 		wp_enqueue_style('font-awesome', 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css', array(), '6.0.0-beta3');
@@ -218,7 +220,7 @@ class Form
 				'parking-management-intl-tel-input',
 			),
 			PKMGMT_VERSION);
-		$properties = $pm->get_properties();
+		$properties = $this->pm->get_properties();
 		unset($properties['payment']);
 		unset($properties['database']);
 		unset($properties['sms']);
@@ -226,7 +228,7 @@ class Form
 		wp_localize_script('parking-management-booking',
 			'external_object',
 			array(
-				'locale' => $pm->locale,
+				'locale' => $this->pm->locale,
 				'home_url' => home_url(),
 				'form_css' => pkmgmt_plugin_url('modules/booking/css/form.css'),
 				'properties' => $properties
