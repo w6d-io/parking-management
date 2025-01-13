@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-01-11T20:49:18+00:00\n"
+"POT-Creation-Date: 2025-01-12T15:34:26+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.10.0\n"
 "X-Domain: parking-management\n"
@@ -266,6 +266,14 @@ msgstr ""
 
 #: modules/booking/includes/form.php:396
 msgid "Destination"
+msgstr ""
+
+#: modules/booking/includes/form.php:423
+msgid "Departure"
+msgstr ""
+
+#: modules/booking/includes/form.php:429
+msgid "Return"
 msgstr ""
 
 #: modules/booking/includes/form.php:439
