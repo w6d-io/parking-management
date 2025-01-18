@@ -28,6 +28,7 @@ class Member
 	{
 		return $this->member;
 	}
+
 	public function __construct()
 	{
 		if (!$conn = database::connect()) {
@@ -49,7 +50,7 @@ class Member
 			return $req->fetch(PDO::FETCH_ASSOC)["id_membre"];
 		} catch (PDOException $e) {
 			$post = array_merge($_GET, $_POST);
-			Logger::error("member.isMemberExists", ['data'=>$post,'error'=>$e->getMessage()]);
+			Logger::error("member.isMemberExists", ['data' => $post, 'error' => $e->getMessage()]);
 			return false;
 		}
 	}
@@ -102,6 +103,78 @@ class Member
 		if (!$req->execute(array('id' => $member_id)))
 			throw new Exception("failed to read member");
 		return $req->fetch(PDO::FETCH_ASSOC);
+	}
+
+	/**
+	 * Updates specific fields of a member record
+	 * @param int $member_id The ID of the member to update
+	 * @param array $fields Associative array of fields to update and their new values
+	 * @return bool
+	 */
+	public function patch(int $member_id, array $fields): bool
+	{
+		// Define allowable fields for updating
+		$allowedFields = [
+			'code_postal', 'ville', 'pays',
+			'tel_fixe', 'tel_port'
+		];
+
+		// Filter out any fields that aren't in the allowed list
+		$updateFields = array_intersect_key($fields, array_flip($allowedFields));
+
+		if (empty($updateFields)) {
+			Logger::error("member.patch", "No valid fields provided for update");
+//			throw new Exception("No valid fields provided for update");
+			return false;
+		}
+
+		try {
+			// Build the SQL query dynamically based on the fields to update
+			$setClauses = array_map(function ($field) {
+				return "`$field` = :$field";
+			}, array_keys($updateFields));
+
+			$sql = "UPDATE `tbl_membre` SET " . implode(', ', $setClauses) . " WHERE `id_membre` = :id_membre";
+
+			$req = $this->conn->prepare($sql);
+
+			// Add member_id to the parameters
+			$params = array_merge($updateFields, ['id_membre' => $member_id]);
+
+			// Format specific fields if needed
+			if (isset($params['email'])) {
+				$params['email'] = strtolower($params['email']);
+			}
+			if (isset($params['nom'])) {
+				$params['nom'] = ucwords($params['nom']);
+			}
+			if (isset($params['prenom'])) {
+				$params['prenom'] = ucwords($params['prenom']);
+			}
+			if (isset($params['ville'])) {
+				$params['ville'] = ucwords($params['ville']);
+			}
+
+			if (!$req->execute($params)) {
+				Logger::error("member.patch", [
+					'member_id' => $member_id,
+					'fields' => $fields,
+					'errorInfo' => $this->conn->errorInfo()
+				]);
+//				throw new Exception("Failed to update member");
+				return false;
+			}
+
+			return true;
+		} catch (PDOException $e) {
+			Logger::error("member.patch", [
+				'member_id' => $member_id,
+				'fields' => $fields,
+				'error' => $e->getMessage()
+			]);
+//			throw $e;
+			return false;
+		}
 	}
 
 }

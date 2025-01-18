@@ -107,6 +107,8 @@ class Booking implements IShortcode, IParkingManagement
 			$member_id = $member->isMemberExists($post['email']);
 			if (!$member_id)
 				$member_id = $member->create();
+			else
+				$member->patch($member_id, $post);
 			$order = new Order();
 			$order_id = $order->create($member_id);
 			if ($order_id === 0)
