@@ -109,6 +109,8 @@ class Booking implements IShortcode, IParkingManagement
 				$member_id = $member->create();
 			$order = new Order();
 			$order_id = $order->create($member_id);
+			if ($order_id === 0)
+				exit(0);
 			$vehicle = new Vehicle();
 			$vehicle->create($order_id);
 
