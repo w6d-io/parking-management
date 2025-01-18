@@ -144,6 +144,7 @@ class Order
 		$end = substr($this->getData('retour'), 0, 10);
 		if (Booked::is($start)) {
 			$price['complet'] = 1;
+			Logger::info("order.create", "car park is full on " . DatesRange::convertDate($start));
 			throw new Exception(__("Car park is full on ", 'parking-management') . DatesRange::convertDate($start));
 		}
 		$start = DateTime::createFromFormat('Y-m-d', $start);
@@ -152,6 +153,7 @@ class Order
 		$end_hour = substr($this->getData('retour'), 11, 5);
 		if (Booked::is($start) || Booked::is($end)) {
 			$price['complet'] = 1;
+			Logger::info("order.create", "car park is full");
 			return 0;
 		}
 
@@ -223,10 +225,10 @@ class Order
 		";
 		$req = $this->conn->prepare($query);
 		if (!$req->execute($this->order))
-			throw new Exception(__("order creation failed", 'parking-management'));
+			throw new Exception("order creation failed in database insertion");
 		$id = $this->conn->lastInsertId();
 		if (!$id)
-			throw new Exception(__("order creation failed", 'parking-management'));
+			throw new Exception("order creation failed : id is null");
 		Logger::info("order.create", ['id' => $id]);
 		$query = 'UPDATE `tbl_commande` SET remarque = :remarque, facture_id = :facture_id WHERE `id_commande` = :id';
 		$req = $this->conn->prepare($query);
@@ -238,7 +240,7 @@ class Order
 			'remarque' => $this->order['remarque'],
 			'facture_id' => $this->order['facture_id']
 		)))
-			throw new Exception(__("order creation failed", 'parking-management'));
+			Logger::error("order.create", ["message" => "error during order update with remarque and facture_id", "facture_id" => $this->order['facture_id'], "remarque" => $this->order['remarque']]);
 		return (int)$id;
 	}
 
