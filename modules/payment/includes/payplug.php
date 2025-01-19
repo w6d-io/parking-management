@@ -100,7 +100,7 @@ class Payplug implements IPayment
 
 			return $payment->hosted_payment->payment_url;
 		} catch (Exception $e) {
-			Logger::error("payplug.initPayment", ['data' => $data, 'payload' => $payload ?? 'n/c', 'exception' => $e]);
+			Logger::error("payplug.initPayment", ['data' => $data, 'payload' => $payload ?? 'n/c', 'exception' => $e->getMessage()]);
 			return '';
 		}
 	}
