@@ -8,7 +8,7 @@ use PKMGMT;
 
 class Logger
 {
-	private const logDirectory = PKMGMT_PLUGIN_DIR . DS . 'logs';
+	private const logDirectory = WP_CONTENT_DIR . DS . 'logs' . DS . 'parking-management';
 	private static bool|PDO $conn = false;
 	private static bool $useDatabase;
 	private static bool $useFile;
@@ -61,8 +61,12 @@ class Logger
 			self::$retention = (int)self::$info['logs']['retention'] ?? 30;
 		if (!self::$conn)
 			self::$conn = database::connect();
-		if (self::$useFile && !is_dir(self::logDirectory))
+		if (self::$useFile && !is_dir(self::logDirectory)) {
 			mkdir(self::logDirectory, 0755, true);
+			// Add index.php file to prevent directory listing
+			$indexContent = "<?php\n// Silence is golden.";
+			file_put_contents(self::logDirectory . DS . 'index.php', $indexContent);
+		}
 	}
 
 	private static function getClientIP()
