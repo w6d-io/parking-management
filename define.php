@@ -44,6 +44,3 @@ if (!defined('PKMGMT_LANGUAGES_DIR'))
 	define('PKMGMT_LANGUAGES_DIR', PKMGMT_PLUGIN_DIR . DS . 'languages');
 if (!defined('PKMGMT_PLUGIN_TEMPLATES'))
 	define('PKMGMT_PLUGIN_TEMPLATES', PKMGMT_PLUGIN_DIR . DS . "templates");
-
-if (!defined(WP_CONTENT_DIR))
-	define('WP_CONTENT_DIR', '/var/www/html/wp-content');
