@@ -45,98 +45,214 @@ class Price implements IShortcode, IParkingmanagement
 	}
 
 	/**
-	 * @throws Exception
+	 * Gets the price calculation for a parking booking
+	 * @param array|WP_REST_Request $data Request data containing booking details
+	 * @return array Price calculation results or empty array on error
 	 */
 	public static function getPrice(array|WP_REST_Request $data): array
 	{
-		$pm = getParkingManagementInstance();
-		$info = $pm->prop('info');
-		$form = $pm->prop('form');
-		$high_season = $pm->prop('high_season');
-		$instance = new self($pm);
-		$start = substr($instance->getData($data, 'depart'), 0, 10);
-		$start_hour = substr($instance->getData($data, 'depart'), 11, 5);
-		$end = substr($instance->getData($data, 'retour'), 0, 10);
-		$end_hour = substr($instance->getData($data, 'retour'), 11, 5);
+		try {
+			Logger::info("price.getPrice.start", [
+				'request_data' => $data instanceof WP_REST_Request ? $data->get_params() : $data
+			]);
 
-		$realNumberOfDay = $numberOfDay = Order::nbRealDay($start, $end);
-		$maxLot = Booked::getMaxLot($start, $end, Order::getSiteID($info['terminal']));
-		$usedLot = Booked::usedLot($start, $end, Order::getSiteID($info['terminal']));
-		$maxUsedLot = max($usedLot);
-		$percentage = array();
-		foreach ($maxLot as $k => $v) {
-			$percentage[] = !empty($usedLot[$k]) ? $v / $usedLot[$k] : 0;
-		}
-		$price = array(
-			'du' => !empty($start) ? $start : NULL,
-			'au' => !empty($end) ? $end : NULL,
-			'complet' => 0,
-			'toolong' => 0,
-			'holiday' => 0,
-			'high_season' => 0,
-			'total' => 0,
-			'total_reel' => 0,
-			'timing' => 0,
-			'max' => max($maxLot),
-			'utilise' => $maxUsedLot,
-			'nb_jour_reel' => $realNumberOfDay,
-			'nb_jour' => $numberOfDay,
-			'pourcentage' => max($percentage),
-			'nb_vehicule' => 1,
-			'promo' => 0,
-			'options' => array(),
-		);
-		if (Booked::is($start) || Booked::is($end)) {
-			$price['complet'] = 1;
+			$pm = getParkingManagementInstance();
+			$info = $pm->prop('info');
+			$form = $pm->prop('form');
+			$high_season = $pm->prop('high_season');
+			$instance = new self($pm);
+
+			// Extract and validate dates
+			$start = substr($instance->getData($data, 'depart'), 0, 10);
+			$start_hour = substr($instance->getData($data, 'depart'), 11, 5);
+			$end = substr($instance->getData($data, 'retour'), 0, 10);
+			$end_hour = substr($instance->getData($data, 'retour'), 11, 5);
+
+			if (!$start || !$end) {
+				Logger::error("price.getPrice.dates", [
+					'start' => $start,
+					'end' => $end,
+					'error' => 'Invalid dates provided'
+				]);
+				return [];
+			}
+
+			Logger::info("price.getPrice.dates", [
+				'start' => $start,
+				'start_hour' => $start_hour,
+				'end' => $end,
+				'end_hour' => $end_hour
+			]);
+
+			$realNumberOfDay = $numberOfDay = Order::nbRealDay($start, $end);
+
+			// Get lot availability
+			$siteId = Order::getSiteID($info['terminal']);
+			$maxLot = Booked::getMaxLot($start, $end, $siteId);
+			$usedLot = Booked::usedLot($start, $end, $siteId);
+			$maxUsedLot = max($usedLot);
+
+			Logger::info("price.getPrice.lots", [
+				'max_lot' => $maxLot,
+				'used_lot' => $usedLot,
+				'max_used_lot' => $maxUsedLot
+			]);
+
+			$percentage = array();
+			foreach ($maxLot as $k => $v) {
+				$percentage[] = !empty($usedLot[$k]) ? $v / $usedLot[$k] : 0;
+			}
+
+			$price = array(
+				'du' => !empty($start) ? $start : NULL,
+				'au' => !empty($end) ? $end : NULL,
+				'complet' => 0,
+				'toolong' => 0,
+				'holiday' => 0,
+				'high_season' => 0,
+				'total' => 0,
+				'total_reel' => 0,
+				'timing' => 0,
+				'max' => max($maxLot),
+				'utilise' => $maxUsedLot,
+				'nb_jour_reel' => $realNumberOfDay,
+				'nb_jour' => $numberOfDay,
+				'pourcentage' => max($percentage),
+				'nb_vehicule' => 1,
+				'promo' => 0,
+				'options' => array(),
+			);
+
+			if (Booked::is($start) || Booked::is($end)) {
+				Logger::info("price.getPrice.booked", [
+					'start_booked' => Booked::is($start),
+					'end_booked' => Booked::is($end)
+				]);
+				$price['complet'] = 1;
+				return $price;
+			}
+
+			// Process vehicle type
+			$type_id = $instance->getData($data, 'type_id');
+			$type_id = !empty($type_id) && is_numeric($type_id) ? $type_id : '1';
+			if (!is_numeric($type_id)) {
+				$type_id = '1';
+			}
+			$type_id = VehicleType::fromInt((int)$type_id);
+
+			$site_id = Order::getSiteID($info['terminal'])->value;
+			$parking_type = ParkingType::fromInt((int)$instance->getData($data, 'parking_type'));
+
+			if ($type_id == VehicleType::TRUCK) {
+				$parking_type = ParkingType::OUTSIDE;
+			}
+			if ($type_id == VehicleType::MOTORCYCLE) {
+				$parking_type = ParkingType::INSIDE;
+			}
+
+			Logger::info("price.getPrice.types", [
+				'vehicle_type' => $type_id->name,
+				'parking_type' => $parking_type->name,
+				'site_id' => $site_id
+			]);
+
+			// Get price grid
+			try {
+				$priceGrid = self::priceGrid(Order::getSiteID($info['terminal']), $numberOfDay, $start, $end, $type_id, $parking_type);
+				$priceGrid = unserialize($priceGrid['grille']);
+			} catch (Exception $e) {
+				Logger::error("price.getPrice.priceGrid", [
+					'error' => $e->getMessage()
+				]);
+				return [];
+			}
+
+			// Calculate base price
+			if (!empty($priceGrid[$site_id][$type_id->value][$parking_type->value][$numberOfDay])) {
+				$total = $priceGrid[$site_id][$type_id->value][$parking_type->value][$numberOfDay];
+			} else {
+				$latest = self::latestPrice($priceGrid[$site_id][$type_id->value][$parking_type->value]);
+				$total = $priceGrid[$site_id][$type_id->value][$parking_type->value][$latest];
+				$total += ($numberOfDay - $latest) * $priceGrid[$site_id][$type_id->value][$parking_type->value]['jour_supplementaire'];
+			}
+
+			$price['total'] = $price['total_reel'] = $total;
+
+			// Apply holiday surcharge
+			try {
+				if (self::isHoliday($start)) {
+					$price['holiday'] = 1;
+					$price['total'] += self::get_extra_price($form['options']['holiday']);
+					Logger::info("price.getPrice.holiday", ['start_date' => $start]);
+				}
+				if (self::isHoliday($end)) {
+					$price['holiday'] = 1;
+					$price['total'] += self::get_extra_price($form['options']['holiday']);
+					Logger::info("price.getPrice.holiday", ['end_date' => $end]);
+				}
+			} catch (Exception $e) {
+				Logger::error("price.getPrice.holiday", [
+					'error' => $e->getMessage()
+				]);
+				// Continue without holiday pricing if check fails
+			}
+
+			if (HighSeason::is($start) || HighSeason::is($end)) {
+				$price['high_season'] = 1;
+				$price['total'] += $high_season['price'];
+				Logger::info("price.getPrice.highSeason", [
+					'start_high_season' => HighSeason::is($start),
+					'end_high_season' => HighSeason::is($end)
+				]);
+			}
+
+			$nb_pax = $instance->getData($data, 'nb_pax');
+			if (!empty($nb_pax) && $nb_pax > 4) {
+				$extra = ($nb_pax - 4) * self::get_extra_price($form['options']['shuttle']);
+				$price['total'] += $extra;
+				Logger::info("price.getPrice.passengers", [
+					'passengers' => $nb_pax,
+					'extra_charge' => $extra
+				]);
+			}
+
+			$night_start = self::night_extra($start_hour, $form['options']['night_extra_charge']);
+			$night_end = self::night_extra($end_hour, $form['options']['night_extra_charge']);
+			$price['total'] += $night_start + $night_end;
+
+			if ($night_start || $night_end) {
+				Logger::info("price.getPrice.nightCharge", [
+					'start_hour' => $start_hour,
+					'end_hour' => $end_hour,
+					'start_charge' => $night_start,
+					'end_charge' => $night_end
+				]);
+			}
+
+			$assurance_annulation = $instance->getData($data, 'assurance_annulation');
+			if (!empty($assurance_annulation) && ($assurance_annulation == '1')) {
+				$insurance_price = (int)$form['options']['cancellation_insurance']['price'];
+				$price['total'] += $insurance_price;
+				Logger::info("price.getPrice.insurance", ['price' => $insurance_price]);
+			}
+
+			$price['timing'] = microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"];
+
+			Logger::info("price.getPrice.complete", [
+				'final_price' => $price['total'],
+				'calculation_time' => $price['timing']
+			]);
+
 			return $price;
-		}
 
-		$type_id = $instance->getData($data, 'type_id');
-		$type_id = !empty($type_id) && is_numeric($type_id) ? $type_id : '1';
-		if (!is_numeric($type_id))
-			$type_id = '1';
-		$type_id = VehicleType::fromInt((int)$type_id);
-		$site_id = Order::getSiteID($info['terminal'])->value;
-		$parking_type = ParkingType::fromInt((int)$instance->getData($data, 'parking_type'));
-		if ( $type_id == VehicleType::TRUCK)
-			$parking_type = ParkingType::OUTSIDE;
-		if ( $type_id == VehicleType::MOTORCYCLE)
-			$parking_type = ParkingType::INSIDE;
-		$priceGrid = self::priceGrid(Order::getSiteID($info['terminal']), $numberOfDay, $start, $end, $type_id, $parking_type);
-		$priceGrid = unserialize($priceGrid['grille']);
-
-		if (!empty($priceGrid[$site_id][$type_id->value][$parking_type->value][$numberOfDay])) {
-			$total = $priceGrid[$site_id][$type_id->value][$parking_type->value][$numberOfDay];
-		} else {
-			// Price isn't set
-			$latest = self::latestPrice($priceGrid[$site_id][$type_id->value][$parking_type->value]);
-			$total = $priceGrid[$site_id][$type_id->value][$parking_type->value][$latest];
-			$total += ($numberOfDay - $latest) * $priceGrid[$site_id][$type_id->value][$parking_type->value]['jour_supplementaire'];
+		} catch (Exception $e) {
+			Logger::error("price.getPrice.error", [
+				'error' => $e->getMessage(),
+				'trace' => $e->getTraceAsString(),
+				'request_data' => $data instanceof WP_REST_Request ? $data->get_params() : $data
+			]);
+			return [];
 		}
-		$price['total'] = $price['total_reel'] = $total;
-		if (self::isHoliday($start)) {
-			$price['holiday'] = 1;
-			$price['total'] += self::get_extra_price($form['options']['holiday']);
-		}
-		if (self::isHoliday($end)) {
-			$price['holiday'] = 1;
-			$price['total'] += self::get_extra_price($form['options']['holiday']);
-		}
-		if (HighSeason::is($start) || HighSeason::is($end)) {
-			$price['high_season'] = 1;
-			$price['total'] += $high_season['price'];
-		}
-		$nb_pax = $instance->getData($data, 'nb_pax');
-		if (!empty($nb_pax) && $nb_pax > 4)
-			$price['total'] += ($nb_pax - 4) * self::get_extra_price($form['options']['shuttle']);
-		$price['timing'] = microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"];
-		$price['total'] += self::night_extra($start_hour, $form['options']['night_extra_charge']);
-		$price['total'] += self::night_extra($end_hour, $form['options']['night_extra_charge']);
-		$assurance_annulation = $instance->getData($data, 'assurance_annulation');
-		if (!empty($assurance_annulation) && ($assurance_annulation == '1')) {
-			$price['total'] += (int)$form['options']['cancellation_insurance']['price'];
-		}
-		return $price;
 	}
 
 	/**
