@@ -73,13 +73,13 @@ class Payplug implements IPayment
 			if ($provider['properties']['notification_url']['value'] !== '')
 				$notify_url = $provider['properties']['notification_url']['value'];
 			$payload = array(
-				'title' => ' ',
+				'title' => 'n/c',
 				'first_name' => $data['post']['prenom'] ?? $data['member']['prenom'],
 				'last_name' => $data['post']['nom'] ?? $data['member']['nom'],
 				'email' => $data['post']['email'] ?? $data['member']['email'],
 				'address1' => 'n/c',
-				'postcode' => $data['post']['code_postal'] ?? ($data['member']['code_postal'] ?? '94310'),
-				'city' => $data['post']['ville'] ?? ($data['member']['ville'] ?? 'Orly'),
+				'postcode' => $data['post']['code_postal'] ?? (!empty($data['member']['code_postal']) ? $data['member']['code_postal']: 'n/c'),
+				'city' => $data['post']['ville'] ?? (!empty($data['member']['ville']) ? $data['member']['ville']: 'n/c'),
 				'country' => 'FR',
 				'language' => "fr"
 			);
@@ -100,7 +100,7 @@ class Payplug implements IPayment
 
 			return $payment->hosted_payment->payment_url;
 		} catch (Exception $e) {
-			Logger::error("payplug.initPayment", ['data' => $data, 'exception' => $e]);
+			Logger::error("payplug.initPayment", ['data' => $data, 'payload' => $payload ?? 'n/c', 'exception' => $e]);
 			return '';
 		}
 	}

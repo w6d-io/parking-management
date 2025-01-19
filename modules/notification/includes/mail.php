@@ -85,6 +85,7 @@ class Mail
 
 			// Send the email
 			$mail->send();
+			Logger::info("mail.send", "mail was sent to $to");
 			return true;
 		} catch (Exception $e) {
 			Logger::error("mail.send",  $e->getMessage());

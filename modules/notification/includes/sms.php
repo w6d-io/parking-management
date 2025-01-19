@@ -15,35 +15,46 @@ class SMS {
 			Logger::error("sms.send", "failed to find parking management instance");
 			return false;
 		}
-		$sms = $pm->prop('notification')['sms'];
+		$sms = $pm->prop('notification')['sms'] ?? null;
+		if (!$sms) {
+			Logger::error("sms.send", "missing SMS configuration");
+			return false;
+		}
 
-		match ($sms['type']) {
-			'AWS' => self::aws($sms,$phone,$message),
-			default => null
+		return match ($sms['type'] ?? '') {
+			'AWS' => self::aws($sms, $phone, $message),
+			default => false
 		};
-		return true;
 	}
 
-	private static function aws(array $sms, string $phone, string $message): void
+	private static function aws(array $sms, string $phone, string $message): bool
 	{
-		$aws_cred = array(
-			'credentials' => array(
+		if ( empty($sms['user']) || empty($sms['password'])) {
+			Logger::warming("sms.aws", "sms is not configuration");
+			return false;
+		}
+		$awsConfig = [
+			'credentials' => [
 				'key' => $sms['user'],
 				'secret' => $sms['password'],
-			),
-			'region' => 'eu-west-3', // TODO add region into admin config
+			],
+			'region' => $sms['region'] ?? 'eu-west-3',
 			'version' => 'latest'
-		);
-		Logger::info('sms.aws.debug', ["sms" => $sms, "phone" => $phone]);
+		];
+
+		Logger::info('sms.aws.debug', [
+			'sms' => array_merge($sms, ['password' => '***']), // Hide sensitive data
+			'phone' => $phone
+		]);
 		try {
-			$SnSclient = new SnsClient($aws_cred);
-			$SnSclient->publish([
+			$snsClient = new SnsClient($awsConfig);
+			$result = $snsClient->publish([
 				'Message' => $message,
 				'PhoneNumber' => $phone,
 				'MessageAttributes' => [
 					'AWS.SNS.SMS.SenderID' => [
 						'DataType' => 'String',
-						'StringValue' => $sms['sender']
+						'StringValue' => $sms['sender'] ?? 'PARKING'
 					],
 					'AWS.SNS.SMS.SMSType' => [
 						'DataType' => 'String',
@@ -51,8 +62,11 @@ class SMS {
 					],
 				]
 			]);
+			Logger::info('sms.aws.sent', ['messageId' => $result['MessageId'] ?? null]);
+			return true;
 		} catch (AwsException $e) {
-			Logger::error("sms.send",  $e->getMessage());
+			Logger::error("sms.aws",  $e->getMessage());
+			return false;
 		}
 	}
 
