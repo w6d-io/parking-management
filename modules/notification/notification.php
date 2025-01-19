@@ -69,8 +69,10 @@ class Notification implements IShortcode
 
 	private function mail(array $data, string $subject, $template): void
 	{
-		if (empty($template))
+		if (empty($template)) {
+			Logger::warming("notification.mail", "mail do not sent to {$data['member_email']} : missing template");
 			return;
+		}
 		$message = replacePlaceholders($template, $data);
 		if (Mail::send(
 			$data['member_email'],
