@@ -52,9 +52,6 @@ class Price implements IShortcode, IParkingmanagement
 	public static function getPrice(array|WP_REST_Request $data): array
 	{
 		try {
-			Logger::info("price.getPrice.start", [
-				'request_data' => $data instanceof WP_REST_Request ? $data->get_params() : $data
-			]);
 
 			$pm = getParkingManagementInstance();
 			$info = $pm->prop('info');

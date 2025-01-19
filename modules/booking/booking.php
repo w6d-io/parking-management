@@ -129,7 +129,7 @@ class Booking implements IShortcode, IParkingManagement
 
 		} catch (Exception|PDOException $e) {
 			Logger::error("booking.record", $e->getMessage());
-
+			unset($post['pkmgmt_action'], $post['submit2']);
 			wp_redirect($current_shortcode_page . '?' . http_build_query($post) . '&message[error]=' . $e->getMessage());
 			return;
 		}

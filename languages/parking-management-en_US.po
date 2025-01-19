@@ -56,7 +56,7 @@ msgstr ""
 
 #: admin/includes/pages.php:95
 #: admin/includes/pages.php:426
-#: modules/booking/includes/form.php:248
+#: modules/booking/includes/form.php:250
 msgid "Name"
 msgstr ""
 
@@ -125,8 +125,8 @@ msgid "RCS"
 msgstr ""
 
 #: admin/includes/pages.php:396
-#: modules/booking/includes/form.php:311
-#: modules/booking/includes/form.php:640
+#: modules/booking/includes/form.php:313
+#: modules/booking/includes/form.php:642
 msgid "Email"
 msgstr ""
 
@@ -205,110 +205,104 @@ msgstr ""
 msgid "failed to get config"
 msgstr ""
 
-#: modules/booking/includes/form.php:73
+#: modules/booking/includes/form.php:75
 msgid "Outside"
 msgstr ""
 
-#: modules/booking/includes/form.php:79
+#: modules/booking/includes/form.php:81
 msgid "Inside"
 msgstr ""
 
-#: modules/booking/includes/form.php:246
+#: modules/booking/includes/form.php:248
 msgid "Personal Information"
 msgstr ""
 
-#: modules/booking/includes/form.php:259
+#: modules/booking/includes/form.php:261
 msgid "Firstname"
 msgstr ""
 
-#: modules/booking/includes/form.php:269
+#: modules/booking/includes/form.php:271
 msgid "Zip code"
 msgstr ""
 
-#: modules/booking/includes/form.php:300
+#: modules/booking/includes/form.php:302
 msgid "Mobile phone"
 msgstr ""
 
-#: modules/booking/includes/form.php:324
+#: modules/booking/includes/form.php:326
 msgid "Type of vehicle"
 msgstr ""
 
-#: modules/booking/includes/form.php:339
+#: modules/booking/includes/form.php:341
 msgid "Car model"
 msgstr ""
 
-#: modules/booking/includes/form.php:356
+#: modules/booking/includes/form.php:358
 msgid "Immatriculation"
 msgstr ""
 
-#: modules/booking/includes/form.php:369
+#: modules/booking/includes/form.php:371
 msgid "Car Park"
 msgstr ""
 
-#: modules/booking/includes/form.php:393
+#: modules/booking/includes/form.php:395
 msgid "Trip Information"
 msgstr ""
 
-#: modules/booking/includes/form.php:396
+#: modules/booking/includes/form.php:398
 msgid "Destination"
 msgstr ""
 
-#: modules/booking/includes/form.php:439
+#: modules/booking/includes/form.php:441
 msgid "Terminal departure"
 msgstr ""
 
-#: modules/booking/includes/form.php:455
+#: modules/booking/includes/form.php:457
 msgid "Terminal return"
 msgstr ""
 
-#: modules/booking/includes/form.php:473
-#: modules/booking/includes/form.php:631
+#: modules/booking/includes/form.php:475
+#: modules/booking/includes/form.php:633
 #: modules/booking/includes/home_form.php:76
 msgid "Dropping off at"
 msgstr ""
 
-#: modules/booking/includes/form.php:490
-#: modules/booking/includes/form.php:635
+#: modules/booking/includes/form.php:492
+#: modules/booking/includes/form.php:637
 #: modules/booking/includes/home_form.php:93
 msgid "Landing at the airport"
 msgstr ""
 
-#: modules/booking/includes/form.php:503
+#: modules/booking/includes/form.php:505
 msgid "Number of pax"
 msgstr ""
 
-#: modules/booking/includes/form.php:590
+#: modules/booking/includes/form.php:592
 msgid "Order amount"
 msgstr ""
 
-#: modules/booking/includes/form.php:609
+#: modules/booking/includes/form.php:611
 msgid "Validate your order"
 msgstr ""
 
-#: modules/booking/includes/form.php:627
+#: modules/booking/includes/form.php:629
 msgid "Confirmation"
 msgstr ""
 
-#: modules/booking/includes/form.php:648
+#: modules/booking/includes/form.php:650
 msgid "Confirm your order"
 msgstr ""
 
-#: modules/booking/includes/form.php:664
+#: modules/booking/includes/form.php:666
 msgid "I hereby subscribe to the cancellation insurance for "
 msgstr ""
 
-#: modules/booking/includes/form.php:690
+#: modules/booking/includes/form.php:692
 msgid "Loading..."
 msgstr ""
 
-#: modules/booking/includes/order.php:147
+#: modules/booking/includes/order.php:148
 msgid "Car park is full on "
-msgstr ""
-
-#: modules/booking/includes/order.php:226
-#: modules/booking/includes/order.php:229
-#: modules/booking/includes/order.php:241
-msgid "order creation failed"
 msgstr ""
 
 #: modules/notification/notification.php:50
@@ -405,10 +399,14 @@ msgstr ""
 msgid "Your quote in 2 clicks"
 msgstr ""
 
-#: modules/booking/includes/form.php:423
+#: modules/booking/includes/form.php:425
 msgid "Departure"
 msgstr ""
 
-#: modules/booking/includes/form.php:429
+#: modules/booking/includes/form.php:431
 msgid "Return"
+msgstr ""
+
+#: modules/booking/includes/member.php:120
+msgid "Failed to create member"
 msgstr ""

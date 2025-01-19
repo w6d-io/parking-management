@@ -61,7 +61,7 @@ VALUES (:commande_id, :type_id, :parking_type, :options, :marque, :modele, :imma
 		$req = $this->conn->prepare($query);
 		Logger::info("vehicule.create", ['params' => $params]);
 		if (!$req->execute($params)) {
-			Logger::error("vehicule.create", ['error' => $this->conn->errorInfo()]);
+			Logger::error("vehicule.create", ['error' => $req->errorInfo()]);
 			throw new Exception("vehicle creation failed");
 		}
 		return (int)$this->conn->lastInsertId();

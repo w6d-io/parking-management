@@ -79,7 +79,7 @@ class Payplug implements IPayment
 				'email' => $data['post']['email'] ?? $data['member']['email'],
 				'address1' => 'n/c',
 				'postcode' => $data['post']['code_postal'] ?? (!empty($data['member']['code_postal']) ? $data['member']['code_postal']: 'n/c'),
-				'city' => $data['post']['ville'] ?? (!empty($data['member']['ville']) ? $data['member']['ville']: 'n/c'),
+				'city' => (!empty($data['member']['ville']) ? $data['member']['ville']: 'n/c'),
 				'country' => 'FR',
 				'language' => "fr"
 			);
