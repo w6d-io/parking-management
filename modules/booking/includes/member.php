@@ -82,7 +82,7 @@ class Member
 			}
 
 			$this->member = [
-				'status' => MemberStatus::CUSTOMER,
+				'status' => MemberStatus::CUSTOMER->value,
 				'date' => date('Y-m-d'),
 				'email' => strtolower($post['email']),
 				'password' => strrev(md5($password)),
@@ -99,6 +99,7 @@ class Member
 				'afficher' => 1
 			];
 
+			Logger::info("member.create.request", ["member" => $this->member]);
 			// Validate required fields
 			$requiredFields = ['email', 'nom', 'prenom', 'code_postal'];
 			foreach ($requiredFields as $field) {
