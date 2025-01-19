@@ -259,7 +259,11 @@ class Order
 		$req = $this->conn->prepare($query);
 		if (!$req->execute(array('id' => $order_id)))
 			throw new Exception("order read failed");
-		return $req->fetch(PDO::FETCH_ASSOC);
+		$result = $req->fetch(PDO::FETCH_ASSOC);
+		if ($result === false) {
+			throw new Exception("Order not found with id: " . $order_id);
+		}
+		return $result;
 	}
 
 	/**
