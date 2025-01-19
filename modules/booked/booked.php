@@ -47,7 +47,7 @@ class Booked implements IShortcode, IParkingManagement
 		$query = "SELECT `$field` FROM `tbl_remplissage` WHERE `date` >= :du AND `date` < DATE_ADD(:au, INTERVAL 1 DAY) ORDER BY `date`";
 		$req = $conn->prepare($query);
 		if (!$req->execute(['du' => $start->format('Y-m-d'), 'au' => $end->format('Y-m-d')])) {
-			Logger::error("booked.getMaxLot", ['errorInfo' => $conn->errorInfo()]);
+			Logger::error("booked.getMaxLot", ['errorInfo' => $req->errorInfo()]);
 			throw new Exception("Error executing query");
 		}
 		while ($row = $req->fetch(PDO::FETCH_ASSOC)) {
@@ -72,7 +72,7 @@ class Booked implements IShortcode, IParkingManagement
 		$query = "SELECT `date`, `utilisee` FROM `tbl_remplissage` WHERE `date` >= :du AND `date` <= :au";
 		$req = $conn->prepare($query);
 		if (!$req->execute(['du' => $start->format('Y-m-d'), 'au' => $end->format('Y-m-d')])) {
-			Logger::error("booked.usedLot", ['errorInfo' => $conn->errorInfo()]);
+			Logger::error("booked.usedLot", ['errorInfo' => $req->errorInfo()]);
 			throw new Exception("Error executing query");
 		}
 		while ($row = $req->fetch(PDO::FETCH_ASSOC)) {

@@ -44,7 +44,7 @@ class Member
 		try {
 			$sql = "SELECT `id_membre` FROM `tbl_membre` WHERE `email` = ?";
 			$req = $this->conn->prepare($sql);
-			$req->execute(array($email)) or die($this->conn->errorInfo());
+			$req->execute(array($email)) or die($req->errorInfo());
 			if ($req->rowCount() == 0)
 				return false;
 			return $req->fetch(PDO::FETCH_ASSOC)["id_membre"];
@@ -76,7 +76,7 @@ class Member
 			$req = $this->conn->prepare($sql);
 			if (!$req) {
 				Logger::error("member.create.prepare", [
-					'errorInfo' => $this->conn->errorInfo()
+					'errorInfo' => $req->errorInfo()
 				]);
 				throw new Exception("Failed to prepare member creation statement");
 			}
@@ -91,7 +91,7 @@ class Member
 				'prenom' => ucwords($post['prenom']),
 				'code_postal' => $post['code_postal'],
 				'ville' => ucwords($post['ville']),
-				'pays' => $post['pays'],
+				'pays' => !empty($post['pays']) ? $post['pays']: 0,
 				'tel_fixe' => NULL,
 				'tel_port' => $post['tel_port'],
 				'tva' => '',
@@ -114,10 +114,10 @@ class Member
 
 			if (!$req->execute($this->member)) {
 				Logger::error("member.create.execute", [
-					'errorInfo' => $this->conn->errorInfo(),
+					'errorInfo' => $req->errorInfo(),
 					'data' => array_diff_key($this->member, array_flip(['password']))
 				]);
-				throw new Exception("Failed to create member");
+				throw new Exception(__("Failed to create member", 'parking-management'));
 			}
 
 			$memberId = $this->conn->lastInsertId();
@@ -216,7 +216,7 @@ class Member
 				Logger::error("member.patch", [
 					'member_id' => $member_id,
 					'fields' => $fields,
-					'errorInfo' => $this->conn->errorInfo()
+					'errorInfo' => $req->errorInfo()
 				]);
 //				throw new Exception("Failed to update member");
 				return false;
