@@ -335,30 +335,51 @@ class Order
 
 	}
 
+	/**
+	 * @param string $member_id
+	 * @return int
+	 */
 	public function isExists(string $member_id): int
 	{
+		try {
+			$start = substr($this->getData('depart'), 0, 10);
+			$start_hour = substr($this->getData('depart'), 11, 5);
+			$end = substr($this->getData('retour'), 0, 10);
+			$end_hour = substr($this->getData('retour'), 11, 5);
 
-		$start = substr($this->getData('depart'), 0, 10);
-		$start_hour = substr($this->getData('depart'), 11, 5);
-		$end = substr($this->getData('retour'), 0, 10);
-		$end_hour = substr($this->getData('retour'), 11, 5);
-		$start = DateTime::createFromFormat('Y-m-d', $start);
-		$end = DateTime::createFromFormat('Y-m-d', $end);
+			$start_date = DateTime::createFromFormat('Y-m-d', $start);
+			$end_date = DateTime::createFromFormat('Y-m-d', $end);
 
-		$query = "SELECT `id_commande` FROM `tbl_commande` WHERE `membre_id` = :member_id AND `depart` = :depart AND `depart_heure` = :depart_heure AND `arrivee` = :arrivee AND `arrivee_heure` = :arrivee_heure";
-		$req = $this->conn->prepare($query);
-		$req->execute(array(
-			'member_id' => $member_id,
-			'depart' => $start->format('Y-m-d'),
-			'depart_heure' => $start_hour,
-			'arrivee' => $end->format('Y-m-d'),
-			'arrivee_heure' => $end_hour
-		));
-		if ($row = $req->fetch(PDO::FETCH_ASSOC)) {
-			if ($row['id_commande'] != '')
+			if ($start_date === false || $end_date === false) {
+				Logger::error("order.isExists", ["message"=>"Invalid date format ", "start"=>$start, "end"=>$end, "start_hour"=>$start_hour, "end_hour"=>$end_hour]);
+				throw new InvalidArgumentException("Invalid date format provided");
+			}
+
+			$query = "SELECT `id_commande` FROM `tbl_commande` WHERE `membre_id` = :member_id AND `depart` = :depart AND `depart_heure` = :depart_heure AND `arrivee` = :arrivee AND `arrivee_heure` = :arrivee_heure";
+			$req = $this->conn->prepare($query);
+
+			if (!$req->execute([
+				'member_id' => $member_id,
+				'depart' => $start_date->format('Y-m-d'),
+				'depart_heure' => $start_hour,
+				'arrivee' => $end_date->format('Y-m-d'),
+				'arrivee_heure' => $end_hour
+			])) {
+				Logger::error("order.isExists", "Database query execution failed");
+				throw new Exception("Database query execution failed");
+			}
+
+			$row = $req->fetch(PDO::FETCH_ASSOC);
+			if ($row && !empty($row['id_commande'])) {
 				return (int)$row['id_commande'];
+			}
+
+			return 0;
+
+		} catch (InvalidArgumentException|Exception $e) {
+			Logger::error("order.isExists", ["message" => $e->getMessage(), "member_id" => $member_id]);
+			return 0;
 		}
-		return 0;
 	}
 
 	private function getData($field = null)
