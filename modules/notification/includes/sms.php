@@ -43,7 +43,7 @@ class SMS {
 		];
 
 		Logger::info('sms.aws.debug', [
-			'sms' => array_merge($sms, ['password' => '***']), // Hide sensitive data
+			'sms' => array_merge($sms, ['password' => '************']), // Hide sensitive data
 			'phone' => $phone
 		]);
 		try {

@@ -71,6 +71,7 @@ class PayplugAPI extends API
 				'secretKey' => $secretKey
 			));
 			$resource = Notification::treat($request->get_body());
+			Logger::info("payplug.api.create_item", ['resource' => $resource]);
 			if ($resource instanceof APIResource && $resource->is_paid) {
 				$order_id = $resource->metadata['id_commande'];
 				$payment_date = date('Y-m-d H:i:s', $resource->hosted_payment->paid_at);
@@ -78,18 +79,22 @@ class PayplugAPI extends API
 				$payment_id = PaymentID::PAYPLUG;
 				$order = new Order();
 				$order->update_payment((int)$order_id, $payment_date, $amount, $payment_id);
-				Logger::info("payplug.api.create", "record payment status recorded");
+				Logger::info("payplug.api.create_item", "record payment status recorded");
+				return new WP_REST_Response(null, WP_Http::NO_CONTENT);
+			}
+			if ($resource->failure) {
+				Logger::error("payplug.api.create_item", ["failure" => ["code"=>$resource->failure->code, "message" => $resource->failure->message]]);
 				return new WP_REST_Response(null, WP_Http::NO_CONTENT);
 			}
 		} catch (PayplugException|Exception $e) {
-			Logger::error("payplug.api.create", $e->getMessage());
+			Logger::error("payplug.api.create_item", $e->getMessage());
 			return new WP_Error(
 				'payplug-notification-error',
 				$e->getMessage(),
 				array('status' => WP_Http::BAD_REQUEST)
 			);
 		}
-		Logger::error("payplug.api.create", "record payment status not recorded");
+		Logger::error("payplug.api.create_item", "record payment status not recorded");
 
 		return new WP_Error(
 			"record-payment-status",
