@@ -91,7 +91,7 @@ class Member
 				'prenom' => ucwords($post['prenom']),
 				'code_postal' => $post['code_postal'],
 				'ville' => ucwords($post['ville']),
-				'pays' => !empty($post['pays']) ? $post['pays']: 0,
+				'pays' => !empty($post['pays']) ? $post['pays']: 'n/c',
 				'tel_fixe' => NULL,
 				'tel_port' => $post['tel_port'],
 				'tva' => '',
@@ -221,7 +221,7 @@ class Member
 //				throw new Exception("Failed to update member");
 				return false;
 			}
-
+			Logger::info("member.patch", "No valid fields provided for update");
 			return true;
 		} catch (PDOException $e) {
 			Logger::error("member.patch", [

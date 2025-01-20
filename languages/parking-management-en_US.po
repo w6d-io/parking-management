@@ -354,7 +354,7 @@ msgstr ""
 msgid "person"
 msgstr ""
 
-#: modules/payment/includes/payplug/api.php:96
+#: modules/payment/includes/payplug/api.php:101
 msgid "payment status not recorded"
 msgstr ""
 
@@ -409,4 +409,12 @@ msgstr ""
 
 #: modules/booking/includes/member.php:120
 msgid "Failed to create member"
+msgstr ""
+
+#: modules/booking/includes/order.php:229
+msgid "order creation failed in database insertion"
+msgstr ""
+
+#: modules/booking/includes/order.php:234
+msgid "fail to create order"
 msgstr ""

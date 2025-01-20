@@ -224,11 +224,15 @@ class Order
 		)
 		";
 		$req = $this->conn->prepare($query);
-		if (!$req->execute($this->order))
-			throw new Exception("order creation failed in database insertion");
+		if (!$req->execute($this->order)) {
+			Logger::error("order.create", ['message' => $req->errorInfo(), 'params' => $this->order]);
+			throw new Exception(__("order creation failed in database insertion", 'parking-management'));
+		}
 		$id = $this->conn->lastInsertId();
-		if (!$id)
-			throw new Exception("order creation failed : id is null");
+		if (!$id) {
+			Logger::error("order.create", ['message'=> 'Order id is null']);
+			throw new Exception(__("fail to create order", 'parking-management'));
+		}
 		Logger::info("order.create", ['id' => $id]);
 		$query = 'UPDATE `tbl_commande` SET remarque = :remarque, facture_id = :facture_id WHERE `id_commande` = :id';
 		$req = $this->conn->prepare($query);
