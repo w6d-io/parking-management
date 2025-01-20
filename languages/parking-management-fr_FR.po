@@ -318,7 +318,7 @@ msgstr "La récupération de la configuration a échoué"
 msgid "Checkout"
 msgstr "Paiement"
 
-#: modules/payment/includes/payplug/api.php:96
+#: modules/payment/includes/payplug/api.php:101
 msgid "payment status not recorded"
 msgstr "La mise à jour du status du paiement a échoué"
 
@@ -410,3 +410,11 @@ msgstr "Retour"
 #: modules/booking/includes/member.php:120
 msgid "Failed to create member"
 msgstr "Echec lors de la création du compte utilisateur"
+
+#: modules/booking/includes/order.php:229
+msgid "order creation failed in database insertion"
+msgstr "Echec lors de la création de la réservation"
+
+#: modules/booking/includes/order.php:234
+msgid "fail to create order"
+msgstr "Echec lors de la création de la réservation"
