@@ -271,7 +271,7 @@ class Form
 					self::_label('code_postal', esc_html__('Zip code', 'parking-management')),
 					Html::_index('text', 'code_postal', 'code_postal',
 						array(
-							'class' => 'zip-code regular required col-5 border rounded py-2 px-3 form-control',
+							'class' => 'zip-code regular col-5 border rounded py-2 px-3 form-control',
 							'autocomplete' => 'off',
 							'value' => $post['code_postal'] ?? '',
 							'tabindex' => "3",
@@ -398,7 +398,7 @@ class Form
 					self::_label('destination', esc_html__('Destination', 'parking-management')),
 					Html::_index('text', 'destination', 'destination',
 						array(
-							'class' => 'destination regular required border rounded py-2 form-control',
+							'class' => 'destination regular border rounded py-2 form-control',
 							'value' => $post['destination'] ?? '',
 							'tabindex' => "10",
 						)
@@ -442,7 +442,7 @@ class Form
 								),
 								Html::_select('terminal_depart', 'terminal[depart]',
 									array(
-										'class' => 'required border form-select esg-sorting-select py-2',
+										'class' => 'border form-select esg-sorting-select py-2',
 										'tabindex' => "11",
 									),
 									self::get_terminal($pm),
@@ -458,7 +458,7 @@ class Form
 								),
 								Html::_select('terminal_arrivee', 'terminal[arrivee]',
 									array(
-										'class' => 'required border form-select esg-sorting-select py-2',
+										'class' => 'border form-select esg-sorting-select py-2',
 										'tabindex' => "13",
 									),
 									self::get_terminal($pm),
