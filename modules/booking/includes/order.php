@@ -184,7 +184,7 @@ class Order
 					'retour' => $this->getData('nb_pax')
 				)
 			),
-			'destination_id' => $this->getData('destination_id'),
+			'destination_id' => !empty($this->getData('destination_id'))?$this->getData('destination_id'):0 ,
 			'terminal' => serialize($this->getData('terminal')),
 			'remarque' => '',
 			'total' => $price['total'],
