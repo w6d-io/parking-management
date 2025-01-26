@@ -88,6 +88,10 @@ document.addEventListener('DOMContentLoaded', function () {
 			RangePlugin: {
 				elementEnd: endDateInput,
 				minDate: new Date(),
+				locale: {
+					one: "jour",
+					other: "jours"
+				}
 			},
 			LockPlugin: {
 				minDate: new Date(),
