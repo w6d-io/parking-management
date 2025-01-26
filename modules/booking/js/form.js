@@ -122,6 +122,9 @@ document.addEventListener('DOMContentLoaded', function () {
 			element: startDateInput,
 			lang: 'fr-FR',
 			autoApply: false,
+			locale: {
+				apply: "OK"
+			},
 			calendars: calendars,
 			grid: calendars,
 			plugins: ['RangePlugin', 'LockPlugin', 'TimePlugin'],
@@ -147,6 +150,10 @@ document.addEventListener('DOMContentLoaded', function () {
 			RangePlugin: {
 				elementEnd: endDateInput,
 				minDate: new Date(),
+				locale: {
+					one: "jour",
+					other: "jours"
+				}
 			},
 			LockPlugin: {
 				minDate: new Date(),
