@@ -91,7 +91,7 @@ class Html
 			$value == '1'
 		);
 		$contents[] = Html::_label_with_attr(array('class' => 'form-check-label'), $id . '-' . $key, $key);
-		$contents[] = '<br/>';
+//		$contents[] = '<br/>';
 
 		return implode(PHP_EOL, $contents);
 	}

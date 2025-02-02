@@ -33,6 +33,7 @@ class Page
 	//</div>
 	public static function form(int $amount, $order_id): string
 	{
+		print_log(['message'=>'ici et la']);
 		self::enqueue();
 		return Html::_div(array('id' => 'mypos-form'),
 			Html::_div(array('class' => 'container'),

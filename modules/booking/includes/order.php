@@ -50,6 +50,7 @@ enum ParkingType: int
 {
 	case OUTSIDE = 0;
 	case INSIDE = 1;
+	case VALET = 2;
 
 	public static function fromInt(int $value): ?self
 	{
@@ -193,7 +194,7 @@ class Order
 			'tva_transport' => 10,
 			'coupon_id' => 0,
 			'recherche' => mb_convert_encoding($search, 'ISO-8859-1', 'UTF-8'),
-			'status' => Payment::validateOnPayment() && Payment::isEnabled() ? OrderStatus::PENDING->value : OrderStatus::CONFIRMED->value,
+			'status' => (Payment::validateOnPayment() || $this->getData('parking_type') == ParkingType::VALET->value) && Payment::isEnabled() ? OrderStatus::PENDING->value : OrderStatus::CONFIRMED->value,
 			'nb_retard' => 0,
 			'ip' => $_SERVER['REMOTE_ADDR'],
 			'host' => $_SERVER['HTTP_USER_AGENT'],

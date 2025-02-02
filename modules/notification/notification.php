@@ -4,6 +4,7 @@ namespace ParkingManagement;
 
 use Booking\Member;
 use Booking\Order;
+use Booking\Vehicle;
 use Exception;
 use Notification\Mail;
 use ParkingManagement\interfaces\IShortcode;
@@ -104,11 +105,14 @@ class Notification implements IShortcode
 		$order = $orderInstance->read($_GET['order_id']);
 		$memberInstance = new Member();
 		$member = $memberInstance->read($order['membre_id']);
+		$vehicleInstance = new Vehicle();
+		$vehicle = $vehicleInstance->read($_GET['order_id']);
 
 		$info = $this->pm->prop('info');
 		$form = $this->pm->prop('form');
 		$data = replacementData('member', $member);
 		$data = array_merge($data, replacementData('order', $order));
+		$data = array_merge($data, replacementData('vehicle', $vehicle));
 		$data['order_depart_formated'] = DatesRange::convertDate($data['order_depart'] . ' ' . $data['order_depart_heure'], 'Y-m-d H:i:s', 'd MMMM y H:mm');
 		$data['order_arrivee_formated'] = DatesRange::convertDate($data['order_arrivee'] . ' ' . $data['order_arrivee_heure'], 'Y-m-d H:i:s', 'd MMMM y H:mm');
 		$data['order_id'] = $_GET['order_id'];

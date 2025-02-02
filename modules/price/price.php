@@ -293,6 +293,7 @@ class Price implements IShortcode, IParkingmanagement
 		while ($row = $req->fetch(PDO::FETCH_ASSOC)) {
 			$priceGrid[$row['date']] = $row['grille_tarifaire'];
 			$deserialized = unserialize($row['grille_tarifaire']);
+//			print_log(["deserialized" => $deserialized[$site_id][$type_id->value]]);
 			$latest = self::latestPrice($deserialized[$site_id][$type_id->value][$parking_type->value]);
 			$price[$row['date']] = !empty($deserialized[$site_id][$type_id->value][$parking_type->value][$numberOfDay]) && !empty($latest) ? $deserialized[$site_id][$type_id->value][$parking_type->value][$numberOfDay] : $deserialized[$site_id][$type_id->value][$parking_type->value][$latest];
 		}

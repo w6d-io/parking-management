@@ -106,6 +106,7 @@ class Template
 				'mypos' => [
 					'name' => 'mypos',
 					'enabled' => "0",
+					'redirect-to-provider' => '0',
 					'active-test' => '0',
 					'properties' => [
 						'configuration_package' => [
@@ -174,6 +175,23 @@ class Template
 				'terms_and_conditions' => '0',
 				'dialog_confirmation' => '0',
 			),
+			'payment' => '',
+			'valet' => array(
+				'validation_page' => [
+					'title' => 'Validation Page',
+					'value' => ''
+				],
+				'payment' => '',
+			),
+			'indicative' => '',
+			'booking_page' => [
+				'title' => 'Booking Page',
+				'value' => ''
+			],
+			'validation_page' => [
+				'title' => 'Validation Page',
+				'value' => ''
+			],
 			'options' => array(
 				'night_extra_charge' => array(
 					'enabled' => "0",
@@ -206,11 +224,6 @@ class Template
 					'price' => 0
 				),
 			),
-			'indicative' => '',
-			'validation_page' => [
-				'title' => 'Validation Page',
-				'value' => ''
-			],
 		);
 	}
 

@@ -21,7 +21,7 @@ function pkmgmt_parking_management_shortcode_func(array $atts, $content = null, 
 
 	$atts = shortcode_atts(
 		array(
-			'type' => 'form', // type supported form, home-form, payment, price, booked
+			'type' => 'form', // type supported form, valet, home-form, payment, price, booked
 			'payment_provider' => '', // payment supported payplug, mypos, mypos-payment
 			'action' => '', // action supported confirmation, cancellation
 		), $atts, 'parking-management'
@@ -32,7 +32,7 @@ function pkmgmt_parking_management_shortcode_func(array $atts, $content = null, 
 	$action = trim(array_key_exists('action', $atts) ? $atts['action'] : '');
 
 	return match ($type) {
-		'form', 'home-form', 'price', 'booked', 'high-season', 'payment', 'notification' => pkmgmt_parking_management_shortcode_router($type, ['payment_provider'=>$payment_provider, 'action' => $action]),
+		'form', 'valet', 'home-form', 'price', 'booked', 'high-season', 'payment', 'notification' => pkmgmt_parking_management_shortcode_router($type, ['payment_provider' => $payment_provider, 'action' => $action]),
 		default => '[parking-management "not found"]',
 	};
 }
@@ -44,12 +44,12 @@ function pkmgmt_parking_management_shortcode_router(string $type, $atts): string
 		return '[parking-management "not found"]';
 
 	/** @var IShortcode $instance */
-	$instance =  match ($type) {
-		'form', 'home-form' => new Booking($pm),
+	$instance = match ($type) {
+		'form', 'valet', 'home-form' => new Booking($pm),
 		'price' => new Price($pm),
 		'booked' => new Booked($pm),
 		'high-season' => new HighSeason($pm),
-		'payment' => new Payment($pm),
+		'payment' => new Payment($pm, $atts['payment_provider']),
 		'notification' => new Notification($pm),
 	};
 

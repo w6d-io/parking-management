@@ -41,8 +41,8 @@ class MyPos implements IPayment
 
 	public function pay(): string
 	{
-//		if ($this->config['redirect-to-provider'] == '1' )
 		$this->redirect();
+		print_log(['message' => 'ici'], false);
 		return Page::form($this->amount, $this->order_id);
 	}
 
@@ -50,6 +50,8 @@ class MyPos implements IPayment
 	{
 		$data = array();
 		try {
+			if ($this->config['redirect-to-provider'] != '1')
+				return;
 			$provider = $this->config;
 			$test_enabled = $provider['active-test'] === '1';
 
