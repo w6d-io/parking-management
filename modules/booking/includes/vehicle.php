@@ -62,7 +62,7 @@ VALUES (:commande_id, :type_id, :parking_type, :options, :marque, :modele, :imma
 		Logger::info("vehicule.create", ['params' => $params]);
 		if (!$req->execute($params)) {
 			Logger::error("vehicule.create", ['error' => $req->errorInfo()]);
-			throw new Exception("vehicle creation failed");
+			throw new Exception(esc_html__("vehicle creation failed", 'parking-management'));
 		}
 		return (int)$this->conn->lastInsertId();
 	}

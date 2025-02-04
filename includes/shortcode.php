@@ -49,7 +49,7 @@ function pkmgmt_parking_management_shortcode_router(string $type, $atts): string
 		'price' => new Price($pm),
 		'booked' => new Booked($pm),
 		'high-season' => new HighSeason($pm),
-		'payment' => new Payment($pm, $atts['payment_provider']),
+		'payment' => new Payment($pm),
 		'notification' => new Notification($pm),
 	};
 

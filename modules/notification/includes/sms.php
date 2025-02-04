@@ -30,7 +30,7 @@ class SMS {
 	private static function aws(array $sms, string $phone, string $message): bool
 	{
 		if ( empty($sms['user']) || empty($sms['password'])) {
-			Logger::warming("sms.aws", "sms is not configuration");
+			Logger::warning("sms.aws", "sms is not configuration");
 			return false;
 		}
 		$awsConfig = [

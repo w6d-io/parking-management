@@ -41,9 +41,14 @@ class Logger
 		self::log('info', $action, $message);
 	}
 
-	public static function warming(string $action, mixed $message): void
+	public static function debug(string $action, mixed $message): void
 	{
-		self::log('warming', $action, $message);
+		self::log('debug', $action, $message);
+	}
+
+	public static function warning(string $action, mixed $message): void
+	{
+		self::log('warning', $action, $message);
 	}
 
 	private static function config(): void

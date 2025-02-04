@@ -18,8 +18,18 @@ class Payment implements IShortcode, IParkingManagement
 	private ParkingManagement $pm;
 	private string $provider = '';
 
+	private array $config;
+
+	public function __construct(ParkingManagement $pm)
+	{
+		$this->pm = $pm;
+		$this->config = $pm->prop('payment');
+	}
+
+
 	private function getInstanceProvider(): IPayment
 	{
+		Logger::debug('payment.getInstanceProvider', ["provider" => $this->provider]);
 		return match ($this->provider) {
 			'payplug' => new Payplug($this->pm),
 			'mypos' => new MyPos($this->pm),
@@ -28,41 +38,40 @@ class Payment implements IShortcode, IParkingManagement
 
 	private function getEnabledProvider($form = 'booking'): string
 	{
+
 		$form_payment = match ($form) {
 			'valet' => $this->pm->prop('form')['valet']['payment'],
 			default => $this->pm->prop('form')['payment'],
 		};
-		if (self::isEnabled($form_payment))
+		$this->provider = $form_payment;
+
+		if ($this->isEnabled())
 			return $form_payment;
 		return '';
 	}
-
-	private function getSupportedProvider(): array
+	public function setProviderBySource($source): void
 	{
-		$payment = $this->pm->prop('payment');
-		return array_keys($payment['providers']);
-	}
-
-	public function __construct(ParkingManagement $pm, $source = 'booking')
-	{
-		$this->pm = $pm;
 		$provider = $this->getEnabledProvider($source);
 		if (empty($provider))
 			return;
 		$this->provider = $provider;
 	}
 
+	public function setProvider($provider): void
+	{
+		$this->provider = match ($provider) {
+			'payplug', 'mypos', 'paypal' => $provider,
+			default => ''
+		};
+	}
 	public function shortcode(string $type): string
 	{
-
 		if (!array_key_exists('order_id', $_GET) || !is_numeric($_GET['order_id'])
 			|| (array_key_exists('from', $_GET) && $_GET['from'] === 'provider')
 		)
 			return '';
-//		if ($type === '')
-//			return '';
-//		$this->provider = $type;
-		if (!in_array($this->provider, $this->getSupportedProvider()))
+		$this->setProvider($type);
+		if (!$this->isEnabled())
 			return '';
 		return match ($this->provider) {
 			'payplug', 'mypos' => $this->run_provider(),
@@ -83,22 +92,11 @@ class Payment implements IShortcode, IParkingManagement
 		$instance->redirect();
 	}
 
-	public static function isEnabled(string $name = ''): bool
+	public function isEnabled(): bool
 	{
-		$pm = getParkingManagementInstance();
-		if (!$pm) {
-			return false;
-		}
-
-		$providers = $pm->prop('payment')['providers'] ?? [];
-
-		return array_reduce($providers, function($carry, $provider) use ($name) {
-			if ($provider['enabled'] !== '1') {
-				return $carry;
-			}
-
-			return $carry || $name === '' || $name === $provider['name'];
-		}, false);
+		if (!empty($this->provider))
+			return $this->config['providers'][$this->provider]['enabled'] == '1';
+		return false;
 	}
 
 	public static function validateOnPayment(): bool

@@ -2,10 +2,8 @@
 
 namespace ParkingManagement\Admin;
 
-use ParagonIE\Sodium\Core\Curve25519\H;
 use ParkingManagement\Html;
 use ParkingManagement\ParkingManagement;
-use ParkingManagement\Template;
 
 class Pages
 {
@@ -207,10 +205,10 @@ class Pages
 		);
 	}
 
-	private static function _label($for, ...$contents): string
-	{
-		return sprintf('<label for="%s">%s</label>', esc_attr($for), implode("", $contents));
-	}
+//	private static function _label($for, ...$contents): string
+//	{
+//		return sprintf('<label for="%s">%s</label>', esc_attr($for), implode("", $contents));
+//	}
 
 
 	private static function _field($id, $div_class, $name, $label_content, $value): string
@@ -519,7 +517,7 @@ class Pages
 		echo '<h6>Booking form</h6>';
 		echo '<div class="form-control">';
 		echo '<div class="row text-start">';
-		echo '<div class="pb-2">Redirect payment</div>';
+		echo '<div class="pb-2">Payment link</div>';
 		echo '<div class="' . $box['id'] . '-fields">';
 		echo self::_field_radio(
 			'form-payment',
@@ -553,7 +551,7 @@ class Pages
 		echo '<h6>Valet form</h6>';
 		echo '<div class="form-control">';
 		echo '<div class="row text-start">';
-		echo '<div class="pb-2">Redirect payment</div>';
+		echo '<div class="pb-2">Payment link</div>';
 		echo '<div class="' . $box['id'] . '-fields">';
 		echo self::_field_radio(
 			'form-valet-payment',

@@ -71,7 +71,7 @@ class Notification implements IShortcode
 	private function mail(array $data, string $subject, $template): void
 	{
 		if (empty($template)) {
-			Logger::warming("notification.mail", "mail do not sent to {$data['member_email']} : missing template");
+			Logger::warning("notification.mail", "mail do not sent to {$data['member_email']} : missing template");
 			return;
 		}
 		$message = replacePlaceholders($template, $data);
@@ -82,7 +82,7 @@ class Notification implements IShortcode
 		))
 			Logger::info("notification.mail", "mail sent to {$data['member_email']}");
 		else
-			Logger::warming("notification.mail", "mail do not sent to {$data['member_email']}");
+			Logger::warning("notification.mail", "mail do not sent to {$data['member_email']}");
 	}
 
 	private function sms(array $data): void
@@ -93,7 +93,7 @@ class Notification implements IShortcode
 		if (SMS::send($data['order_telephone'], $message))
 			Logger::info("notification.sms", "message sent to {$data['order_telephone']}");
 		else
-			Logger::warming("notification.sms", "message do not sent to {$data['order_telephone']}");
+			Logger::warning("notification.sms", "message do not sent to {$data['order_telephone']}");
 	}
 
 	/**
