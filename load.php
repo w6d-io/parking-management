@@ -130,8 +130,12 @@ function pkmgmt_upgrade(): void
 	}
 	if (version_compare($old_version, '3.0.0', '<')) {
 		pkmgmt_migrate_2_to_3();
-	} elseif (version_compare($old_version, '3.1.0', '<')) {
+	}
+	if (version_compare($old_version, '3.1.0', '<')) {
 		pkmgmt_migrate_3_0_to_3_1();
+	}
+	if (version_compare($old_version, '3.6.0', '<')) {
+		pkmgmt_migrate_3_1_to_3_6();
 	}
 
 	do_action('pkmgmt_upgrade', $old_version, $new_version);
@@ -236,6 +240,33 @@ function pkmgmt_migrate_3_0_to_3_1(): void
 		$pm->save();
 	} catch (Exception $e) {
 		Logger::error("migrate.3.0.to.3.1", $e->getMessage());
+	}
+}
+
+function pkmgmt_migrate_3_1_to_3_6(): void
+{
+	$pm = getParkingManagementInstance();
+	if (!$pm)
+		return;
+	$props = $pm->get_properties();
+	$props['payment']['providers']['mypos']['redirect-to-provider'] = '0';
+	$props['form']['payment'] = '';
+	$props['form']['valet']= [
+		'validation_page' => [
+			'title' => 'Validation Page',
+			'value' => ''
+		],
+		'payment' => ''
+	];
+	$props['form']['booking_page'] = [
+		'title' => 'Booking Page',
+		'value' => ''
+	];
+	$pm->set_properties($props);
+	try {
+		$pm->save();
+	} catch (Exception $e) {
+		Logger::error("migrate.3.1.to.3.6", $e->getMessage());
 	}
 }
 
