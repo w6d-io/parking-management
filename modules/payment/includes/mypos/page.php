@@ -26,7 +26,8 @@ class Page
 				'order_id' => $order_id,
 				'amount' => $amount,
 				'test_enabled' => $test_enabled,
-				'article' => 'reservation du '
+				'article' => 'reservation du ',
+				'wallet_number' => '61938166610' #to change
 			)
 		);
 	}

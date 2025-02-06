@@ -1,8 +1,7 @@
-
-var paymentParams = {
+const paymentParams = {
 	sid: '000000000000010',
 	ipcLanguage: 'fr',
-	walletNumber: '61938166610',
+	walletNumber: external_object.wallet_number,
 	amount: external_object.amount,
 	currency: 'EUR',
 	orderID: external_object.order_id,
@@ -20,7 +19,7 @@ var paymentParams = {
 	]
 };
 
-var callbackParams = {
+const callbackParams = {
 	isSandbox: external_object.test_enabled,
 
 	onMessageReceived: function (messages) {
