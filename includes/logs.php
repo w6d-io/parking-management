@@ -76,7 +76,7 @@ class Logger
 		}
 		if (self::$useFile && !file_exists(self::logDirectory . DS . '.htaccess')) {
 			// Add .htaccess file to prevent reading file from directory
-			$fileContent = "order deny,allow\ndeny from all\nallow from 127.0.0.1";
+			$fileContent = "order deny,allow\ndeny from all";
 			file_put_contents(self::logDirectory . DS . '.htaccess', $fileContent);
 		}
 
