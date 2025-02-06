@@ -68,10 +68,18 @@ class Logger
 			self::$conn = database::connect();
 		if (self::$useFile && !is_dir(self::logDirectory)) {
 			mkdir(self::logDirectory, 0755, true);
-			// Add index.php file to prevent directory listing
-			$indexContent = "<?php\n// Silence is golden.";
-			file_put_contents(self::logDirectory . DS . 'index.php', $indexContent);
 		}
+		if (self::$useFile && !file_exists(self::logDirectory . DS . 'index.php')) {
+			// Add index.php file to prevent directory listing
+			$fileContent = "<?php\n// Silence is golden.";
+			file_put_contents(self::logDirectory . DS . 'index.php', $fileContent);
+		}
+		if (self::$useFile && !file_exists(self::logDirectory . DS . '.htaccess')) {
+			// Add .htaccess file to prevent reading file from directory
+			$fileContent = "order deny,allow\ndeny from all\nallow from 127.0.0.1";
+			file_put_contents(self::logDirectory . DS . '.htaccess', $fileContent);
+		}
+
 	}
 
 	private static function getClientIP()
