@@ -9,6 +9,7 @@ use ParkingManagement\Booked;
 use ParkingManagement\database\database;
 use ParkingManagement\DatesRange;
 use ParkingManagement\Logger;
+use ParkingManagement\ParkingManagement;
 use ParkingManagement\Payment;
 use ParkingManagement\PaymentID;
 use ParkingManagement\Price;
@@ -50,6 +51,7 @@ enum ParkingType: int
 {
 	case OUTSIDE = 0;
 	case INSIDE = 1;
+	case VALET = 2;
 
 	public static function fromInt(int $value): ?self
 	{
@@ -69,6 +71,8 @@ class Order
 	private array $data;
 
 	private array $order;
+
+	private ParkingManagement $pm;
 
 	public function getOrder(): array
 	{
@@ -92,6 +96,7 @@ class Order
 	public function __construct()
 	{
 		$pm = getParkingManagementInstance();
+		$this->pm = $pm;
 		if (!$conn = database::connect()) {
 			Logger::error("member.database.connect", database::getError());
 			return;
@@ -143,7 +148,6 @@ class Order
 		$start = substr($this->getData('depart'), 0, 10);
 		$end = substr($this->getData('retour'), 0, 10);
 		if (Booked::is($start)) {
-			$price['complet'] = 1;
 			Logger::info("order.create", "car park is full on " . DatesRange::convertDate($start));
 			throw new Exception(__("Car park is full on ", 'parking-management') . DatesRange::convertDate($start));
 		}
@@ -152,7 +156,6 @@ class Order
 		$start_hour = substr($this->getData('depart'), 11, 5);
 		$end_hour = substr($this->getData('retour'), 11, 5);
 		if (Booked::is($start) || Booked::is($end)) {
-			$price['complet'] = 1;
 			Logger::info("order.create", "car park is full");
 			return 0;
 		}
@@ -165,6 +168,11 @@ class Order
 		$referer = parse_url($_SERVER['HTTP_REFERER']);
 		$referer_host = array_key_exists('host', $referer) ? $referer['host'] : NULL;
 		$price = Price::getPrice($this->data);
+		$payment = new Payment($this->pm);
+		if ($this->getData('parking_type') == ParkingType::VALET->value)
+			$payment->setProviderBySource('valet');
+		else
+			$payment->setProviderBySource('booking');
 		$this->order = array(
 			'resauuid' => uniqid(),
 			'site_id' => $this->site_id,
@@ -184,7 +192,7 @@ class Order
 					'retour' => $this->getData('nb_pax')
 				)
 			),
-			'destination_id' => !empty($this->getData('destination_id'))?$this->getData('destination_id'):0 ,
+			'destination_id' => !empty($this->getData('destination_id')) ? $this->getData('destination_id') : 0,
 			'terminal' => serialize($this->getData('terminal')),
 			'remarque' => '',
 			'total' => $price['total'],
@@ -193,7 +201,7 @@ class Order
 			'tva_transport' => 10,
 			'coupon_id' => 0,
 			'recherche' => mb_convert_encoding($search, 'ISO-8859-1', 'UTF-8'),
-			'status' => Payment::validateOnPayment() && Payment::isEnabled() ? OrderStatus::PENDING->value : OrderStatus::CONFIRMED->value,
+			'status' => (Payment::validateOnPayment() || $this->getData('parking_type') == ParkingType::VALET->value) && $payment->isEnabled() ? OrderStatus::PENDING->value : OrderStatus::CONFIRMED->value,
 			'nb_retard' => 0,
 			'ip' => $_SERVER['REMOTE_ADDR'],
 			'host' => $_SERVER['HTTP_USER_AGENT'],
@@ -230,7 +238,7 @@ class Order
 		}
 		$id = $this->conn->lastInsertId();
 		if (!$id) {
-			Logger::error("order.create", ['message'=> 'Order id is null']);
+			Logger::error("order.create", ['message' => 'Order id is null']);
 			throw new Exception(__("fail to create order", 'parking-management'));
 		}
 		Logger::info("order.create", ['id' => $id]);
@@ -359,7 +367,7 @@ class Order
 			$end_date = DateTime::createFromFormat('Y-m-d', $end);
 
 			if ($start_date === false || $end_date === false) {
-				Logger::error("order.isExists", ["message"=>"Invalid date format ", "start"=>$start, "end"=>$end, "start_hour"=>$start_hour, "end_hour"=>$end_hour]);
+				Logger::error("order.isExists", ["message" => "Invalid date format ", "start" => $start, "end" => $end, "start_hour" => $start_hour, "end_hour" => $end_hour]);
 				throw new InvalidArgumentException("Invalid date format provided");
 			}
 

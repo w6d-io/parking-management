@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-01-20T16:06:55+00:00\n"
+"POT-Creation-Date: 2025-02-02T14:23:27+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.10.0\n"
 "X-Domain: parking-management\n"
@@ -30,7 +30,7 @@ msgid "David ALEXANDRE"
 msgstr ""
 
 #: admin/admin.php:73
-#: admin/includes/pages.php:15
+#: admin/includes/pages.php:16
 #: includes/parking-management.php:108
 #: includes/parking-management.php:109
 msgid "Parking Management"
@@ -49,146 +49,146 @@ msgstr ""
 msgid "You are not allowed to edit this page."
 msgstr ""
 
-#: admin/includes/pages.php:37
+#: admin/includes/pages.php:38
 msgid "Configuration saved."
 msgstr ""
 
-#: admin/includes/pages.php:87
+#: admin/includes/pages.php:88
 msgid "Title"
 msgstr ""
 
-#: admin/includes/pages.php:95
-#: admin/includes/pages.php:426
-#: modules/booking/includes/form.php:250
+#: admin/includes/pages.php:96
+#: admin/includes/pages.php:450
+#: modules/booking/includes/form.php:254
 msgid "Name"
 msgstr ""
 
-#: admin/includes/pages.php:107
+#: admin/includes/pages.php:108
 msgid "Copy and paste this code into your page to include booking form."
 msgstr ""
 
-#: admin/includes/pages.php:113
+#: admin/includes/pages.php:114
+msgid "Copy and paste this code into your page to include valet booking form."
+msgstr ""
+
+#: admin/includes/pages.php:120
 msgid "Copy and paste this code into your page to include home booking form."
 msgstr ""
 
-#: admin/includes/pages.php:119
+#: admin/includes/pages.php:126
 msgid "Copy and paste this code into your page to include price table."
 msgstr ""
 
-#: admin/includes/pages.php:125
+#: admin/includes/pages.php:132
 msgid "Copy and paste this code into your page to include booked message."
 msgstr ""
 
-#: admin/includes/pages.php:131
+#: admin/includes/pages.php:138
 msgid "Copy and paste this code into your page to include high-season message."
 msgstr ""
 
-#: admin/includes/pages.php:137
+#: admin/includes/pages.php:144
 msgid "Copy and paste this code into your page where you want a notification confirmation after an order."
 msgstr ""
 
-#: admin/includes/pages.php:143
+#: admin/includes/pages.php:150
 msgid "Copy and paste this code into your page where you want a notification cancellation after an order."
 msgstr ""
 
-#: admin/includes/pages.php:149
-msgid "Copy and paste this code into your page to include a random enabled payment form."
-msgstr ""
-
-#: admin/includes/pages.php:155
+#: admin/includes/pages.php:156
 msgid "Copy and paste this code into your page to include paypal payment form."
 msgstr ""
 
-#: admin/includes/pages.php:161
+#: admin/includes/pages.php:162
 msgid "Copy and paste this code into your page to include payplug payment form."
 msgstr ""
 
-#: admin/includes/pages.php:167
+#: admin/includes/pages.php:168
 msgid "Copy and paste this code into your page to include mypos payment form."
 msgstr ""
 
-#: admin/includes/pages.php:174
+#: admin/includes/pages.php:175
 msgid "Save"
 msgstr ""
 
-#: admin/includes/pages.php:304
+#: admin/includes/pages.php:321
 msgid "Browse page"
 msgstr ""
 
-#: admin/includes/pages.php:387
+#: admin/includes/pages.php:411
 msgid "Address"
 msgstr ""
 
-#: admin/includes/pages.php:390
+#: admin/includes/pages.php:414
 msgid "Mobile"
 msgstr ""
 
-#: admin/includes/pages.php:393
+#: admin/includes/pages.php:417
 msgid "RCS"
 msgstr ""
 
-#: admin/includes/pages.php:396
-#: modules/booking/includes/form.php:313
-#: modules/booking/includes/form.php:642
+#: admin/includes/pages.php:420
+#: modules/booking/includes/form.php:317
+#: modules/booking/includes/form.php:685
 msgid "Email"
 msgstr ""
 
-#: admin/includes/pages.php:399
+#: admin/includes/pages.php:423
 msgid "Terminal"
 msgstr ""
 
-#: admin/includes/pages.php:407
+#: admin/includes/pages.php:431
 msgid "Vehicle Type supported"
 msgstr ""
 
-#: admin/includes/pages.php:410
+#: admin/includes/pages.php:434
 msgid "Vehicle storage mode"
 msgstr ""
 
-#: admin/includes/pages.php:429
+#: admin/includes/pages.php:453
 msgid "Host"
 msgstr ""
 
-#: admin/includes/pages.php:432
+#: admin/includes/pages.php:456
 msgid "Port"
 msgstr ""
 
-#: admin/includes/pages.php:435
-#: admin/includes/pages.php:684
+#: admin/includes/pages.php:459
+#: admin/includes/pages.php:789
 msgid "Username"
 msgstr ""
 
-#: admin/includes/pages.php:438
-#: admin/includes/pages.php:687
+#: admin/includes/pages.php:462
+#: admin/includes/pages.php:792
 msgid "Password"
 msgstr ""
 
-#: admin/includes/pages.php:471
-msgid "Booking"
-msgstr ""
-
-#: admin/includes/pages.php:474
+#: admin/includes/pages.php:578
 msgid "Indicative"
 msgstr ""
 
-#: admin/includes/pages.php:499
-#: admin/includes/pages.php:531
+#: admin/includes/pages.php:584
+msgid "Booking"
+msgstr ""
+
+#: admin/includes/pages.php:604
+#: admin/includes/pages.php:636
 msgid "Add a date"
 msgstr ""
 
-#: admin/includes/pages.php:670
+#: admin/includes/pages.php:775
 msgid "Type"
 msgstr ""
 
-#: admin/includes/pages.php:690
+#: admin/includes/pages.php:795
 msgid "Sender"
 msgstr ""
 
-#: admin/includes/pages.php:693
+#: admin/includes/pages.php:798
 msgid "Template"
 msgstr ""
 
-#: admin/includes/pages.php:704
+#: admin/includes/pages.php:809
 msgid "Select a page"
 msgstr ""
 
@@ -220,107 +220,111 @@ msgstr ""
 msgid "failed to get config"
 msgstr ""
 
-#: modules/booking/includes/form.php:75
+#: modules/booking/includes/form.php:76
 msgid "Outside"
 msgstr ""
 
-#: modules/booking/includes/form.php:81
+#: modules/booking/includes/form.php:82
 msgid "Inside"
 msgstr ""
 
-#: modules/booking/includes/form.php:248
-msgid "Personal Information"
+#: modules/booking/includes/form.php:88
+msgid "Valet"
 msgstr ""
 
-#: modules/booking/includes/form.php:261
+#: modules/booking/includes/form.php:265
 msgid "Firstname"
 msgstr ""
 
-#: modules/booking/includes/form.php:271
+#: modules/booking/includes/form.php:275
 msgid "Zip code"
 msgstr ""
 
-#: modules/booking/includes/form.php:302
+#: modules/booking/includes/form.php:306
 msgid "Mobile phone"
 msgstr ""
 
-#: modules/booking/includes/form.php:326
+#: modules/booking/includes/form.php:334
 msgid "Type of vehicle"
 msgstr ""
 
-#: modules/booking/includes/form.php:341
+#: modules/booking/includes/form.php:351
 msgid "Car model"
 msgstr ""
 
-#: modules/booking/includes/form.php:358
+#: modules/booking/includes/form.php:368
 msgid "Immatriculation"
 msgstr ""
 
-#: modules/booking/includes/form.php:371
+#: modules/booking/includes/form.php:392
 msgid "Car Park"
 msgstr ""
 
-#: modules/booking/includes/form.php:395
-msgid "Trip Information"
+#: modules/booking/includes/form.php:410
+msgid "Personal Information"
 msgstr ""
 
-#: modules/booking/includes/form.php:398
+#: modules/booking/includes/form.php:420
+msgid "Number of pax"
+msgstr ""
+
+#: modules/booking/includes/form.php:465
 msgid "Destination"
 msgstr ""
 
-#: modules/booking/includes/form.php:425
+#: modules/booking/includes/form.php:492
 msgid "Departure"
 msgstr ""
 
-#: modules/booking/includes/form.php:431
+#: modules/booking/includes/form.php:498
 msgid "Return"
 msgstr ""
 
-#: modules/booking/includes/form.php:441
+#: modules/booking/includes/form.php:508
 msgid "Terminal departure"
 msgstr ""
 
-#: modules/booking/includes/form.php:457
+#: modules/booking/includes/form.php:524
 msgid "Terminal return"
 msgstr ""
 
-#: modules/booking/includes/form.php:475
-#: modules/booking/includes/form.php:633
+#: modules/booking/includes/form.php:542
+#: modules/booking/includes/form.php:676
 #: modules/booking/includes/home_form.php:76
 msgid "Dropping off at"
 msgstr ""
 
-#: modules/booking/includes/form.php:492
-#: modules/booking/includes/form.php:637
+#: modules/booking/includes/form.php:559
+#: modules/booking/includes/form.php:680
 #: modules/booking/includes/home_form.php:93
 msgid "Landing at the airport"
 msgstr ""
 
-#: modules/booking/includes/form.php:505
-msgid "Number of pax"
+#: modules/booking/includes/form.php:584
+msgid "Trip Information"
 msgstr ""
 
-#: modules/booking/includes/form.php:592
+#: modules/booking/includes/form.php:635
 msgid "Order amount"
 msgstr ""
 
-#: modules/booking/includes/form.php:611
+#: modules/booking/includes/form.php:654
 msgid "Validate your order"
 msgstr ""
 
-#: modules/booking/includes/form.php:629
+#: modules/booking/includes/form.php:672
 msgid "Confirmation"
 msgstr ""
 
-#: modules/booking/includes/form.php:650
+#: modules/booking/includes/form.php:693
 msgid "Confirm your order"
 msgstr ""
 
-#: modules/booking/includes/form.php:666
+#: modules/booking/includes/form.php:709
 msgid "I hereby subscribe to the cancellation insurance for "
 msgstr ""
 
-#: modules/booking/includes/form.php:692
+#: modules/booking/includes/form.php:735
 msgid "Loading..."
 msgstr ""
 
@@ -332,23 +336,27 @@ msgstr ""
 msgid "Failed to create member"
 msgstr ""
 
-#: modules/booking/includes/order.php:148
+#: modules/booking/includes/order.php:149
 msgid "Car park is full on "
 msgstr ""
 
-#: modules/booking/includes/order.php:229
+#: modules/booking/includes/order.php:230
 msgid "order creation failed in database insertion"
 msgstr ""
 
-#: modules/booking/includes/order.php:234
+#: modules/booking/includes/order.php:235
 msgid "fail to create order"
 msgstr ""
 
-#: modules/notification/notification.php:50
+#: modules/booking/includes/vehicle.php:65
+msgid "vehicle creation failed"
+msgstr ""
+
+#: modules/notification/notification.php:51
 msgid "Summary of your order"
 msgstr ""
 
-#: modules/notification/notification.php:63
+#: modules/notification/notification.php:64
 msgid "Order cancelled"
 msgstr ""
 
@@ -357,12 +365,12 @@ msgstr ""
 msgid "failed to get parking management instance"
 msgstr ""
 
-#: modules/payment/includes/mypos/page.php:42
+#: modules/payment/includes/mypos/page.php:43
 #: modules/payment/includes/payplug/page.php:28
 msgid "Last step: payment"
 msgstr ""
 
-#: modules/payment/includes/mypos/page.php:53
+#: modules/payment/includes/mypos/page.php:54
 #: modules/payment/includes/payplug/page.php:38
 msgid "Checkout"
 msgstr ""

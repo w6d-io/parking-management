@@ -4,6 +4,7 @@ namespace ParkingManagement;
 
 use Booking\Member;
 use Booking\Order;
+use Booking\Vehicle;
 use Exception;
 use Notification\Mail;
 use ParkingManagement\interfaces\IShortcode;
@@ -70,7 +71,7 @@ class Notification implements IShortcode
 	private function mail(array $data, string $subject, $template): void
 	{
 		if (empty($template)) {
-			Logger::warming("notification.mail", "mail do not sent to {$data['member_email']} : missing template");
+			Logger::warning("notification.mail", "mail do not sent to {$data['member_email']} : missing template");
 			return;
 		}
 		$message = replacePlaceholders($template, $data);
@@ -81,7 +82,7 @@ class Notification implements IShortcode
 		))
 			Logger::info("notification.mail", "mail sent to {$data['member_email']}");
 		else
-			Logger::warming("notification.mail", "mail do not sent to {$data['member_email']}");
+			Logger::warning("notification.mail", "mail do not sent to {$data['member_email']}");
 	}
 
 	private function sms(array $data): void
@@ -92,7 +93,7 @@ class Notification implements IShortcode
 		if (SMS::send($data['order_telephone'], $message))
 			Logger::info("notification.sms", "message sent to {$data['order_telephone']}");
 		else
-			Logger::warming("notification.sms", "message do not sent to {$data['order_telephone']}");
+			Logger::warning("notification.sms", "message do not sent to {$data['order_telephone']}");
 	}
 
 	/**
@@ -104,11 +105,14 @@ class Notification implements IShortcode
 		$order = $orderInstance->read($_GET['order_id']);
 		$memberInstance = new Member();
 		$member = $memberInstance->read($order['membre_id']);
+		$vehicleInstance = new Vehicle();
+		$vehicle = $vehicleInstance->read($_GET['order_id']);
 
 		$info = $this->pm->prop('info');
 		$form = $this->pm->prop('form');
 		$data = replacementData('member', $member);
 		$data = array_merge($data, replacementData('order', $order));
+		$data = array_merge($data, replacementData('vehicle', $vehicle));
 		$data['order_depart_formated'] = DatesRange::convertDate($data['order_depart'] . ' ' . $data['order_depart_heure'], 'Y-m-d H:i:s', 'd MMMM y H:mm');
 		$data['order_arrivee_formated'] = DatesRange::convertDate($data['order_arrivee'] . ' ' . $data['order_arrivee_heure'], 'Y-m-d H:i:s', 'd MMMM y H:mm');
 		$data['order_id'] = $_GET['order_id'];

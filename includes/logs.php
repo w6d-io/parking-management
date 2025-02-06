@@ -41,9 +41,14 @@ class Logger
 		self::log('info', $action, $message);
 	}
 
-	public static function warming(string $action, mixed $message): void
+	public static function debug(string $action, mixed $message): void
 	{
-		self::log('warming', $action, $message);
+		self::log('debug', $action, $message);
+	}
+
+	public static function warning(string $action, mixed $message): void
+	{
+		self::log('warning', $action, $message);
 	}
 
 	private static function config(): void
@@ -63,10 +68,18 @@ class Logger
 			self::$conn = database::connect();
 		if (self::$useFile && !is_dir(self::logDirectory)) {
 			mkdir(self::logDirectory, 0755, true);
-			// Add index.php file to prevent directory listing
-			$indexContent = "<?php\n// Silence is golden.";
-			file_put_contents(self::logDirectory . DS . 'index.php', $indexContent);
 		}
+		if (self::$useFile && !file_exists(self::logDirectory . DS . 'index.php')) {
+			// Add index.php file to prevent directory listing
+			$fileContent = "<?php\n// Silence is golden.";
+			file_put_contents(self::logDirectory . DS . 'index.php', $fileContent);
+		}
+		if (self::$useFile && !file_exists(self::logDirectory . DS . '.htaccess')) {
+			// Add .htaccess file to prevent reading file from directory
+			$fileContent = "order deny,allow\ndeny from all";
+			file_put_contents(self::logDirectory . DS . '.htaccess', $fileContent);
+		}
+
 	}
 
 	private static function getClientIP()

@@ -218,10 +218,9 @@ class Member
 					'fields' => $fields,
 					'errorInfo' => $req->errorInfo()
 				]);
-//				throw new Exception("Failed to update member");
 				return false;
 			}
-			Logger::info("member.patch", "No valid fields provided for update");
+			Logger::info("member.patch", "Member updated");
 			return true;
 		} catch (PDOException $e) {
 			Logger::error("member.patch", [
@@ -229,7 +228,6 @@ class Member
 				'fields' => $fields,
 				'error' => $e->getMessage()
 			]);
-//			throw $e;
 			return false;
 		}
 	}

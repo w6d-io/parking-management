@@ -6,11 +6,11 @@ use Booking\Form;
 use Booking\HomeForm;
 use Booking\Member;
 use Booking\Order;
+use Booking\ParkingType;
 use Booking\Vehicle;
 use Exception;
 use ParkingManagement\interfaces\IParkingmanagement;
 use ParkingManagement\interfaces\IShortcode;
-use Mail;
 use PDOException;
 
 require_once PKMGMT_PLUGIN_MODULES_DIR . DS . "booking" . DS . "includes" . DS . "form.php";
@@ -34,11 +34,12 @@ class Booking implements IShortcode, IParkingManagement
 		return match ($type) {
 			'form' => $this->shortcode_form(),
 			'home-form' => $this->shortcode_home_form(),
+			'valet' => $this->shortcode_form(true),
 			'default' => '',
 		};
 	}
 
-	private function shortcode_form(): string
+	private function shortcode_form($forValet = false): string
 	{
 		$form = new Form($this->pm);
 		return $this->message() .
@@ -48,8 +49,8 @@ class Booking implements IShortcode, IParkingManagement
 						Html::_form('reservation', 'reservation', 'post', '', array(),
 							Html::_div(array('class' => 'row'),
 								Html::_div(array('class' => 'col-12'),
-									$form->personal_information($this->pm),
-									$form->trip_information($this->pm)
+									$form->personal_information($this->pm, $forValet),
+									$form->trip_information($this->pm, $forValet)
 								),
 								$form->cancellation_insurance($this->pm),
 								$form->cgv($this->pm),
@@ -101,6 +102,9 @@ class Booking implements IShortcode, IParkingManagement
 	{
 		global $current_shortcode_page;
 		$post = array_merge($_GET, $_POST);
+		$source = 'booking';
+		if ($post['parking_type'] == ParkingType::VALET->value)
+			$source = 'valet';
 		$page = home_url();
 		try {
 			$member = new Member();
@@ -116,14 +120,19 @@ class Booking implements IShortcode, IParkingManagement
 			$vehicle = new Vehicle();
 			$vehicle->create($order_id);
 
-			if (Payment::isEnabled()) {
+			$payment = new Payment($this->pm);
+			$payment->setProviderBySource($source);
+			if ($payment->isEnabled()) {
 				$_GET['order_id'] = $order_id;
-				$payment = new Payment($this->pm);
+				Logger::debug('booking.create', ["source" => $source, "order_id" => $order_id]);
 				$payment->redirect();
 			}
 			$form = $this->pm->prop('form');
-			if ($form['validation_page']['value'] != '')
+			if ($form['validation_page']['value'] != '' && $post['parking_type'] != ParkingType::VALET->value)
 				$page = $form['validation_page']['value'];
+			if ($post['parking_type'] == ParkingType::VALET->value && $form['valet']['validation_page']['value'] != '')
+				$page = $form['valet']['validation_page']['value'];
+
 			wp_redirect($page . '?order_id=' . $order_id);
 			exit(0);
 

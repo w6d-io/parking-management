@@ -42,7 +42,10 @@ class Controller
 	#[NoReturn] private function home_form_redirect(): void
 	{
 		$post = array_merge($_GET, $_POST);
-		$url = sprintf(home_url()."/reservation?depart=%s 00:00&retour=%s 00:00", $post['depart'], $post['retour']);
+		$pm = getParkingManagementInstance();
+		$form = $pm->prop('form');
+		$booking_page = $form['booking_page']['value'];
+		$url = sprintf($booking_page."?depart=%s 00:00&retour=%s 00:00", $post['depart'], $post['retour']);
 		wp_redirect($url);
 		exit(0);
 	}

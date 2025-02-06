@@ -2,7 +2,6 @@
 
 namespace ParkingManagement\Admin;
 
-use ParagonIE\Sodium\Core\Curve25519\H;
 use ParkingManagement\Html;
 use ParkingManagement\ParkingManagement;
 
@@ -108,6 +107,12 @@ class Pages
 			"[parking-management type='form']"
 		);
 		echo self::_shortcode_field(
+			'shortcode-valet',
+			'shortcode-valet',
+			esc_html__("Copy and paste this code into your page to include valet booking form.", 'parking-management'),
+			"[parking-management type='valet']"
+		);
+		echo self::_shortcode_field(
 			'shortcode-home-form',
 			'shortcode-home-form',
 			esc_html__("Copy and paste this code into your page to include home booking form.", 'parking-management'),
@@ -142,12 +147,6 @@ class Pages
 			'shortcode-notification-cancellation',
 			esc_html__("Copy and paste this code into your page where you want a notification cancellation after an order.", 'parking-management'),
 			"[parking-management type='notification' action='cancellation']"
-		);
-		echo self::_shortcode_field(
-			'shortcode-payment-random',
-			'shortcode-payment-random',
-			esc_html__("Copy and paste this code into your page to include a random enabled payment form.", 'parking-management'),
-			"[parking-management type='payment']"
 		);
 		echo self::_shortcode_field(
 			'shortcode-payment-paypal',
@@ -206,10 +205,10 @@ class Pages
 		);
 	}
 
-	private static function _label($for, ...$contents): string
-	{
-		return sprintf('<label for="%s">%s</label>', esc_attr($for), implode("", $contents));
-	}
+//	private static function _label($for, ...$contents): string
+//	{
+//		return sprintf('<label for="%s">%s</label>', esc_attr($for), implode("", $contents));
+//	}
 
 
 	private static function _field($id, $div_class, $name, $label_content, $value): string
@@ -257,12 +256,28 @@ class Pages
 			return Html::_div(array('class' => $div_class), "bad values type");
 		}
 		$contents = array();
-		$contents[] = '<span>' . $span_content . '</span>';
-		$contents[] = '<br/>';
+		$contents[] = '<div class="pb-2">' . $span_content . '</div>';
 		foreach ($values as $key => $value) {
 			$contents[] = Html::_div(
-				array('class' => 'form-check form-switch  '),
+				array('class' => 'form-check form-switch form-check-inline'),
 				Html::_checkbox($id, $name, array('class' => $id . ' form-check-input'), $key, $value),
+			);
+		}
+		return Html::_div(array('class' => $div_class),
+			...$contents
+		);
+	}
+
+	private static function _field_radio($id, $div_class, $name, array $elements, $value): string
+	{
+		$contents = array();
+		foreach ($elements as $element) {
+			$contents[] = Html::_div(
+				array('class' => 'form-check form-check-inline'),
+				Html::_radio($id . '_' . $element['id'], $name, $element['value'], array('class' =>' form-check-input'), $value == $element['value']),
+				Html::_label_with_attr(
+					array('class' => 'form-check-label'),
+					$id . '_' . $element['id'], $element['label']),
 			);
 		}
 		return Html::_div(array('class' => $div_class),
@@ -298,7 +313,7 @@ class Pages
 	{
 		return Html::_div(array('class' => $div_class),
 			Html::_label($id, $label_content),
-			'<br/>',
+//			'<br/>',
 			Html::_div(array('class' => 'input-group mb-3'),
 				Html::_div(array('class' => 'input-group-prepend'),
 					'<button type="button" class="btn btn-outline-primary pages-list " data-bs-toggle="modal" data-bs-target="#dialog-pages-list">' . esc_html__('Browse page', 'parking-management') . '</button>'
@@ -315,14 +330,21 @@ class Pages
 	private static function _field_payment($id, $div_class, $label_content, $name, $payment): string
 	{
 		$contents = array();
-		$contents[] = '<div class="form-control">';
-		$contents[] = Html::_checkbox($id, $name, array(), 'enabled', $payment['enabled']);
+		$contents[] = '<div class="payment_field form-control pt-3">';
+		$contents[] = '<div class="form-check form-switch form-check-inline">';
+		$contents[] = Html::_checkbox($id, $name, array('class'=>'form-check-input'), 'enabled', $payment['enabled']);
+		$contents[] = '</div>';
 		if (array_key_exists('active-test', $payment)) {
-			$contents[] = Html::_checkbox($id, $name, array(), 'active-test', $payment['active-test']);
+			$contents[] = '<div class="form-check form-switch form-check-inline">';
+			$contents[] = Html::_checkbox($id, $name, array('class'=>'form-check-input'), 'active-test', $payment['active-test']);
+			$contents[] = '</div>';
 		}
 		if (array_key_exists('redirect-to-provider', $payment)) {
-			$contents[] = Html::_checkbox($id, $name, array(), 'redirect-to-provider', $payment['redirect-to-provider']);
+			$contents[] = '<div class="form-check form-switch form-check-inline">';
+			$contents[] = Html::_checkbox($id, $name, array('class'=>'form-check-input'), 'redirect-to-provider', $payment['redirect-to-provider']);
+			$contents[] = '</div>';
 		}
+
 		$contents[] = '</div>';
 		foreach ($payment['properties'] as $key => $params) {
 			$contents[] = Html::_index('hidden', $id . '-' . $key . '-' . $params['title'], $name . '[properties]' . '[' . $key . '][title]', array('value' => $params['title']));
@@ -467,17 +489,98 @@ class Pages
 
 	public static function form_box($form, $box): void
 	{
+		$payment_elements = [
+			[
+				'id' => 0,
+				'label' => 'None',
+				'value' => '',
+			],
+			[
+				'id' => 1,
+				'label' => 'PayPlug',
+				'value' => 'payplug',
+			],
+			[
+				'id' => 2,
+				'label' => 'MyPOS',
+				'value' => 'mypos',
+			],
+			[
+				'id' => 3,
+				'label' => 'PayPal',
+				'value' => 'paypal',
+			]
+		];
+		echo '<div class="text-center">';
+
+		echo '<div class="form-control">';
+		echo '<h6>Booking form</h6>';
+		echo '<div class="form-control">';
+		echo '<div class="row text-start">';
+		echo '<div class="pb-2">Payment link</div>';
 		echo '<div class="' . $box['id'] . '-fields">';
-		echo self::_field_checkbox('form-booking', 'form_field', 'pkmgmt-form[booking]', esc_html__('Booking', 'parking-management'), $form['booking']);
+		echo self::_field_radio(
+			'form-payment',
+			'col form_field',
+			'pkmgmt-form[payment]',
+			$payment_elements,
+			 $form['payment']);
 		echo '</div>';
+		echo '</div>';
+		echo '</div>';
+
+		echo '<div class="row">';
+
+		echo '<div class="col ' . $box['id'] . '-fields">';
+		echo Html::_index('hidden', 'form-booking-page-title', 'pkmgmt-form[booking_page][title]', array('value' => $form['booking_page']['title']));
+		echo self::_field_page('form-booking-page', "form-control", 'pkmgmt-form[booking_page][value]', $form['booking_page']['title'], $form['booking_page']['value']);
+		echo '</div>';
+		echo '<div class="col ' . $box['id'] . '-fields">';
+		echo Html::_index('hidden', 'form-validation-page-title', 'pkmgmt-form[validation_page][title]', array('value' => $form['validation_page']['title']));
+		echo self::_field_page('form-validation-page', "form-control", 'pkmgmt-form[validation_page][value]', $form['validation_page']['title'], $form['validation_page']['value']);
+		echo '</div>';
+
+		echo '</div>';
+		echo '</div>';
+		echo '</div>';
+
+
+
+		echo '<div class="text-center">';
+		echo '<div class="form-control">';
+		echo '<h6>Valet form</h6>';
+		echo '<div class="form-control">';
+		echo '<div class="row text-start">';
+		echo '<div class="pb-2">Payment link</div>';
+		echo '<div class="' . $box['id'] . '-fields">';
+		echo self::_field_radio(
+			'form-valet-payment',
+			'col form_field',
+			'pkmgmt-form[valet][payment]',
+			$payment_elements,
+			$form['valet']['payment']);
+		echo '</div>';
+		echo '</div>';
+		echo '</div>';
+
+		echo '<div class="row">';
+		echo '<div class="' . $box['id'] . '-fields">';
+		echo self::_field_page('form-valet-validation-page', "form-control", 'pkmgmt-form[valet][validation_page][value]', $form['valet']['validation_page']['title'], $form['valet']['validation_page']['value']);
+		echo '</div>';
+
+		echo '</div>';
+		echo '</div>';
+		echo '</div>';
+
 		echo '<div class="' . $box['id'] . '-fields">';
 		echo self::_field('form-indicative', 'form_field', 'pkmgmt-form[indicative]', esc_html__('Indicative', 'parking-management'), $form['indicative']);
 		echo '</div>';
 
-		echo '<div class="' . $box['id'] . '-fields">';
-		echo Html::_index('hidden', 'form-validation-page-title', 'pkmgmt-form[validation_page][title]', array('value' => $form['validation_page']['title']));
 
-		echo self::_field_page('form-validation-page', "form-control", 'pkmgmt-form[validation_page][value]', $form['validation_page']['title'], $form['validation_page']['value']);
+		echo '<div class="' . $box['id'] . '-fields">';
+		echo '<div class="my-3">';
+		echo self::_field_checkbox('form-booking', 'form-control form_field', 'pkmgmt-form[booking]', esc_html__('Booking', 'parking-management'), $form['booking']);
+		echo '</div>';
 		echo '</div>';
 
 		echo '<div class="' . $box['id'] . '-fields">';

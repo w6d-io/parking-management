@@ -8,6 +8,7 @@ use ParkingManagement\ParkingManagement;
 class Form
 {
 	private ParkingManagement $pm;
+
 	public function __construct(ParkingManagement $pm)
 	{
 		$this->pm = $pm;
@@ -22,7 +23,7 @@ class Form
 				array(
 					'class' => 'radio ' . $div_class,
 				),
-				Html::_radio($id . '_' . $element['id'], $name, $element['value'], array('class'=>'parking-type','tabindex' => "9"), $value == $element['value']),
+				Html::_radio($id . '_' . $element['id'], $name, $element['value'], array('class' => 'parking-type', 'tabindex' => "9"), $value == $element['value']),
 				Html::_label_with_attr(
 					array(
 						'class' => 'px-md-5 px-3',
@@ -42,7 +43,7 @@ class Form
 				array(
 					'class' => 'radio ' . $div_class,
 				),
-				Html::_radio($id . '_' . $element['value'], $name, $element['value'], array('class'=> 'type-id', 'tabindex' => "6",), $value == $element['value']),
+				Html::_radio($id . '_' . $element['value'], $name, $element['value'], array('class' => 'type-id', 'tabindex' => "6",), $value == $element['value']),
 				Html::_label_with_attr(array(
 					'class' => 'label px-3 px-md-5'
 				), $id . '_' . $element['value'],
@@ -80,6 +81,12 @@ class Form
 					'id' => '2',
 					'label' => esc_html__('Inside', 'parking-management'),
 					'value' => '1'
+				);
+			if (array_key_exists('valet', $info['type']) && $info['type']['valet'] === '1')
+				$types[] = array(
+					'id' => '3',
+					'label' => esc_html__('Valet', 'parking-management'),
+					'value' => '2'
 				);
 		}
 		return $types;
@@ -237,123 +244,126 @@ class Form
 
 	}
 
-	public function personal_information(ParkingManagement $pm): string
+	public function common_personal_information(ParkingManagement $pm, $forValet = false): array
 	{
 		$post = array_merge($_GET, $_POST);
-		$parking_type = $this->get_parking_type($pm);
 		$vehicle_type = $this->get_vehicle_type($pm);
-		return Html::_div(
-			array('class' => 'personal-information col-12'),
-			Html::_fieldset(
-				'<legend>' . __('Personal Information', 'parking-management') . '</legend>',
-				self::_row_field('name',
-					self::_label('nom', esc_html__('Name', 'parking-management')),
-					Html::_index('text', 'nom', 'nom',
-						array(
-							'class' => 'name regular required col-5 border rounded py-2 px-3 form-control',
-							'value' => $post['nom'] ?? '',
-							'tabindex' => "1",
-							'autofocus' => 'autofocus',
-						)
-					),
+
+		$content = [
+			self::_row_field('name',
+				self::_label('nom', esc_html__('Name', 'parking-management')),
+				Html::_index('text', 'nom', 'nom',
+					array(
+						'class' => 'name regular required col-5 border rounded py-2 px-3 form-control',
+						'value' => $post['nom'] ?? '',
+						'tabindex' => "1",
+						'autofocus' => 'autofocus',
+					)
 				),
-				self::_row_field('firstname',
-					self::_label('prenom', esc_html__('Firstname', 'parking-management')),
-					Html::_index('text', 'prenom', 'prenom',
-						array(
-							'class' => 'firstname regular required col-5 border rounded py-2 px-3 form-control',
-							'value' => $post['prenom'] ?? '',
-							'tabindex' => "2",
-						)
-					),
+			),
+			self::_row_field('firstname',
+				self::_label('prenom', esc_html__('Firstname', 'parking-management')),
+				Html::_index('text', 'prenom', 'prenom',
+					array(
+						'class' => 'firstname regular required col-5 border rounded py-2 px-3 form-control',
+						'value' => $post['prenom'] ?? '',
+						'tabindex' => "2",
+					)
 				),
-				self::_row_field('zip-code',
-					self::_label('code_postal', esc_html__('Zip code', 'parking-management')),
-					Html::_index('text', 'code_postal', 'code_postal',
-						array(
-							'class' => 'zip-code regular col-5 border rounded py-2 px-3 form-control',
-							'autocomplete' => 'off',
-							'value' => $post['code_postal'] ?? '',
-							'tabindex' => "3",
-						)
-					),
-					Html::_index('text', 'ville', 'ville',
-						array(
-							'class' => 'ville regular',
-							'value' => $post['ville'] ?? '',
-							'tabindex' => "-1",
-						)
-					),
-					Html::_index('text', 'pays', 'pays',
-						array(
-							'class' => 'pays regular',
-							'value' => $post['pays'] ?? '',
-							'tabindex' => "-1",
-						)
-					),
+			),
+			self::_row_field('zip-code',
+				self::_label('code_postal', esc_html__('Zip code', 'parking-management')),
+				Html::_index('text', 'code_postal', 'code_postal',
+					array(
+						'class' => 'zip-code regular col-5 border rounded py-2 px-3 form-control',
+						'autocomplete' => 'off',
+						'value' => $post['code_postal'] ?? '',
+						'tabindex' => "3",
+					)
 				),
-				self::_row_field('mobile input-group align-items-center',
-					Html::_index('hidden', 'tel_port', 'tel_port', [
+				Html::_index('text', 'ville', 'ville',
+					array(
+						'class' => 'ville regular',
+						'value' => $post['ville'] ?? '',
+						'tabindex' => "-1",
+					)
+				),
+				Html::_index('text', 'pays', 'pays',
+					array(
+						'class' => 'pays regular',
+						'value' => $post['pays'] ?? '',
+						'tabindex' => "-1",
+					)
+				),
+			),
+			self::_row_field('mobile input-group align-items-center',
+				Html::_index('hidden', 'tel_port', 'tel_port', [
+					'value' => $post['tel_port'] ?? '',
+				]),
+				Html::_label_with_attr(
+					array('class' => 'mobile col-sm-3'),
+					'mobile',
+					esc_html__('Mobile phone', 'parking-management')
+				),
+				Html::_index('tel', 'mobile', 'mobile',
+					array(
+						'class' => 'mobile regular required col-5 border rounded py-2 form-control',
 						'value' => $post['tel_port'] ?? '',
-					]),
-					Html::_label_with_attr(
-						array('class' => 'mobile col-sm-3'),
-						'mobile',
-						esc_html__('Mobile phone', 'parking-management')
-					),
-					Html::_index('tel', 'mobile', 'mobile',
-						array(
-							'class' => 'mobile regular required col-5 border rounded py-2 form-control',
-							'value' => $post['tel_port'] ?? '',
-							'tabindex' => "4",
-						)
-					),
+						'tabindex' => "4",
+					)
 				),
-				self::_row_field('email',
-					self::_label('email', esc_html__('Email', 'parking-management')),
-					Html::_index('email', 'email', 'email',
-						array(
-							'class' => 'email regular required col-5 border rounded py-2 px-3 form-control',
-							'value' => $post['email'] ?? '',
-							'tabindex' => "5",
-						)
-					),
+			),
+			self::_row_field('email',
+				self::_label('email', esc_html__('Email', 'parking-management')),
+				Html::_index('email', 'email', 'email',
+					array(
+						'class' => 'email regular required col-5 border rounded py-2 px-3 form-control',
+						'value' => $post['email'] ?? '',
+						'tabindex' => "5",
+					)
 				),
-				self::_row_field('type-id input-group align-items-center',
-					Html::_label_with_attr(
-						array('class' => 'type_id col-sm-3'),
+			),
+		];
+		if ($forValet) {
+			$content[] = Html::_index('hidden', 'type_id', 'type_id', ['value' => VehicleType::CAR->value]);
+		} else {
+			$content[] = self::_row_field('type-id input-group align-items-center',
+				Html::_label_with_attr(
+					array('class' => 'type_id col-sm-3'),
+					'type_id',
+					esc_html__('Type of vehicle', 'parking-management')
+				),
+				Html::_div(
+					array(
+						'class' => 'row col col-sm-5 col-md-8 gx-sm-4 gx-md-5 justify-content-around',
+					),
+					self::_radio_type_field(
+						'col col-sm d-flex justify-content-around p-0',
 						'type_id',
-						esc_html__('Type of vehicle', 'parking-management')
-					),
-					Html::_div(
-						array(
-							'class' => 'row col col-sm-5 col-md-8 gx-sm-4 gx-md-5 justify-content-around',
-						),
-						self::_radio_type_field(
-							'col col-sm d-flex justify-content-around p-0',
-							'type_id',
-							'type_id',
-							$vehicle_type,
-							($post['type_id'] ?? $vehicle_type[0]['value']))
+						'type_id',
+						$vehicle_type,
+						($post['type_id'] ?? $vehicle_type[0]['value']))
+				)
+			);
+		}
+		return array_merge($content,
+			[self::_row_field('modele',
+				self::_label('modele', esc_html__('Car model', 'parking-management')),
+				Html::_index('text', 'marque', 'marque',
+					array(
+						'class' => 'marque regular',
+						'value' => $post['marque'] ?? '',
+						'tabindex' => "-1",
 					)
 				),
-				self::_row_field('modele',
-					self::_label('modele', esc_html__('Car model', 'parking-management')),
-					Html::_index('text', 'marque', 'marque',
-						array(
-							'class' => 'marque regular',
-							'value' => $post['marque'] ?? '',
-							'tabindex' => "-1",
-						)
-					),
-					Html::_index('text', 'modele', 'modele',
-						array(
-							'class' => 'modele regular required col-5 border rounded py-2 px-3 form-control',
-							'value' => $post['modele'] ?? '',
-							'tabindex' => "7",
-						)
+				Html::_index('text', 'modele', 'modele',
+					array(
+						'class' => 'modele regular required col-5 border rounded py-2 px-3 form-control',
+						'value' => $post['modele'] ?? '',
+						'tabindex' => "7",
 					)
-				),
+				)
+			),
 				self::_row_field('immatriculation',
 					self::_label('immatriculation', esc_html__('Immatriculation', 'parking-management')),
 					Html::_index('text', 'immatriculation', 'immatriculation',
@@ -363,184 +373,217 @@ class Form
 							'tabindex' => "8",
 						)
 					)
+				)
+			]);
+	}
+
+	public function personal_information(ParkingManagement $pm, $forValet = false): string
+	{
+		$post = array_merge($_GET, $_POST);
+		$parking_type = $this->get_parking_type($pm);
+		$content = $this->common_personal_information($pm, $forValet);
+		if ($forValet) {
+			$content[] = Html::_index('hidden', 'parking_type', 'parking_type', ['value' => ParkingType::VALET->value]);
+		} else {
+			$content[] = self::_row_field('parking_type input-group align-items-center',
+				Html::_label_with_attr(
+					array('class' => 'parking_type col-sm-3'),
+					'parking_type',
+					esc_html__('Car Park', 'parking-management')
 				),
-				self::_row_field('parking_type input-group align-items-center',
-					Html::_label_with_attr(
-						array('class' => 'parking_type col-sm-3'),
-						'parking_type',
-						esc_html__('Car Park', 'parking-management')
+				Html::_div(
+					array(
+						'class' => 'col col-sm-5 col-md-8 row justify-content-around',
 					),
-					Html::_div(
-						array(
-							'class' => 'col col-sm-5 col-md-8 row justify-content-around',
-						),
-						self::_radio_parking_type_field(
-							'col-sm d-flex justify-content-around',
-							'parking_type',
-							'parking_type',
-							$parking_type,
-							($post['parking_type'] ?? $parking_type[0]['value']))
-					)
-				),
+					self::_radio_parking_type_field(
+						'col-sm d-flex justify-content-around',
+						'parking_type',
+						'parking_type',
+						$parking_type,
+						($post['parking_type'] ?? $parking_type[0]['value']))
+				)
+			);
+		}
+		return Html::_div(
+			array('class' => 'personal-information col-12'),
+			Html::_fieldset(
+				'<legend>' . __('Personal Information', 'parking-management') . '</legend>',
+				...$content,
 			)
 		);
 	}
 
-	public function trip_information(ParkingManagement $pm): string
+	private function pax(): string
 	{
 		$post = array_merge($_GET, $_POST);
+		return self::_row_field('nb_pax',
+			self::_label('nb_pax', esc_html__('Number of pax', 'parking-management')),
+			Html::_select('nb_pax', 'nb_pax', array(
+				'class' => 'required border col-5 rounded py-2 px-3 form-select esg-sorting-select',
+				'tabindex' => "14",
+			),
+				array(
+					array(
+						'value' => '',
+						'label' => '-'
+					),
+					array(
+						'value' => '1',
+						'label' => '1'
+					),
+					array(
+						'value' => '2',
+						'label' => '2'
+					),
+					array(
+						'value' => '3',
+						'label' => '3'
+					),
+					array(
+						'value' => '4',
+						'label' => '4'
+					),
+					array(
+						'value' => '5',
+						'label' => '5  (+7€)'
+					),
+					array(
+						'value' => '6',
+						'label' => '6 (+14€)'
+					),
+				),
+				array_key_exists('nb_pax', $post) ? $post['nb_pax'] : ''
+			),
+		);
+	}
+
+	private function common_trip(ParkingManagement $pm): array
+	{
+		$post = array_merge($_GET, $_POST);
+		return [
+			self::_row_field('destination',
+				self::_label('destination', esc_html__('Destination', 'parking-management')),
+				Html::_index('text', 'destination', 'destination',
+					array(
+						'class' => 'destination regular border rounded py-2 form-control',
+						'value' => $post['destination'] ?? '',
+						'tabindex' => "10",
+					)
+				),
+				Html::_index('text', 'destination_id', 'destination_id',
+					array(
+						'class' => 'destination_id regular',
+						'value' => $post['destination_id'] ?? '',
+						'tabindex' => "-1",
+					)
+				),
+			),
+			self::_row_field('',
+				Html::_div(
+					array('class' => 'row border mx-2 pb-3'),
+					Html::_div(
+						array(
+							'class' => 'row d-none d-md-flex',
+						),
+						Html::_div(
+							array(
+								'class' => 'col',
+							),
+							'<h1 class="title">' . esc_html__('Departure', 'parking-management') . '</h1>',
+						),
+						Html::_div(
+							array(
+								'class' => 'col',
+							),
+							'<h1 class="title">' . esc_html__('Return', 'parking-management') . '</h1>',
+						),
+					),
+					Html::_div(
+						array('class' => 'row'),
+						Html::_div(
+							array('class' => 'col',),
+							Html::_label_with_attr(
+								array('class' => 'form-label'),
+								'terminal_depart',
+								esc_html__('Terminal departure', 'parking-management')
+							),
+							Html::_select('terminal_depart', 'terminal[depart]',
+								array(
+									'class' => 'border form-select esg-sorting-select py-2',
+									'tabindex' => "11",
+								),
+								self::get_terminal($pm),
+								(array_key_exists('terminal', $post) && $post['terminal']['depart'] ?? '')),
+
+						),
+						Html::_div(
+							array('class' => 'col'),
+							Html::_label_with_attr(
+								array('class' => 'form-label'),
+								'terminal_arrivee',
+								esc_html__('Terminal return', 'parking-management')
+							),
+							Html::_select('terminal_arrivee', 'terminal[arrivee]',
+								array(
+									'class' => 'border form-select esg-sorting-select py-2',
+									'tabindex' => "13",
+								),
+								self::get_terminal($pm),
+								(array_key_exists('terminal', $post) && $post['terminal']['arrivee'] ?? '')),
+						),
+					),
+					Html::_div(
+						array('class' => 'row',),
+						Html::_div(
+							array('class' => 'col',),
+							Html::_label_with_attr(
+								array('class' => 'form-label'),
+								'depart',
+								esc_html__('Dropping off at', 'parking-management')
+							),
+							Html::_index('text', 'depart', 'depart', array(
+								'class' => 'departure regular required border rounded form-control py-2',
+								'autocomplete' => 'off',
+								'tabindex' => "12",
+								'value' => $post['depart'] ?? '',
+							)),
+
+						),
+						Html::_div(
+							array('class' => 'col',),
+							Html::_label_with_attr(
+								array(
+									'class' => 'form-label'
+								),
+								'retour',
+								esc_html__('Landing at the airport', 'parking-management')
+							),
+							Html::_index('text', 'retour', 'retour', array(
+								'class' => 'return regular required border rounded form-control py-2',
+								'autocomplete' => 'off',
+								'tabindex' => "-1",
+								'value' => $post['retour'] ?? '',
+							)),
+						),
+					),
+				),
+			),
+		];
+	}
+
+	public function trip_information(ParkingManagement $pm, $forValet = false): string
+	{
+		$post = array_merge($_GET, $_POST);
+		$content = $this->common_trip($pm);
+		if (!$forValet) {
+			$content[] = $this->pax();
+		}
 		return Html::_div(
 			array('class' => 'trip_information'),
 			Html::_fieldset(
 				'<legend>' . __('Trip Information', 'parking-management') . '</legend>',
 
-				self::_row_field('destination',
-					self::_label('destination', esc_html__('Destination', 'parking-management')),
-					Html::_index('text', 'destination', 'destination',
-						array(
-							'class' => 'destination regular border rounded py-2 form-control',
-							'value' => $post['destination'] ?? '',
-							'tabindex' => "10",
-						)
-					),
-					Html::_index('text', 'destination_id', 'destination_id',
-						array(
-							'class' => 'destination_id regular',
-							'value' => $post['destination_id'] ?? '',
-							'tabindex' => "-1",
-						)
-					),
-				),
-				self::_row_field('',
-					Html::_div(
-						array('class' => 'row border mx-2 pb-3'),
-						Html::_div(
-							array(
-								'class' => 'row d-none d-md-flex',
-							),
-							Html::_div(
-								array(
-									'class' => 'col',
-								),
-								'<h1 class="title">'.esc_html__('Departure', 'parking-management').'</h1>',
-							),
-							Html::_div(
-								array(
-									'class' => 'col',
-								),
-								'<h1 class="title">'.esc_html__('Return', 'parking-management').'</h1>',
-							),
-						),
-						Html::_div(
-							array('class' => 'row'),
-							Html::_div(
-								array('class' => 'col',),
-								Html::_label_with_attr(
-									array('class' => 'form-label'),
-									'terminal_depart',
-									esc_html__('Terminal departure', 'parking-management')
-								),
-								Html::_select('terminal_depart', 'terminal[depart]',
-									array(
-										'class' => 'border form-select esg-sorting-select py-2',
-										'tabindex' => "11",
-									),
-									self::get_terminal($pm),
-									(array_key_exists('terminal', $post) && $post['terminal']['depart'] ?? '')),
-
-							),
-							Html::_div(
-								array('class' => 'col'),
-								Html::_label_with_attr(
-									array('class' => 'form-label'),
-									'terminal_arrivee',
-									esc_html__('Terminal return', 'parking-management')
-								),
-								Html::_select('terminal_arrivee', 'terminal[arrivee]',
-									array(
-										'class' => 'border form-select esg-sorting-select py-2',
-										'tabindex' => "13",
-									),
-									self::get_terminal($pm),
-									(array_key_exists('terminal', $post) && $post['terminal']['arrivee'] ?? '')),
-							),
-						),
-						Html::_div(
-							array('class' => 'row',),
-							Html::_div(
-								array('class' => 'col',),
-								Html::_label_with_attr(
-									array('class' => 'form-label'),
-									'depart',
-									esc_html__('Dropping off at', 'parking-management')
-								),
-								Html::_index('text', 'depart', 'depart', array(
-									'class' => 'departure regular required border rounded form-control py-2',
-									'autocomplete' => 'off',
-									'tabindex' => "12",
-									'value' => $post['depart'] ?? '',
-								)),
-
-							),
-							Html::_div(
-								array('class' => 'col',),
-								Html::_label_with_attr(
-									array(
-										'class' => 'form-label'
-									),
-									'retour',
-									esc_html__('Landing at the airport', 'parking-management')
-								),
-								Html::_index('text', 'retour', 'retour', array(
-									'class' => 'return regular required border rounded form-control py-2',
-									'autocomplete' => 'off',
-									'tabindex' => "-1",
-									'value' => $post['retour'] ?? '',
-								)),
-							),
-						),
-					),
-				),
-				self::_row_field('nb_pax',
-					self::_label('nb_pax', esc_html__('Number of pax', 'parking-management')),
-					Html::_select('nb_pax', 'nb_pax', array(
-						'class' => 'required border col-5 rounded py-2 px-3 form-select esg-sorting-select',
-						'tabindex' => "14",
-					),
-						array(
-							array(
-								'value' => '',
-								'label' => '-'
-							),
-							array(
-								'value' => '1',
-								'label' => '1'
-							),
-							array(
-								'value' => '2',
-								'label' => '2'
-							),
-							array(
-								'value' => '3',
-								'label' => '3'
-							),
-							array(
-								'value' => '4',
-								'label' => '4'
-							),
-							array(
-								'value' => '5',
-								'label' => '5  (+7€)'
-							),
-							array(
-								'value' => '6',
-								'label' => '6 (+14€)'
-							),
-						),
-						array_key_exists('nb_pax', $post) ? $post['nb_pax'] : ''
-					),
-				)
-
+				...$content,
 			),
 		);
 	}
@@ -573,7 +616,7 @@ EOT;
 				false,
 				(array_key_exists('cgv_reservation', $post) ? $post['cgv_reservation'] : '0') == '1'
 			),
-			Html::_label_with_attr(array('class'=> 'form-check-label'),'cgv_reservation', $msg),
+			Html::_label_with_attr(array('class' => 'form-check-label'), 'cgv_reservation', $msg),
 		);
 	}
 
@@ -659,11 +702,11 @@ EOT;
 	public function cancellation_insurance(ParkingManagement $pm): string
 	{
 		$form = $pm->prop('form');
-		if ($form['options']['cancellation_insurance']['enabled'] !== '1' || $form['options']['cancellation_insurance']['price'] === '0' )
+		if ($form['options']['cancellation_insurance']['enabled'] !== '1' || $form['options']['cancellation_insurance']['price'] === '0')
 			return '';
 		// Cocher cette case si le client souscrit l'assurance annulation à
 		$post = array_merge($_GET, $_POST);
-		$msg = esc_html__('I hereby subscribe to the cancellation insurance for ', 'parking-management') .$form['options']['cancellation_insurance']['price'].' €';
+		$msg = esc_html__('I hereby subscribe to the cancellation insurance for ', 'parking-management') . $form['options']['cancellation_insurance']['price'] . ' €';
 		return Html::_div(
 			array('class' => 'cancellation-insurance form-check'),
 			Html::_index('hidden', '', 'assurance_annulation', array('value' => '0')),
@@ -680,14 +723,14 @@ EOT;
 				false,
 				(array_key_exists('assurance_annulation', $post) ? $post['assurance_annulation'] : '0') == '1'
 			),
-			Html::_label_with_attr(array('class' => 'form-check-label'),'assurance_annulation', $msg),
+			Html::_label_with_attr(array('class' => 'form-check-label'), 'assurance_annulation', $msg),
 		);
 	}
 
 	public function spinner(): string
 	{
 		return Html::_div(array('class' => 'justify-content-center spinner-container', 'id' => 'spinner-container'),
-			Html::_div(array('class' => 'spinner-border text-primary', 'role'=>'status'),
+			Html::_div(array('class' => 'spinner-border text-primary', 'role' => 'status'),
 				Html::_span(array('class' => 'sr-only'),
 					__('Loading...', 'parking-management')
 				),

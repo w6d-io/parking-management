@@ -62,7 +62,7 @@ VALUES (:commande_id, :type_id, :parking_type, :options, :marque, :modele, :imma
 		Logger::info("vehicule.create", ['params' => $params]);
 		if (!$req->execute($params)) {
 			Logger::error("vehicule.create", ['error' => $req->errorInfo()]);
-			throw new Exception("vehicle creation failed");
+			throw new Exception(esc_html__("vehicle creation failed", 'parking-management'));
 		}
 		return (int)$this->conn->lastInsertId();
 	}
@@ -84,6 +84,21 @@ VALUES (:commande_id, :type_id, :parking_type, :options, :marque, :modele, :imma
 		return 0;
 	}
 
+	public function read(string $order_id): array
+	{
+		$query = "SELECT `id_vehicule` FROM `tbl_vehicule`
+                     WHERE
+                	`commande_id` = :order_id";
+		$req = $this->conn->prepare($query);
+		if(!$req->execute(array(
+			'order_id' => $order_id,
+		))){
+			Logger::error("vehicle.read", ['error' => $req->errorInfo()]);
+			return [];
+		}
+		return $req->fetch(PDO::FETCH_ASSOC);
+
+	}
 
 	private function getData(string|null $field = null)
 	{

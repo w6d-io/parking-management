@@ -36,20 +36,22 @@ class MyPos implements IPayment
 		$payment = $pm->prop('payment');
 		$this->config = $payment['providers']['mypos'];
 		$this->order_id = $_GET['order_id'];
-
+		$this->initPayment();
 	}
 
 	public function pay(): string
 	{
-//		if ($this->config['redirect-to-provider'] == '1' )
 		$this->redirect();
-		return Page::form($this->amount, $this->order_id);
+		return Page::form($this->amount, $this->order_id, $this->config);
 	}
 
 	public function redirect(): void
 	{
 		$data = array();
 		try {
+			Logger::debug('mypos.redirect', ['config' => $this->config]);
+			if ($this->config['redirect-to-provider'] != '1')
+				return;
 			$provider = $this->config;
 			$test_enabled = $provider['active-test'] === '1';
 
@@ -106,6 +108,20 @@ class MyPos implements IPayment
 			Logger::error("payplug.initPayment", ['data' => $data, 'message' => $e->getMessage(), 'exception' => $e]);
 		}
 	}
+
+	private function initPayment(): void
+	{
+		$data = [];
+		try {
+			$order = new Order();
+			$data['order'] = $order->read($this->order_id);
+			$this->amount = $data['order']['total'];
+
+		} catch (Exception $e) {
+			Logger::error("mypos.initPayment", ['data' => $data, 'payload' => $payload ?? 'n/c', 'exception' => $e->getMessage()]);
+		}
+	}
 }
+
 
 new MyPosAPI();
