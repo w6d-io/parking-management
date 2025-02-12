@@ -4,7 +4,7 @@ namespace ParkingManagement;
 
 use JetBrains\PhpStorm\NoReturn;
 
-class Controller
+class controller
 {
 	public function __construct()
 	{
@@ -51,4 +51,4 @@ class Controller
 	}
 }
 
-new Controller();
+new controller();

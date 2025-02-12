@@ -2,13 +2,11 @@
 
 namespace ParkingManagement\API;
 
-use Booking\Order;
+use Booking\ParkingType;
 use Exception;
 use ParkingManagement\database\database;
 use ParkingManagement\Logger;
-use PDO;
 use WP_Error;
-use WP_REST_Controller;
 use WP_REST_Response;
 use WP_REST_Server;
 
@@ -46,25 +44,31 @@ class Destination extends API
 	public function get_item($request): WP_Error|WP_REST_Response
 	{
 		try {
-			$conn = database::connect();
+			$kind = 'booking';
+			if ($request->has_param('parking_type') && $request['parking_type'] == ParkingType::VALET->value)
+				$kind = 'valet';
+			$conn = database::connect($kind);
 			if (!$conn)
 				return new WP_Error("database_connection_failed", __("Database connection failed.", 'parking-management'));
 			$data = array();
-			$query = "SELECT `id_destination`, `iata`, `titre`, `pays` FROM `tbl_destination` WHERE `iata` LiKE :term OR `oaci` LiKE :term OR `titre` LiKE :term ORDER BY `pays` ASC, `titre` ASC";
-			$req = $conn->prepare($query);
-			if (!$req->execute(array('term' => "%".$request['term'] . "%"))) {
+			if (! $results = $conn->get_results(
+				$conn->prepare(
+					"SELECT `id_destination`, `iata`, `titre`, `pays` FROM `tbl_destination` WHERE `iata` LiKE %s OR `oaci` LiKE %s OR `titre` LiKE %s ORDER BY `pays` , `titre` ",
+					["%" . $request['term'] . "%", "%" . $request['term'] . "%", "%" . $request['term'] . "%"]
+				), ARRAY_A)
+			) {
 				return new WP_Error("database_error", __("Database error.", 'parking-management'));
 			}
-			while ($row = $req->fetch(PDO::FETCH_ASSOC)) {
+			foreach ($results as $row) {
 				$data[] = array(
 					'id' => $row['id_destination'],
-					'category' => stripslashes(iconv('utf-8', 'latin1',$row['pays'])),
-					'label' => stripslashes(iconv('utf-8', 'latin1',$row['titre'])).' ('.$row['iata'].')',
-					'value' => stripslashes(iconv('utf-8', 'latin1',$row['titre'])));;
+					'category' => stripslashes(iconv('utf-8', 'latin1', $row['pays'])),
+					'label' => stripslashes(iconv('utf-8', 'latin1', $row['titre'])) . ' (' . $row['iata'] . ')',
+					'value' => stripslashes(iconv('utf-8', 'latin1', $row['titre'])));
 			}
 			return rest_ensure_response($data);
 		} catch (Exception $e) {
-			Logger::error("destination.get_item", ['request'=>$request,'error'=>$e->getMessage()]);
+			Logger::error("destination.get_item", ['request' => $request, 'error' => $e->getMessage()]);
 			return new WP_Error('error', $e->getMessage());
 		}
 	}

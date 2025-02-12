@@ -336,7 +336,7 @@ document.addEventListener('DOMContentLoaded', function () {
 			}
 		},
 
-		submitHandler: function () {
+		submitHandler: function (form) {
 			if (external_object.properties.form.booking.dialog_confirmation === '1') {
 				easepickCreate(
 					$('#depart2').get(0),
@@ -351,7 +351,7 @@ document.addEventListener('DOMContentLoaded', function () {
 				dialogConfirm.dialog("open");
 			} else {
 				$('#spinner-container').css('display', 'flex');
-				this.submit();
+				form.submit();
 			}
 		}
 	})

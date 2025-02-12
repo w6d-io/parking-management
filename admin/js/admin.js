@@ -151,10 +151,19 @@ document.addEventListener('DOMContentLoaded', function () {
 		$(this).on('click', function(event) {
 			event.preventDefault();
 			tabTrigger.show();
-		})
-		;
-
+		});
 	});
+
+	// valet template
+	const valetButtons = $('#nav-valet-tab button');
+	valetButtons.each(function() {
+		var tabTrigger = new bootstrap.Tab(this);
+		$(this).on('click', function(event) {
+			event.preventDefault();
+			tabTrigger.show();
+		});
+	});
+
 	const notificationMailButtons = $('#nav-notification-tab button');
 	notificationMailButtons.each(function() {
 		var tabTrigger = new bootstrap.Tab(this);
@@ -167,6 +176,7 @@ document.addEventListener('DOMContentLoaded', function () {
 	});
 
 	bootstrap.Tab.getInstance(mailButtons[0]).show();
+	bootstrap.Tab.getInstance(valetButtons[0]).show();
 	bootstrap.Tab.getInstance(notificationMailButtons[0]).show();
 
 	// Initialize the first tab

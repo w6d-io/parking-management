@@ -6,17 +6,17 @@ use Exception;
 use ParkingManagement\database\database;
 use ParkingManagement\Logger;
 use ParkingManagement\Price;
-use PDO;
+use wpdb;
 
 class Vehicle
 {
 
 	private array $data;
-	private PDO $conn;
+	private wpdb $conn;
 
-	public function __construct()
+	public function __construct(string $kind)
 	{
-		if (!$conn = database::connect()) {
+		if (!$conn = database::connect($kind)) {
 			Logger::error("member.database.connect", database::getError());
 			return;
 		}
@@ -55,48 +55,43 @@ class Vehicle
 			, 1 => array('encours' => '00:00', 'fait' => '00:00')
 			))
 		);
-		$query = "
-INSERT INTO `tbl_vehicule`(`commande_id`, `type_id`, `parking_type`, `options`, `marque`, `modele`, `immatriculation`, `nb_personne`, `tarif`, `status`, `commentaire`)
-VALUES (:commande_id, :type_id, :parking_type, :options, :marque, :modele, :immatriculation, :nb_personne, :tarif, :status, :commentaire)";
-		$req = $this->conn->prepare($query);
 		Logger::info("vehicule.create", ['params' => $params]);
-		if (!$req->execute($params)) {
-			Logger::error("vehicule.create", ['error' => $req->errorInfo()]);
+		if (!$this->conn->insert(
+			'tbl_vehicule',
+			$params
+		)) {
+			Logger::error("vehicule.create", ['error' => $this->conn->last_error]);
 			throw new Exception(esc_html__("vehicle creation failed", 'parking-management'));
 		}
-		return (int)$this->conn->lastInsertId();
+		return $this->conn->insert_id;
 	}
 
-	public function isExists(string $order_id): int
+	public function isExists(int $order_id): int
 	{
-
-		$query = "SELECT `id_vehicule` FROM `tbl_vehicule`
+		if ($row = $this->conn->get_row(
+			$this->conn->prepare("SELECT `id_vehicule` FROM `tbl_vehicule`
                      WHERE
-                	`commande_id` = :order_id";
-		$req = $this->conn->prepare($query);
-		$req->execute(array(
-			'order_id' => $order_id,
-		));
-		if ($row = $req->fetch(PDO::FETCH_ASSOC)) {
+                	`commande_id` = %d",
+				[$order_id]
+			), ARRAY_A)) {
 			if ($row['id_vehicule'] != '')
 				return (int)$row['id_vehicule'];
 		}
 		return 0;
 	}
 
-	public function read(string $order_id): array
+	public function read(int $order_id): array
 	{
-		$query = "SELECT `id_vehicule` FROM `tbl_vehicule`
-                     WHERE
-                	`commande_id` = :order_id";
-		$req = $this->conn->prepare($query);
-		if(!$req->execute(array(
-			'order_id' => $order_id,
-		))){
-			Logger::error("vehicle.read", ['error' => $req->errorInfo()]);
+		$row = $this->conn->get_row($this->conn->prepare(
+			"SELECT `id_vehicule` FROM `tbl_vehicule` WHERE `commande_id` = %d",
+			[$order_id]),
+			ARRAY_A
+		);
+		if (!$row) {
+			Logger::error("vehicle.read", ['error' => $this->conn->last_error]);
 			return [];
 		}
-		return $req->fetch(PDO::FETCH_ASSOC);
+		return $row;
 
 	}
 

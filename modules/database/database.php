@@ -3,38 +3,35 @@
 namespace ParkingManagement\database;
 
 use ParkingManagement\Logger;
-use PDO;
-use PDOException;
+use wpdb;
 
 class database {
-	private static array $database;
-	private static PDO $_conn;
-	private static string $charset = "utf8";
 
 	private static array $error;
 
 	// TODO: Add a test connection
-	public static function connect(): bool|PDO
+	public static function connect(string $kind): bool|wpdb
 	{
 		$pm = getParkingManagementInstance();
 		if (!$pm) {
 			self::$error = array(
 				'code' => '0001',
-				'message' => 'ParkingManagement\database requires PDO object'
+				'message' => 'fail to get Parking management instance'
 			);
 			Logger::error("database.connect", self::$error);
 			return false;
 		}
-		if (isset(self::$_conn)) {
-			return self::$_conn;
-		}
-		self::$database = $pm->prop('database');
-		if (empty(self::$database) || !is_array(self::$database)
-			|| (!array_key_exists('host', self::$database)) || empty(self::$database['host'])
-			|| (!array_key_exists('port', self::$database)) || empty(self::$database['port'])
-			|| (!array_key_exists('name', self::$database)) || empty(self::$database['name'])
-			|| (!array_key_exists('user', self::$database)) || empty(self::$database['user'])
-			|| (!array_key_exists('password', self::$database)) || empty(self::$database['password'])
+		$database = match ($kind) {
+			'valet' => $pm->prop('form')['valet']['database'],
+			'booking' => $pm->prop('database'),
+			default => []
+		};
+		if (empty($database)
+			|| (!array_key_exists('host', $database)) || empty($database['host'])
+			|| (!array_key_exists('port', $database)) || empty($database['port'])
+			|| (!array_key_exists('name', $database)) || empty($database['name'])
+			|| (!array_key_exists('user', $database)) || empty($database['user'])
+			|| (!array_key_exists('password', $database)) || empty($database['password'])
 		)
 		{
 			self::$error = array(
@@ -44,20 +41,11 @@ class database {
 			Logger::error("database.connect", self::$error);
 			return false;
 		}
-		try {
-			$dsn = 'mysql:host=' . self::$database['host'] . ';port=' . self::$database['port'] . ';dbname=' . self::$database['name']. ';charset='.self::$charset;
-			self::$_conn = new PDO($dsn, self::$database['user'], self::$database['password']);
-			self::$_conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_WARNING);
-		} catch (PDOException $e) {
-			self::$error = array(
-				'code' => '0003',
-				'message' => $e->getMessage(),
-			);
-			Logger::error("database.connect", self::$error);
 
-			return false;
-		}
-		return self::$_conn;
+			$dsn = new wpdb($database['user'], $database['password'], $database['name'], "{$database['host']}:{$database['port']}" );
+			$dsn->hide_errors();
+
+		return $dsn;
 	}
 	public static function getError(): array
 	{

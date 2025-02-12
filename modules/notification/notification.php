@@ -16,6 +16,7 @@ require_once PKMGMT_PLUGIN_MODULES_DIR . DS . "notification" . DS . "includes" .
 class Notification implements IShortcode
 {
 	private ParkingManagement $pm;
+	private string $kind = 'booking';
 
 	public function __construct(ParkingManagement $pm)
 	{
@@ -30,24 +31,27 @@ class Notification implements IShortcode
 		if (Payment::validateOnPayment() && (!array_key_exists('from', $_GET) || $_GET['from'] != 'provider'))
 			return '';
 		try {
-			$data = $this->getData();
+			$data = $this->getData($this->kind);
+			$order = new Order($this->kind);
+			return match ($type) {
+				'confirmation' => $this->confirmation($data, $order),
+				'cancellation' => $this->cancellation($data, $order),
+				default => ''
+			};
 		} catch (Exception $e) {
 			Logger::error("notification.getData", $e->getMessage());
 			return '';
 		}
-		$order = new Order;
-		return match ($type) {
-			'confirmation' => $this->confirmation($data, $order),
-			'cancellation' => $this->cancellation($data, $order),
-			default => ''
-		};
 	}
 
-	private function confirmation(array $data,Order $order): string
+	private function confirmation(array $data, Order $order): string
 	{
 		try {
 		$order->confirmed($_GET['order_id']);
-		$mail = $this->pm->prop('notification')['mail'];
+		$mail = match ($this->kind) {
+			'valet' => $this->pm->prop('notification')['valet'],
+			default => $this->pm->prop('notification')['mail'],
+		};
 		$this->mail($data, esc_html__('Summary of your order', 'parking-management'), $mail['templates']['confirmation']['value']);
 		$this->sms($data);
 		} catch (Exception $e) {
@@ -60,7 +64,10 @@ class Notification implements IShortcode
 	{
 		try {
 			$order->cancel($_GET['order_id']);
-			$mail = $this->pm->prop('notification')['mail'];
+			$mail = match ($this->kind) {
+				'valet' => $this->pm->prop('notification')['valet'],
+				default => $this->pm->prop('notification')['mail'],
+			};
 			$this->mail($data, esc_html__('Order cancelled', 'parking-management'), $mail['templates']['cancellation']['value']);
 		} catch (Exception $e) {
 			Logger::error("notification.cancellation", $e->getMessage());
@@ -99,13 +106,13 @@ class Notification implements IShortcode
 	/**
 	 * @throws Exception
 	 */
-	private function getData(): array
+	private function getData($kind): array
 	{
-		$orderInstance = new Order();
+		$orderInstance = new Order($kind);
 		$order = $orderInstance->read($_GET['order_id']);
-		$memberInstance = new Member();
+		$memberInstance = new Member($kind);
 		$member = $memberInstance->read($order['membre_id']);
-		$vehicleInstance = new Vehicle();
+		$vehicleInstance = new Vehicle($kind);
 		$vehicle = $vehicleInstance->read($_GET['order_id']);
 
 		$info = $this->pm->prop('info');
@@ -126,5 +133,10 @@ class Notification implements IShortcode
 		$data['url_access'] = home_url();
 		$data['home_url'] = home_url();
 		return $data;
+	}
+
+	public function setKind(string $kind): void
+	{
+		$this->kind = $kind;
 	}
 }

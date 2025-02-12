@@ -2,7 +2,7 @@
 
 namespace ParkingManagement;
 
-use Booking\AirPort;
+use Booking\Airport;
 use Booking\Order;
 use DateTime;
 use DateTimeZone;
@@ -11,7 +11,6 @@ use ParkingManagement\API\BookedAPI;
 use ParkingManagement\database\database;
 use ParkingManagement\interfaces\IParkingmanagement;
 use ParkingManagement\interfaces\IShortcode;
-use PDO;
 
 include_once PKMGMT_PLUGIN_MODULES_DIR . DS . 'booked' . DS . 'api.php';
 
@@ -33,9 +32,9 @@ class Booked implements IShortcode, IParkingManagement
 	/**
 	 * @throws Exception
 	 */
-	public static function getMaxLot($start, $end, $parking_id = AirPort::ORLY, $field = NULL): array
+	public static function getMaxLot($kind, $start, $end, $parking_id = Airport::ORLY, $field = NULL): array
 	{
-		$conn = database::connect();
+		$conn = database::connect($kind);
 		if (!$conn)
 			throw new Exception("Database connection failed");
 		$field = !empty($field) ? 'employe' : 'client';
@@ -44,13 +43,16 @@ class Booked implements IShortcode, IParkingManagement
 		$start = DateTime::createFromFormat('Y-m-d', $start);
 		$end = DateTime::createFromFormat('Y-m-d', $end);
 
-		$query = "SELECT `$field` FROM `tbl_remplissage` WHERE `date` >= :du AND `date` < DATE_ADD(:au, INTERVAL 1 DAY) ORDER BY `date`";
-		$req = $conn->prepare($query);
-		if (!$req->execute(['du' => $start->format('Y-m-d'), 'au' => $end->format('Y-m-d')])) {
-			Logger::error("booked.getMaxLot", ['errorInfo' => $req->errorInfo()]);
+		if (! $results = $conn->get_results(
+			$conn->prepare(
+				"SELECT $field FROM `tbl_remplissage` WHERE `date` >= %s AND `date` < DATE_ADD(%s, INTERVAL 1 DAY) ORDER BY `date`",
+				[$start->format('Y-m-d'), $end->format('Y-m-d')]
+			), ARRAY_A)
+		) {
+			Logger::error("booked.getMaxLot", ['errorInfo' => $conn->last_error, 'results' => $results]);
 			throw new Exception("Error executing query");
 		}
-		while ($row = $req->fetch(PDO::FETCH_ASSOC)) {
+		foreach ($results as $row) {
 			$deserialized = unserialize($row[$field]);
 			$maxLot[] = $deserialized[$parking_id->value];
 		}
@@ -60,22 +62,25 @@ class Booked implements IShortcode, IParkingManagement
 	/**
 	 * @throws Exception
 	 */
-	public static function usedLot($start, $end = NULL, $parking_id = AirPort::ORLY): array
+	public static function usedLot($kind, $start, $end = NULL, $parking_id = Airport::ORLY): array
 	{
-		$conn = database::connect();
+		$conn = database::connect($kind);
 		if (!$conn)
 			throw new Exception("Database connection failed");
 		$start = DateTime::createFromFormat('Y-m-d', $start);
 		$end = !empty($end) ? DateTime::createFromFormat('Y-m-d', $end) : DateTime::createFromFormat('Y-m-d', $start);
 
 		$used = array();
-		$query = "SELECT `date`, `utilisee` FROM `tbl_remplissage` WHERE `date` >= :du AND `date` <= :au";
-		$req = $conn->prepare($query);
-		if (!$req->execute(['du' => $start->format('Y-m-d'), 'au' => $end->format('Y-m-d')])) {
-			Logger::error("booked.usedLot", ['errorInfo' => $req->errorInfo()]);
+		if (! $results = $conn->get_results(
+			$conn->prepare(
+				"SELECT `date`, `utilisee` FROM `tbl_remplissage` WHERE `date` >= %s AND `date` <= %s",
+				[$start->format('Y-m-d'), $end->format('Y-m-d')]
+			), ARRAY_A)
+		) {
+			Logger::error("booked.usedLot", ['errorInfo' => $conn->last_error]);
 			throw new Exception("Error executing query");
 		}
-		while ($row = $req->fetch(PDO::FETCH_ASSOC)) {
+		foreach ($results as $row) {
 			$deserialized = unserialize($row['utilisee']);
 			$used[$row['date']] = abs($deserialized[$parking_id->value]);
 		}
@@ -84,11 +89,11 @@ class Booked implements IShortcode, IParkingManagement
 		return !empty($used) ? $used : array(0);
 	}
 
-	private static function HTMLMessage(ParkingManagement $pm) : string
+	private static function HTMLMessage(ParkingManagement $pm): string
 	{
 		try {
 			$zone = new DateTimeZone("Europe/Paris");
-			$date = new DateTime( 'now', $zone);
+			$date = new DateTime('now', $zone);
 			$booked = DatesRange::getDateRange($date->format('Y-m-d'), $pm->prop('booked_dates'));
 			$message = DatesRange::getMessage($booked, $pm->locale);
 			if (empty($message)) {
@@ -113,6 +118,10 @@ class Booked implements IShortcode, IParkingManagement
 		return DatesRange::isContain($date, $booked_dates['dates']);
 	}
 
+	public function setKind(string $kind): void
+	{
+		// TODO: Implement setKind() method.
+	}
 }
 
 new BookedAPI();

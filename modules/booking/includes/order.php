@@ -13,73 +13,17 @@ use ParkingManagement\ParkingManagement;
 use ParkingManagement\Payment;
 use ParkingManagement\PaymentID;
 use ParkingManagement\Price;
-use PDO;
-
-enum OrderStatus: int
-{
-	case PENDING = 0;
-	case CONFIRMED = 1;
-	case PAID = 2;
-	case COMPLETED = 3;
-}
-
-enum AirPort: int
-{
-	case ORLY = 1;
-	case ROISSY = 2;
-	case ZAVENTEM = 3;
-}
-
-enum VehicleType: int
-{
-	case CAR = 1;
-	case MOTORCYCLE = 2;
-	case TRUCK = 3;
-
-	public static function fromInt(int $value): ?self
-	{
-		foreach (self::cases() as $case) {
-			if ($case->value === $value) {
-				return $case;
-			}
-		}
-		throw new InvalidArgumentException("Invalid value for VehicleType enum: $value");
-	}
-}
-
-enum ParkingType: int
-{
-	case OUTSIDE = 0;
-	case INSIDE = 1;
-	case VALET = 2;
-
-	public static function fromInt(int $value): ?self
-	{
-		foreach (self::cases() as $case) {
-			if ($case->value === $value) {
-				return $case;
-			}
-		}
-		throw new InvalidArgumentException("Invalid value for ParkingType enum: $value");
-	}
-}
+use wpdb;
 
 class Order
 {
-	private string $terminal;
+	private string $airport;
 	private int $site_id;
 	private array $data;
 
-	private array $order;
-
 	private ParkingManagement $pm;
 
-	public function getOrder(): array
-	{
-		return $this->order;
-	}
-
-	private bool|PDO $conn;
+	private bool|wpdb $conn;
 	public const PhoneCountry = array(
 		1 => array('id' => 1, 'initial' => 'FR', 'pays' => 'France', 'prefix' => '0033', 'size' => 13, 'min' => '0', 'before' => '0'),
 		2 => array('id' => 2, 'initial' => 'BE', 'pays' => 'Belgium', 'prefix' => '0032', 'size' => 13, 'min' => '0', 'before' => ''),
@@ -93,19 +37,15 @@ class Order
 	/**
 	 * @throws Exception
 	 */
-	public function __construct()
+	public function __construct(string $kind)
 	{
 		$pm = getParkingManagementInstance();
 		$this->pm = $pm;
-		if (!$conn = database::connect()) {
-			Logger::error("member.database.connect", database::getError());
-			return;
-		}
-		$this->conn = $conn;
 		$info = $pm->prop('info');
 		if (empty($info))
 			throw new Exception('Parking management info property is empty.');
-		$this->terminal = $info['terminal'];
+		$this->conn = database::connect($kind);
+		$this->airport = $info['terminal'];
 		$this->site_id = self::getSiteID($info['terminal'])->value;
 		$this->data = $_POST;
 		date_default_timezone_set('Europe/Paris');
@@ -121,11 +61,13 @@ class Order
 		if ($order_id = $this->isExists($member_id))
 			return $order_id;
 
-		$query = "SELECT `grille_tarifaire` FROM `tbl_remplissage` WHERE `date` = ?";
 		$date = substr($this->getData('depart'), 0, 10);
-		$req = $this->conn->prepare($query);
-		$req->execute(array($date));
-		$row = $req->fetch(PDO::FETCH_ASSOC);
+		$row = $this->conn->get_row(
+			$this->conn->prepare(
+				"SELECT `grille_tarifaire` FROM `tbl_remplissage` WHERE `date` = %s",
+				[$date]
+			), ARRAY_A);
+
 
 		$unserialize = unserialize($row['grille_tarifaire']);
 
@@ -169,11 +111,11 @@ class Order
 		$referer_host = array_key_exists('host', $referer) ? $referer['host'] : NULL;
 		$price = Price::getPrice($this->data);
 		$payment = new Payment($this->pm);
+		$kind = 'booking';
 		if ($this->getData('parking_type') == ParkingType::VALET->value)
-			$payment->setProviderBySource('valet');
-		else
-			$payment->setProviderBySource('booking');
-		$this->order = array(
+			$kind = 'valet';
+		$payment->setProviderBySource($kind);
+		$order = array(
 			'resauuid' => uniqid(),
 			'site_id' => $this->site_id,
 			'parking_id' => $this->site_id,
@@ -200,60 +142,41 @@ class Order
 			'tva' => 20,
 			'tva_transport' => 10,
 			'coupon_id' => 0,
-			'recherche' => mb_convert_encoding($search, 'ISO-8859-1', 'UTF-8'),
+			'recherche' => sansAccent($search),
 			'status' => (Payment::validateOnPayment() || $this->getData('parking_type') == ParkingType::VALET->value) && $payment->isEnabled() ? OrderStatus::PENDING->value : OrderStatus::CONFIRMED->value,
 			'nb_retard' => 0,
 			'ip' => $_SERVER['REMOTE_ADDR'],
 			'host' => $_SERVER['HTTP_USER_AGENT'],
 			'referer' => $referer_host
 		);
-		Logger::info("order.create", ['params' => $this->order]);
+		Logger::info("order.create", ['params' => $order]);
 
-		$query = "
-		INSERT INTO `tbl_commande`
-		(
-		    `resauuid`, `site_id`, `parking_id`,  `date`, `membre_id`
-		    , `telephone`, `facturation`, `depart`, `depart_heure`, `arrivee`
-		    , `arrivee_heure`, `nb_jour`, `nb_jour_offert`, `nb_personne`
-		    , `destination_id`, `terminal`, `remarque`, `total`, `grille_tarifaire`, `tva`
-		    , `tva_transport`, `coupon_id`, `recherche`, `status`
-		    , `nb_retard`
-		    , `ip`, `host`, `referer`
-		)
-		VALUES
-		(
-		    :resauuid, :site_id , :parking_id , :date , :membre_id
-		    , :telephone , :facturation , :depart , :depart_heure , :arrivee
-		    , :arrivee_heure , :nb_jour , :nb_jour_offert , :nb_personne
-		    , :destination_id , :terminal , :remarque, :total , :grille_tarifaire, :tva
-		    , :tva_transport , :coupon_id , :recherche , :status
-		    , :nb_retard
-		    , :ip, :host, :referer
-		)
-		";
-		$req = $this->conn->prepare($query);
-		if (!$req->execute($this->order)) {
-			Logger::error("order.create", ['message' => $req->errorInfo(), 'params' => $this->order]);
+		if (!$this->conn->insert(
+			'tbl_commande',
+			$order)) {
+			Logger::error("order.create", ['message' => $this->conn->last_error, 'params' => $order]);
 			throw new Exception(__("order creation failed in database insertion", 'parking-management'));
 		}
-		$id = $this->conn->lastInsertId();
+
+		$id = $this->conn->insert_id;
 		if (!$id) {
 			Logger::error("order.create", ['message' => 'Order id is null']);
 			throw new Exception(__("fail to create order", 'parking-management'));
 		}
 		Logger::info("order.create", ['id' => $id]);
-		$query = 'UPDATE `tbl_commande` SET remarque = :remarque, facture_id = :facture_id WHERE `id_commande` = :id';
-		$req = $this->conn->prepare($query);
-		$this->order['id'] = (int)$id;
-		$this->order['remarque'] = "Commande Parking " . $this->terminal . " / Destination : " . mb_convert_encoding($this->getData('destination'), 'ISO-8859-1', 'UTF-8') . " / Reference : " . $id;
-		$this->order['facture_id'] = $this->getBillID($id);
-		if (!$req->execute(array(
-			'id' => $id,
-			'remarque' => $this->order['remarque'],
-			'facture_id' => $this->order['facture_id']
-		)))
-			Logger::error("order.create", ["message" => "error during order update with remarque and facture_id", "facture_id" => $this->order['facture_id'], "remarque" => $this->order['remarque']]);
-		return (int)$id;
+		$order['remarque'] = "Commande Parking " . $this->airport . " / Destination : " . mb_convert_encoding($this->getData('destination'), 'ISO-8859-1', 'UTF-8') . " / Reference : " . $id;
+		$order['facture_id'] = $this->getBillID($id);
+		if (!$this->conn->update(
+			'tbl_commande',
+			[
+				'remarque' => $order['remarque'],
+				'facture_id' => $order['facture_id']
+			],
+			['id_commande' => $id]
+		))
+			Logger::error("order.create", ["message" => "error during order update with remarque and facture_id", "facture_id" => $order['facture_id'], "remarque" => $order['remarque']]);
+
+		return $id;
 	}
 
 	/**
@@ -267,12 +190,9 @@ class Order
 		    , `destination_id`, `terminal`, `remarque`, `total`, `grille_tarifaire`, `tva`
 		    , `tva_transport`, `coupon_id`, `recherche`, `status`
 		    , `nb_retard`
-		    , `ip`, `host`, `referer` FROM `tbl_commande` WHERE `id_commande` = :id';
-		$req = $this->conn->prepare($query);
-		if (!$req->execute(array('id' => $order_id)))
-			throw new Exception("order read failed");
-		$result = $req->fetch(PDO::FETCH_ASSOC);
-		if ($result === false) {
+		    , `ip`, `host`, `referer` FROM `tbl_commande` WHERE `id_commande` = %d';
+		$result = $this->conn->get_row($this->conn->prepare($query, [$order_id]), ARRAY_A);
+		if (!$result) {
 			throw new Exception("Order not found with id: " . $order_id);
 		}
 		return $result;
@@ -283,29 +203,22 @@ class Order
 	 */
 	public function update_payment(int $order_id, string $payment_date, float $amount, PaymentID $payment_id): void
 	{
-//		$payment_date = date('Y-m-d H:i:s', $payment_date);
 		$bill_id = $this->getBillID($order_id);
 		$date = date('Y-m-d H:i:s');
-		$query = "UPDATE `tbl_commande` SET
-                          `annulation` = 0,
-                          `facture_id` = :bill_id,
-                          `paye` = :paid,
-                          `date_paiement` = :payment_date,
-                          `paiement_id` = :paiement_id,
-                          `status` = :status,
-                          `date` = :date
-                      WHERE
-                          `id_commande` = :order_id";
-		$req = $this->conn->prepare($query);
-		if (!$req->execute(array(
-			'bill_id' => $bill_id,
-			'paid' => $amount,
-			'payment_date' => $payment_date,
-			'paiement_id' => $payment_id->value,
-			'status' => OrderStatus::PAID->value,
-			'date' => $date,
-			'order_id' => $order_id
-		)))
+		if (!$this->conn->update(
+			'tbl_commande',
+			[
+				'bill_id' => $bill_id,
+				'paid' => $amount,
+				'payment_date' => $payment_date,
+				'paiement_id' => $payment_id->value,
+				'status' => OrderStatus::PAID->value,
+				'date' => $date,
+			],
+			[
+				'id_commande' => $order_id
+			]
+		))
 			throw new Exception("payment order update failed");
 
 	}
@@ -315,18 +228,16 @@ class Order
 	 */
 	public function confirmed(int $order_id): void
 	{
-		$query = "UPDATE `tbl_commande` SET
-                          `annulation` = 0,
-                          `status` = :status
-                      WHERE
-                          `status` = 0
-                          AND
-                          `id_commande` = :order_id";
-		$req = $this->conn->prepare($query);
-		if (!$req->execute(array(
-			'order_id' => $order_id,
-			'status' => OrderStatus::CONFIRMED->value,
-		)))
+		if (!$this->conn->update(
+			'tbl_commande',
+			[
+				'annulation' => 0,
+				'status' => OrderStatus::CONFIRMED->value,
+			],
+			[
+				'id_commande' => $order_id
+			]
+		))
 			throw new Exception("order confirmation failed");
 
 	}
@@ -336,26 +247,25 @@ class Order
 	 */
 	public function cancel(int $order_id): void
 	{
-		$query = "UPDATE `tbl_commande` SET
-                          `annulation` = 1
-                      WHERE
-                          `status` != :status
-                          AND
-                          `id_commande` = :order_id";
-		$req = $this->conn->prepare($query);
-		if (!$req->execute(array(
-			'order_id' => $order_id,
-			'status' => OrderStatus::CONFIRMED->value,
-		)))
+		if (!$this->conn->update(
+			'tbl_commande',
+			[
+				'annulation' => 1,
+				'status' => OrderStatus::CONFIRMED->value,
+			],
+			[
+				'id_commande' => $order_id
+			]
+		))
 			throw new Exception("order cancellation failed");
 
 	}
 
 	/**
-	 * @param string $member_id
+	 * @param int $member_id
 	 * @return int
 	 */
-	public function isExists(string $member_id): int
+	public function isExists(int $member_id): int
 	{
 		try {
 			$start = substr($this->getData('depart'), 0, 10);
@@ -371,22 +281,23 @@ class Order
 				throw new InvalidArgumentException("Invalid date format provided");
 			}
 
-			$query = "SELECT `id_commande` FROM `tbl_commande` WHERE `membre_id` = :member_id AND `depart` = :depart AND `depart_heure` = :depart_heure AND `arrivee` = :arrivee AND `arrivee_heure` = :arrivee_heure";
-			$req = $this->conn->prepare($query);
-
-			if (!$req->execute([
-				'member_id' => $member_id,
-				'depart' => $start_date->format('Y-m-d'),
-				'depart_heure' => $start_hour,
-				'arrivee' => $end_date->format('Y-m-d'),
-				'arrivee_heure' => $end_hour
-			])) {
+			if (!$row = $this->conn->get_row(
+				$this->conn->prepare(
+					"SELECT `id_commande` FROM `tbl_commande` WHERE `membre_id` = %d AND `depart` = %s AND `depart_heure` = %s AND `arrivee` = %s AND `arrivee_heure` = %s",
+					[
+						$member_id,
+						$start_date->format('Y-m-d'),
+						$start_hour,
+						$end_date->format('Y-m-d'),
+						$end_hour
+					]
+				),
+				ARRAY_A)) {
 				Logger::error("order.isExists", "Database query execution failed");
 				throw new Exception("Database query execution failed");
 			}
 
-			$row = $req->fetch(PDO::FETCH_ASSOC);
-			if ($row && !empty($row['id_commande'])) {
+			if (!empty($row['id_commande'])) {
 				return (int)$row['id_commande'];
 			}
 
@@ -405,23 +316,25 @@ class Order
 		return $this->data[$field];
 	}
 
-	private function getBillID($id)
+	private function getBillID(int $id)
 	{
 
-		$query = "SELECT `facture_id` FROM `tbl_commande` WHERE `id_commande` = :id";
-		$req = $this->conn->prepare($query);
-		$req->execute(array('id' => $id));
-		if ($row = $req->fetch(PDO::FETCH_ASSOC)) {
-			if ($row['facture_id'] != '')
+		if ($row = $this->conn->get_row(
+			$this->conn->prepare(
+				"SELECT `facture_id` FROM `tbl_commande` WHERE `id_commande` = %d",
+				[$id]
+			), ARRAY_A)) {
+			if ($row['facture_id'] != '' && $row['facture_id'] != 'NUL000000000')
 				return $row['facture_id'];
 		}
 
-		$site = strtoupper($this->terminal);
-		$query = "SELECT count(*) AS num FROM `tbl_commande` WHERE `facture_id` LIKE '$site%'";
-		$req = $this->conn->prepare($query);
-		$req->execute();
-		$row = $req->fetch(PDO::FETCH_ASSOC);
-		return ($site . str_pad((int)($row['num']) + 1, 9, 0, STR_PAD_LEFT));
+		$site = self::getIATAbyAirport(self::getSiteID(strtolower($this->airport)));
+		$aita = $site->name;
+		$query = "SELECT count(*) AS num FROM `tbl_commande` WHERE `facture_id` LIKE '$aita%'";
+
+		$row = $this->conn->get_row($this->conn->prepare($query), ARRAY_A);
+
+		return ($aita . str_pad((int)($row['num']) + 1, 9, 0, STR_PAD_LEFT));
 	}
 
 	public static function nbRealDay($start, $end): int
@@ -438,12 +351,21 @@ class Order
 		return !empty($phone) ? str_replace('+', '00', str_replace('+330', '+33', $phone)) : NULL;
 	}
 
-	public static function getSiteID($terminal): AirPort
+	public static function getSiteID(string $terminal): Airport
 	{
 		return match (strtolower($terminal)) {
-			"roissy" => AirPort::ROISSY,
-			"zaventem" => AirPort::ZAVENTEM,
-			default => AirPort::ORLY,
+			"roissy" => Airport::ROISSY,
+			"zaventem" => Airport::ZAVENTEM,
+			default => Airport::ORLY,
+		};
+	}
+
+	public static function getIATAbyAirport(Airport $airport): IATA
+	{
+		return match ($airport) {
+			Airport::ROISSY => IATA::CDG,
+			Airport::ZAVENTEM => IATA::BRU,
+			default => IATA::ORY
 		};
 	}
 }

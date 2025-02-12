@@ -104,8 +104,14 @@ class Pages
 			'shortcode-form',
 			'shortcode-form',
 			esc_html__("Copy and paste this code into your page to include booking form.", 'parking-management'),
-			"[parking-management type='form']"
-		);
+			"[parking-management type='form' kind='booking']"
+ 		);
+		echo self::_shortcode_field(
+			'shortcode-form-valet',
+			'shortcode-form-valet',
+			esc_html__("Copy and paste this code into your page to include valet booking form.", 'parking-management'),
+			"[parking-management type='form' kind='valet']"
+ 		);
 		echo self::_shortcode_field(
 			'shortcode-valet',
 			'shortcode-valet',
@@ -149,6 +155,18 @@ class Pages
 			"[parking-management type='notification' action='cancellation']"
 		);
 		echo self::_shortcode_field(
+			'shortcode-notification-confirmation-valet',
+			'shortcode-notification-confirmation-valet',
+			esc_html__("Copy and paste this code into your page where you want a notification confirmation after an order.", 'parking-management'),
+			"[parking-management type='notification' action='confirmation' kind='valet']"
+		);
+		echo self::_shortcode_field(
+			'shortcode-notification-cancellation-valet',
+			'shortcode-notification-cancellation-valet',
+			esc_html__("Copy and paste this code into your page where you want a notification cancellation after an order.", 'parking-management'),
+			"[parking-management type='notification' action='cancellation' kind='valet']"
+		);
+		echo self::_shortcode_field(
 			'shortcode-payment-paypal',
 			'shortcode-payment-paypal',
 			esc_html__("Copy and paste this code into your page to include paypal payment form.", 'parking-management'),
@@ -161,10 +179,22 @@ class Pages
 			"[parking-management type='payment' payment_provider='payplug']"
 		);
 		echo self::_shortcode_field(
+			'shortcode-payment-payplug-valet',
+			'shortcode-payment-payplug-valet',
+			esc_html__("Copy and paste this code into your page to include payplug payment form for valet.", 'parking-management'),
+			"[parking-management type='payment' payment_provider='payplug' kind='valet']"
+		);
+		echo self::_shortcode_field(
 			'shortcode-payment-mypos',
 			'shortcode-payment-mypos',
 			esc_html__("Copy and paste this code into your page to include mypos payment form.", 'parking-management'),
 			"[parking-management type='payment' payment_provider='mypos']"
+		);
+		echo self::_shortcode_field(
+			'shortcode-payment-mypos-valet',
+			'shortcode-payment-mypos-valet',
+			esc_html__("Copy and paste this code into your page to include mypos payment form for valet.", 'parking-management'),
+			"[parking-management type='payment' payment_provider='mypos' kind='valet']"
 		);
 
 		echo '<div class="save-pkmgmt">';
@@ -204,12 +234,6 @@ class Pages
 			'</div>'
 		);
 	}
-
-//	private static function _label($for, ...$contents): string
-//	{
-//		return sprintf('<label for="%s">%s</label>', esc_attr($for), implode("", $contents));
-//	}
-
 
 	private static function _field($id, $div_class, $name, $label_content, $value): string
 	{
@@ -544,8 +568,6 @@ class Pages
 		echo '</div>';
 		echo '</div>';
 
-
-
 		echo '<div class="text-center">';
 		echo '<div class="form-control">';
 		echo '<h6>Valet form</h6>';
@@ -561,14 +583,44 @@ class Pages
 			$form['valet']['payment']);
 		echo '</div>';
 		echo '</div>';
+
+		echo '<div class="row">';
+		echo '<div class="form-check form-switch form-check-inline text-start">';
+		echo Html::_checkbox('form-valet-payment-redirect', 'form-valet-payment-redirect', array('class'=>'form-check-input'), 'redirect-to-provider', $form['valet']['payment-redirect-to-provider']);
+		echo '</div>';
+		echo '</div>';
+
+		echo '</div>';
+
+		$database = $form['valet']['database'];
+		echo '<div class="form-control my-3">';
+		echo '<div class="pb-2">Database</div>';
+		echo '<div class="row text-start">';
+		echo '<div class="' . $box['id'] . '-fields">';
+		echo self::_field('valet-database-name', 'database_field', 'pkmgmt-form[valet][database][name]', esc_html__('Name', 'parking-management'), $database['name']);
+		echo '</div>';
+		echo '<div class="' . $box['id'] . '-fields">';
+		echo self::_field('valet-database-host', 'database_field', 'pkmgmt-form[valet][database][host]', esc_html__('Host', 'parking-management'), $database['host']);
+		echo '</div>';
+		echo '<div class="' . $box['id'] . '-fields">';
+		echo self::_field('valet-database-port', 'database_field', 'pkmgmt-form[valet][database][port]', esc_html__('Port', 'parking-management'), $database['port']);
+		echo '</div>';
+		echo '<div class="' . $box['id'] . '-fields">';
+		echo self::_field('valet-database-user', 'database_field', 'pkmgmt-form[valet][database][user]', esc_html__('Username', 'parking-management'), $database['user']);
+		echo '</div>';
+		echo '<div class="' . $box['id'] . '-fields">';
+		echo self::_field_password('valet-database-password', 'database_field', 'pkmgmt-form[valet][database][password]', esc_html__('Password', 'parking-management'), $database['password']);
+		echo '</div>';
+
+		echo '</div>';
 		echo '</div>';
 
 		echo '<div class="row">';
 		echo '<div class="' . $box['id'] . '-fields">';
 		echo self::_field_page('form-valet-validation-page', "form-control", 'pkmgmt-form[valet][validation_page][value]', $form['valet']['validation_page']['title'], $form['valet']['validation_page']['value']);
 		echo '</div>';
-
 		echo '</div>';
+
 		echo '</div>';
 		echo '</div>';
 
@@ -674,6 +726,17 @@ class Pages
 		echo Html::_button(
 			array(
 				'class' => 'nav-link',
+				'id' => 'nav-notification-valet-tab',
+				'data-bs-toggle' => 'tab',
+				'data-bs-target' => '#nav-notification-valet',
+				'type' => 'button',
+				'role' => 'tab',
+				'aria-controls' => 'nav-notification-valet',
+			), 'Valet'
+		);
+		echo Html::_button(
+			array(
+				'class' => 'nav-link',
 				'id' => 'nav-notification-sms-tab',
 				'data-bs-toggle' => 'tab',
 				'data-bs-target' => '#nav-notification-sms',
@@ -691,6 +754,11 @@ class Pages
 		echo '<div class="tab-pane fade" id="nav-notification-mail" role="tabpanel" aria-labelledby="nav-notification-mail-tab" tabindex="0">';
 		self::mail_box($notification['mail'], $box);
 		echo '</div>';
+
+		echo '<div class="tab-pane fade" id="nav-notification-valet" role="tabpanel" aria-labelledby="nav-notification-valet-tab" tabindex="0">';
+		self::mail_box($notification['valet'], $box, 'valet');
+		echo '</div>';
+
 		echo '<div class="tab-pane fade" id="nav-notification-sms" role="tabpanel" aria-labelledby="nav-notification-sms-tab" tabindex="0">';
 		self::sms_box($notification['sms'], $box);
 		echo '</div>';
@@ -699,30 +767,30 @@ class Pages
 		echo '</div>';
 	}
 
-	private static function mail_box($mail, $box): void
+	private static function mail_box($mail, $box, $name = 'mail'): void
 	{
 		echo Html::_div(array('class' => $box['id'] . '-fields'),
-			Html::_index('hidden', 'mail-host-title', 'pkmgmt-notification[mail][host][title]', array('value' => $mail['host']['title'])),
-			Html::_index('hidden', 'mail-host-type', 'pkmgmt-notification[mail][host][type]', array('value' => $mail['host']['type'])),
-			self::_field('mail-host', 'mail-field', 'pkmgmt-notification[mail][host][value]', $mail['host']['title'], $mail['host']['value'])
+			Html::_index('hidden', $name . '-host-title', "pkmgmt-notification[${name}][host][title]", array('value' => $mail['host']['title'])),
+			Html::_index('hidden', $name . '-host-type', "pkmgmt-notification[${name}][host][type]", array('value' => $mail['host']['type'])),
+			self::_field($name . '-host', $name . '-field', "pkmgmt-notification[${name}][host][value]", $mail['host']['title'], $mail['host']['value'])
 		);
 		echo Html::_div(array('class' => $box['id'] . '-fields'),
-			Html::_index('hidden', 'mail-login-title', 'pkmgmt-notification[mail][login][title]', array('value' => $mail['login']['title'])),
-			Html::_index('hidden', 'mail-login-type', 'pkmgmt-notification[mail][login][type]', array('value' => $mail['login']['type'])),
-			self::_field('mail-login', 'mail-field', 'pkmgmt-notification[mail][login][value]', $mail['login']['title'], $mail['login']['value'])
+			Html::_index('hidden', $name . '-login-title', "pkmgmt-notification[${name}][login][title]", array('value' => $mail['login']['title'])),
+			Html::_index('hidden', $name . '-login-type', "pkmgmt-notification[${name}][login][type]", array('value' => $mail['login']['type'])),
+			self::_field($name . '-login', $name . '-field', "pkmgmt-notification[${name}][login][value]", $mail['login']['title'], $mail['login']['value'])
 		);
 		echo Html::_div(array('class' => $box['id'] . '-fields'),
-			Html::_index('hidden', 'mail-password-title', 'pkmgmt-notification[mail][password][title]', array('value' => $mail['password']['title'])),
-			Html::_index('hidden', 'mail-password-type', 'pkmgmt-notification[mail][password][type]', array('value' => $mail['password']['type'])),
-			self::_field_password('mail-login', 'mail-field', 'pkmgmt-notification[mail][password][value]', $mail['password']['title'], $mail['password']['value']),
+			Html::_index('hidden', $name . '-password-title', "pkmgmt-notification[${name}][password][title]", array('value' => $mail['password']['title'])),
+			Html::_index('hidden', $name . '-password-type', "pkmgmt-notification[${name}][password][type]", array('value' => $mail['password']['type'])),
+			self::_field_password($name . '-login', $name . '-field', "pkmgmt-notification[${name}][password][value]", $mail['password']['title'], $mail['password']['value']),
 		);
 		echo Html::_div(array('class' => $box['id'] . '-fields'),
-			Html::_index('hidden', 'mail-sender-title', 'pkmgmt-notification[mail][sender][title]', array('value' => $mail['sender']['title'])),
-			Html::_index('hidden', 'mail-sender-type', 'pkmgmt-notification[mail][sender][type]', array('value' => $mail['sender']['type'])),
-			Html::_div(array('class' => 'mail-field'),
-				Html::_label('mail-sender', $mail['sender']['title']),
+			Html::_index('hidden', $name . '-sender-title', "pkmgmt-notification[${name}][sender][title]", array('value' => $mail['sender']['title'])),
+			Html::_index('hidden', $name . '-sender-type', "pkmgmt-notification[${name}][sender][type]", array('value' => $mail['sender']['type'])),
+			Html::_div(array('class' => $name . '-field'),
+				Html::_label($name . '-sender', $mail['sender']['title']),
 				'<br/>',
-				Html::_index("email", 'mail-sender', 'pkmgmt-notification[mail][sender][value]', array(
+				Html::_index("email", $name . '-sender', "pkmgmt-notification[${name}][sender][value]", array(
 					'class' => 'wide',
 					'size' => 80,
 					'value' => $mail['sender']['value']
@@ -731,31 +799,31 @@ class Pages
 		);
 		if (empty($mail['templates'])) return;
 		echo '<div class="' . $box['id'] . '-fields">';
-		echo Html::_label('nav-mail-tab', 'Templates');
+		echo Html::_label("nav-${name}-tab", 'Templates');
 		echo '<nav>';
-		echo '<div class="nav nav-tabs" id="nav-mail-tab" role="tablist">';
+		echo '<div class="nav nav-tabs" id="nav-'.$name.'-tab" role="tablist">';
 		foreach ($mail['templates'] as $id => $template) {
 			echo Html::_button(array(
 				'class' => 'nav-link',
-				'id' => 'nav-mail-' . $id . '-tab',
+				'id' => "nav-${name}-" . $id . '-tab',
 				'data-bs-toggle' => 'tab',
-				'data-bs-target' => '#nav-mail-' . $id,
+				'data-bs-target' => "#nav-${name}-" . $id,
 				'type' => 'button',
 				'role' => 'tab',
-				'aria-controls' => 'nav-mail-' . $id,
+				'aria-controls' => "nav-${name}-" . $id,
 			),
 				$template['title']
 			);
 		}
 		echo '</div>';
 		echo '</nav>';
-		echo '<div class="tab-content" id="nav-mail-tab-content">';
+		echo '<div class="tab-content" id="nav-'.$name.'-tab-content">';
 		foreach ($mail['templates'] as $id => $template) {
-			echo '<div class="tab-pane fade" id="nav-mail-' . $id . '" role="tabpanel" aria-labelledby="nav-mail-' . $id . '-tab" tabindex="0">';
-			echo Html::_index('hidden', 'mail-templates-' . $id . '-title', 'pkmgmt-notification[mail][templates][' . $id . '][title]', array('value' => $mail['templates'][$id]['title']));
-			echo Html::_index('hidden', 'mail-templates-' . $id . '-type', 'pkmgmt-notification[mail][templates][' . $id . '][type]', array('value' => $mail['templates'][$id]['type']));
-			wp_editor($template['value'], 'mail-' . $id . '-value', [
-				'textarea_name' => 'pkmgmt-notification[mail][templates][' . $id . '][value]',
+			echo '<div class="tab-pane fade" id="nav-'.$name.'-' . $id . '" role="tabpanel" aria-labelledby="nav-'.$name.'-' . $id . '-tab" tabindex="0">';
+			echo Html::_index('hidden', $name . '-templates-' . $id . '-title', "pkmgmt-notification[${name}][templates][" . $id . '][title]', array('value' => $mail['templates'][$id]['title']));
+			echo Html::_index('hidden', $name . '-templates-' . $id . '-type', "pkmgmt-notification[${name}][templates][" . $id . '][type]', array('value' => $mail['templates'][$id]['type']));
+			wp_editor($template['value'], $name . '-' . $id . '-value', [
+				'textarea_name' => "pkmgmt-notification[${name}][templates][" . $id . '][value]',
 				'textarea_rows' => 30,
 				'tabindex' => "0",
 				'teeny' => true,

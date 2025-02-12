@@ -4,6 +4,7 @@ namespace Payment;
 
 use Booking\Member;
 use Booking\Order;
+use Booking\ParkingType;
 use Exception;
 use ParkingManagement\API\PayplugAPI;
 use ParkingManagement\interfaces\IPayment;
@@ -26,24 +27,28 @@ class Payplug implements IPayment
 	public function __construct(ParkingManagement $pm)
 	{
 
+		$post = array_merge($_GET, $_POST);
 		$payment = $pm->prop('payment');
 		$this->config = $payment['providers']['payplug'];
-		$this->order_id = $_GET['order_id'];
-		$this->payment_url = $this->initPayment();
+		$this->order_id = $post['order_id'];
+		$kind = 'booking';
+		if ($post['parking_type'] == ParkingType::VALET->value)
+			$kind = 'valet';
+		$this->payment_url = $this->initPayment($kind);
 	}
 
 	/**
 	 * @throws Exception
 	 */
-	public function pay(): string
+	public function pay(string $kind): string
 	{
 		if ($this->payment_url === '')
 			return '';
-		$this->redirect();
+		$this->redirect($kind);
 		return Page::form($this->amount, $this->payment_url);
 	}
 
-	public function redirect(): void
+	public function redirect(string $kind): void
 	{
 		if ($this->config['redirect-to-provider'] == '1' && $this->payment_url != '') {
 			wp_redirect($this->payment_url);
@@ -51,14 +56,14 @@ class Payplug implements IPayment
 		}
 	}
 
-	private function initPayment(): string
+	private function initPayment($kind): string
 	{
 		$data = array();
 		try {
 			$provider = $this->config;
-			$order = new Order();
+			$order = new Order($kind);
 			$data['order'] = $order->read($this->order_id);
-			$member = new Member();
+			$member = new Member($kind);
 			$data['member'] = $member->read($data['order']['membre_id']);
 			$data['post'] = $_POST;
 			$this->amount = $data['order']['total'];

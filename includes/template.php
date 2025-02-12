@@ -176,12 +176,21 @@ class Template
 				'dialog_confirmation' => '0',
 			),
 			'payment' => '',
+			'payment_redirect_to_provider' => '0',
 			'valet' => array(
 				'validation_page' => [
 					'title' => 'Validation Page',
 					'value' => ''
 				],
+				'database' => [
+					'name' => "",
+					'host' => "",
+					'port' => "",
+					'user' => "",
+					'password' => ""
+				],
 				'payment' => '',
+				'payment_redirect_to_provider' => '0',
 			),
 			'indicative' => '',
 			'booking_page' => [
@@ -244,6 +253,40 @@ class Template
 	{
 		return [
 			'mail' => [
+				'host' => [
+					'title' => 'Host',
+					'type' => 'text',
+					'value' => ''
+				],
+				'login' => [
+					'title' => 'Login',
+					'type' => 'text',
+					'value' => ''
+				],
+				'password' => [
+					'title' => 'Password',
+					'type' => 'password',
+					'value' => ''
+				],
+				'sender' => [
+					'title' => 'Sender',
+					'type' => 'email',
+					'value' => ''
+				],
+				'templates' => [
+					'confirmation' => [
+						'title' => 'Confirmation',
+						'type' => 'textarea',
+						'value' => ''
+					],
+					'cancellation' => [
+						'title' => 'Cancellation',
+						'type' => 'textarea',
+						'value' => ''
+					],
+				]
+			],
+			'valet' => [
 				'host' => [
 					'title' => 'Host',
 					'type' => 'text',
