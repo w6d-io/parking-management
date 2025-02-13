@@ -5,8 +5,7 @@ namespace Booking;
 use Exception;
 use ParkingManagement\database\database;
 use ParkingManagement\Logger;
-use PDO;
-use PDOException;
+use wpdb;
 
 enum MemberStatus: int
 {
@@ -20,7 +19,7 @@ enum MemberStatus: int
 
 class Member
 {
-	private PDO $conn;
+	private wpdb $conn;
 
 	private array $member;
 
@@ -29,9 +28,9 @@ class Member
 		return $this->member;
 	}
 
-	public function __construct()
+	public function __construct($kind = 'booking')
 	{
-		if (!$conn = database::connect()) {
+		if (!$conn = database::connect($kind)) {
 			Logger::error("member.database.connect", database::getError());
 			return;
 		}
@@ -42,13 +41,11 @@ class Member
 	{
 
 		try {
-			$sql = "SELECT `id_membre` FROM `tbl_membre` WHERE `email` = ?";
-			$req = $this->conn->prepare($sql);
-			$req->execute(array($email)) or die($req->errorInfo());
-			if ($req->rowCount() == 0)
+			$sql = "SELECT `id_membre` FROM `tbl_membre` WHERE `email` = %s";
+			if (!$row = $this->conn->get_row($this->conn->prepare($sql, [$email]), ARRAY_A))
 				return false;
-			return $req->fetch(PDO::FETCH_ASSOC)["id_membre"];
-		} catch (PDOException $e) {
+			return $row["id_membre"];
+		} catch (Exception $e) {
 			$post = array_merge($_GET, $_POST);
 			Logger::error("member.isMemberExists", ['data' => $post, 'error' => $e->getMessage()]);
 			return false;
@@ -57,8 +54,8 @@ class Member
 
 	/**
 	 * Creates a new member record
-	 * @throws Exception|PDOException
 	 * @return string
+	 * @throws Exception
 	 */
 	public function create(): string
 	{
@@ -71,15 +68,6 @@ class Member
 			]);
 
 			$password = generatePassword(8);
-			$sql = "INSERT INTO `tbl_membre` ( `id_membre`, `status`, `date`, `email`, `password`, `reseau_id`, `nom`, `prenom`, `code_postal`, `ville`, `pays`, `tel_fixe`, `tel_port`, `tva`, `url`, `afficher` ) VALUES (NULL, :status, :date, :email, :password, :reseau, :nom, :prenom, :code_postal, :ville, :pays, :tel_fixe, :tel_port, :tva, :url, :afficher)";
-
-			$req = $this->conn->prepare($sql);
-			if (!$req) {
-				Logger::error("member.create.prepare", [
-					'errorInfo' => $req->errorInfo()
-				]);
-				throw new Exception("Failed to prepare member creation statement");
-			}
 
 			$this->member = [
 				'status' => MemberStatus::CUSTOMER->value,
@@ -91,7 +79,7 @@ class Member
 				'prenom' => ucwords($post['prenom']),
 				'code_postal' => $post['code_postal'],
 				'ville' => ucwords($post['ville']),
-				'pays' => !empty($post['pays']) ? $post['pays']: 'n/c',
+				'pays' => !empty($post['pays']) ? $post['pays'] : 'n/c',
 				'tel_fixe' => NULL,
 				'tel_port' => $post['tel_port'],
 				'tva' => '',
@@ -111,16 +99,15 @@ class Member
 					throw new Exception("Required field missing: $field");
 				}
 			}
-
-			if (!$req->execute($this->member)) {
+			if (!$this->conn->insert('tbl_membre', $this->member)) {
 				Logger::error("member.create.execute", [
-					'errorInfo' => $req->errorInfo(),
+					'errorInfo' => $this->conn->last_error,
 					'data' => array_diff_key($this->member, array_flip(['password']))
 				]);
 				throw new Exception(__("Failed to create member", 'parking-management'));
 			}
 
-			$memberId = $this->conn->lastInsertId();
+			$memberId = $this->conn->insert_id;
 
 			// Log successful creation
 			Logger::info("member.create.success", [
@@ -130,12 +117,6 @@ class Member
 
 			return $memberId;
 
-		} catch (PDOException $e) {
-			Logger::error("member.create.database", [
-				'error' => $e->getMessage(),
-				'data' => array_diff_key($this->member ?? [], array_flip(['password']))
-			]);
-			throw $e;
 		} catch (Exception $e) {
 			Logger::error("member.create.general", [
 				'error' => $e->getMessage(),
@@ -155,11 +136,14 @@ class Member
      , `nom`, `prenom`
      , `code_postal`, `ville`, `pays`
      , `tel_fixe`, `tel_port`
-		FROM `tbl_membre` WHERE id_membre = :id';
-		$req = $this->conn->prepare($query);
-		if (!$req->execute(array('id' => $member_id)))
+		FROM `tbl_membre` WHERE id_membre = %d';
+		if (!$row = $this->conn->get_row(
+			$this->conn->prepare($query, [$member_id]),
+			ARRAY_A
+		)) {
 			throw new Exception("failed to read member");
-		return $req->fetch(PDO::FETCH_ASSOC);
+		}
+		return $row;
 	}
 
 	/**
@@ -180,49 +164,49 @@ class Member
 		$updateFields = array_intersect_key($fields, array_flip($allowedFields));
 
 		if (empty($updateFields)) {
-			Logger::error("member.patch", "No valid fields provided for update");
+			Logger::error("member.patch", [
+				"message" => "No valid fields provided for update",
+				'member_id' => $member_id,
+				'fields' => $fields,
+			]);
 //			throw new Exception("No valid fields provided for update");
 			return false;
 		}
 
 		try {
-			// Build the SQL query dynamically based on the fields to update
-			$setClauses = array_map(function ($field) {
-				return "`$field` = :$field";
-			}, array_keys($updateFields));
-
-			$sql = "UPDATE `tbl_membre` SET " . implode(', ', $setClauses) . " WHERE `id_membre` = :id_membre";
-
-			$req = $this->conn->prepare($sql);
-
-			// Add member_id to the parameters
-			$params = array_merge($updateFields, ['id_membre' => $member_id]);
-
 			// Format specific fields if needed
-			if (isset($params['email'])) {
-				$params['email'] = strtolower($params['email']);
+			if (isset($updateFields['email'])) {
+				$updateFields['email'] = strtolower($updateFields['email']);
 			}
-			if (isset($params['nom'])) {
-				$params['nom'] = ucwords($params['nom']);
+			if (isset($updateFields['nom'])) {
+				$updateFields['nom'] = ucwords($updateFields['nom']);
 			}
-			if (isset($params['prenom'])) {
-				$params['prenom'] = ucwords($params['prenom']);
+			if (isset($updateFields['prenom'])) {
+				$updateFields['prenom'] = ucwords($updateFields['prenom']);
 			}
-			if (isset($params['ville'])) {
-				$params['ville'] = ucwords($params['ville']);
+			if (isset($updateFields['ville'])) {
+				$updateFields['ville'] = ucwords($updateFields['ville']);
 			}
 
-			if (!$req->execute($params)) {
+			$where = ['id_membre' => $member_id];
+			$result = $this->conn->update(
+				'tbl_membre',
+				$updateFields,
+				$where
+			);
+
+
+			if ($result === false) {
 				Logger::error("member.patch", [
 					'member_id' => $member_id,
 					'fields' => $fields,
-					'errorInfo' => $req->errorInfo()
+					'errorInfo' => $this->conn->last_error
 				]);
 				return false;
 			}
 			Logger::info("member.patch", "Member updated");
 			return true;
-		} catch (PDOException $e) {
+		} catch (Exception $e) {
 			Logger::error("member.patch", [
 				'member_id' => $member_id,
 				'fields' => $fields,

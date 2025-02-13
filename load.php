@@ -206,7 +206,7 @@ function pkmgmt_migrate_2_to_3(): void
 	$pm->set_properties($properties);
 	try {
 		$pm->save();
-		foreach (['_info', '_database', '_divers', '_response', '_paypal','_template','_name', '_locale'] as $prop) {
+		foreach (['_info', '_database', '_divers', '_response', '_paypal', '_template', '_name', '_locale'] as $prop) {
 			delete_post_meta($pm->id(), $prop);
 		};
 	} catch (Exception $e) {
@@ -251,7 +251,7 @@ function pkmgmt_migrate_3_1_to_3_6(): void
 	$props = $pm->get_properties();
 	$props['payment']['providers']['mypos']['redirect-to-provider'] = '0';
 	$props['form']['payment'] = '';
-	$props['form']['valet']= [
+	$props['form']['valet'] = [
 		'validation_page' => [
 			'title' => 'Validation Page',
 			'value' => ''
@@ -261,6 +261,66 @@ function pkmgmt_migrate_3_1_to_3_6(): void
 	$props['form']['booking_page'] = [
 		'title' => 'Booking Page',
 		'value' => ''
+	];
+	$pm->set_properties($props);
+	try {
+		$pm->save();
+	} catch (Exception $e) {
+		Logger::error("migrate.3.1.to.3.6", $e->getMessage());
+	}
+}
+
+function pkmgmt_migrate_3_6_to_3_7(): void
+{
+	$pm = getParkingManagementInstance();
+	if (!$pm)
+		return;
+	$props = $pm->get_properties();
+	unset($props['payment']['providers']['mypos']['redirect-to-provider']);
+	unset($props['payment']['providers']['payplug']['redirect-to-provider']);
+	unset($props['payment']['providers']['paypal']['redirect-to-provider']);
+	$props['form']['redirect-to-provider'] = '0';
+	$props['form']['valet']['database'] = [
+		'name' => "",
+		'host' => "",
+		'port' => "",
+		'user' => "",
+		'password' => ""
+	];
+	$props['form']['valet']['redirect-to-provider'] = '0';
+	$props['notification']['valet'] =  [
+		'host' => [
+			'title' => 'Host',
+			'type' => 'text',
+			'value' => ''
+		],
+		'login' => [
+			'title' => 'Login',
+			'type' => 'text',
+			'value' => ''
+		],
+		'password' => [
+			'title' => 'Password',
+			'type' => 'password',
+			'value' => ''
+		],
+		'sender' => [
+			'title' => 'Sender',
+			'type' => 'email',
+			'value' => ''
+		],
+		'templates' => [
+			'confirmation' => [
+				'title' => 'Confirmation',
+				'type' => 'textarea',
+				'value' => ''
+			],
+			'cancellation' => [
+				'title' => 'Cancellation',
+				'type' => 'textarea',
+				'value' => ''
+			],
+		]
 	];
 	$pm->set_properties($props);
 	try {

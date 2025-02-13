@@ -57,6 +57,10 @@ class HighSeason implements IShortcode, IParkingmanagement
 		return DatesRange::isContain($date, $high_season['dates']);
 	}
 
+	public function setKind(string $kind): void
+	{
+		// TODO: Implement setKind() method.
+	}
 }
 
 new HighSeasonAPI();

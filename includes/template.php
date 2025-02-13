@@ -63,7 +63,6 @@ class Template
 				'payplug' => [
 					'name' => 'payplug',
 					'enabled' => "0",
-					'redirect-to-provider' => '0',
 					'active-test' => '0',
 					'properties' => [
 						'secret_key' => [
@@ -106,7 +105,6 @@ class Template
 				'mypos' => [
 					'name' => 'mypos',
 					'enabled' => "0",
-					'redirect-to-provider' => '0',
 					'active-test' => '0',
 					'properties' => [
 						'configuration_package' => [
@@ -134,7 +132,6 @@ class Template
 				'paypal' => [
 					'name' => 'paypal',
 					'enabled' => "0",
-					'redirect-to-provider' => '0',
 					'active-test' => '0',
 					'properties' => [
 						'email' => [
@@ -176,12 +173,21 @@ class Template
 				'dialog_confirmation' => '0',
 			),
 			'payment' => '',
+			'redirect-to-provider' => '0',
 			'valet' => array(
 				'validation_page' => [
 					'title' => 'Validation Page',
 					'value' => ''
 				],
+				'database' => [
+					'name' => "",
+					'host' => "",
+					'port' => "",
+					'user' => "",
+					'password' => ""
+				],
 				'payment' => '',
+				'redirect-to-provider' => '0',
 			),
 			'indicative' => '',
 			'booking_page' => [
@@ -244,6 +250,40 @@ class Template
 	{
 		return [
 			'mail' => [
+				'host' => [
+					'title' => 'Host',
+					'type' => 'text',
+					'value' => ''
+				],
+				'login' => [
+					'title' => 'Login',
+					'type' => 'text',
+					'value' => ''
+				],
+				'password' => [
+					'title' => 'Password',
+					'type' => 'password',
+					'value' => ''
+				],
+				'sender' => [
+					'title' => 'Sender',
+					'type' => 'email',
+					'value' => ''
+				],
+				'templates' => [
+					'confirmation' => [
+						'title' => 'Confirmation',
+						'type' => 'textarea',
+						'value' => ''
+					],
+					'cancellation' => [
+						'title' => 'Cancellation',
+						'type' => 'textarea',
+						'value' => ''
+					],
+				]
+			],
+			'valet' => [
 				'host' => [
 					'title' => 'Host',
 					'type' => 'text',

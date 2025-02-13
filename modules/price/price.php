@@ -2,7 +2,7 @@
 
 namespace ParkingManagement;
 
-use Booking\AirPort;
+use Booking\Airport;
 use Booking\Order;
 use Booking\ParkingType;
 use Booking\VehicleType;
@@ -12,7 +12,6 @@ use ParkingManagement\API\PriceAPI;
 use ParkingManagement\database\database;
 use ParkingManagement\interfaces\IParkingmanagement;
 use ParkingManagement\interfaces\IShortcode;
-use PDO;
 use Price\Page;
 use WP_REST_Request;
 
@@ -37,8 +36,7 @@ class Price implements IShortcode, IParkingmanagement
 			return Html::_div(array('class' => 'container-md mt-5'),
 				$page->table(),
 			);
-		} catch (Exception $e)
-		{
+		} catch (Exception $e) {
 			Logger::error("price.shortcode", $e->getMessage());
 			return '';
 		}
@@ -64,6 +62,14 @@ class Price implements IShortcode, IParkingmanagement
 			$start_hour = substr($instance->getData($data, 'depart'), 11, 5);
 			$end = substr($instance->getData($data, 'retour'), 0, 10);
 			$end_hour = substr($instance->getData($data, 'retour'), 11, 5);
+			$kind = 'booking';
+
+			if (
+				(
+					($data instanceof WP_REST_Request && $data->has_param('parking_type')) ||
+					(is_array($data) && array_key_exists('parking_type', $data))
+				) && $data['parking_type'] == ParkingType::VALET->value)
+				$kind = 'valet';
 
 			if (!$start || !$end) {
 				Logger::error("price.getPrice.dates", [
@@ -71,7 +77,7 @@ class Price implements IShortcode, IParkingmanagement
 					'end' => $end,
 					'error' => 'Invalid dates provided'
 				]);
-				return [];
+				return array();
 			}
 
 			Logger::info("price.getPrice.dates", [
@@ -82,11 +88,10 @@ class Price implements IShortcode, IParkingmanagement
 			]);
 
 			$realNumberOfDay = $numberOfDay = Order::nbRealDay($start, $end);
-
 			// Get lot availability
 			$siteId = Order::getSiteID($info['terminal']);
-			$maxLot = Booked::getMaxLot($start, $end, $siteId);
-			$usedLot = Booked::usedLot($start, $end, $siteId);
+			$maxLot = Booked::getMaxLot($kind, $start, $end, $siteId);
+			$usedLot = Booked::usedLot($kind, $start, $end, $siteId);
 			$maxUsedLot = max($usedLot);
 
 			Logger::info("price.getPrice.lots", [
@@ -177,12 +182,12 @@ class Price implements IShortcode, IParkingmanagement
 
 			// Apply holiday surcharge
 			try {
-				if (self::isHoliday($start)) {
+				if (self::isHoliday($kind, $start)) {
 					$price['holiday'] = 1;
 					$price['total'] += self::get_extra_price($form['options']['holiday']);
 					Logger::info("price.getPrice.holiday", ['start_date' => $start]);
 				}
-				if (self::isHoliday($end)) {
+				if (self::isHoliday($kind, $end)) {
 					$price['holiday'] = 1;
 					$price['total'] += self::get_extra_price($form['options']['holiday']);
 					Logger::info("price.getPrice.holiday", ['end_date' => $end]);
@@ -255,15 +260,15 @@ class Price implements IShortcode, IParkingmanagement
 	/**
 	 * @throws Exception
 	 */
-	public static function isHoliday($date): bool
+	public static function isHoliday(string $kind, string $date): bool
 	{
-		$conn = database::connect();
-		if (!$conn)
+		$conn = database::connect($kind);
+		if ($conn === false)
 			throw new Exception("Database connection failed");
-		$query = "SELECT DATE_FORMAT(`date`, '%d/%m/%Y') as `date`, `titre` FROM `tbl_ferie` WHERE `date` = :date";
-		$req = $conn->prepare($query);
-		if ($req->execute(['date' => $date])) {
-			$row = $req->fetch(PDO::FETCH_ASSOC);
+		if ($row = $conn->get_row(
+			$conn->prepare("SELECT DATE_FORMAT(`date`, '%d/%m/%Y') as `date`, `titre` FROM `tbl_ferie` WHERE `date` = %s", [$date]),
+			ARRAY_A
+		)) {
 			return !empty($row);
 		}
 		return false;
@@ -272,11 +277,14 @@ class Price implements IShortcode, IParkingmanagement
 	/**
 	 * @throws Exception
 	 */
-	public static function priceGrid(AirPort $site = AirPort::ORLY, $numberOfDay = 0, $start = NULL, $end = NULL, VehicleType $type_id = VehicleType::CAR, ParkingType $parking_type = ParkingType::OUTSIDE): array
+	public static function priceGrid(Airport $site = Airport::ORLY, $numberOfDay = 0, $start = NULL, $end = NULL, VehicleType $type_id = VehicleType::CAR, ParkingType $parking_type = ParkingType::OUTSIDE): array
 	{
+		$kind = 'booking';
+		if ($parking_type === ParkingType::VALET)
+			$kind = 'valet';
 		$site_id = $site->value;
-		$conn = database::connect();
-		if (!$conn) {
+		$conn = database::connect($kind);
+		if ($conn === false) {
 			Logger::error("price.priceGrid", database::getError());
 			throw new Exception("Database connection failed");
 		}
@@ -286,11 +294,15 @@ class Price implements IShortcode, IParkingmanagement
 		$end = DateTime::createFromFormat('Y-m-d', $end);
 
 		$priceGrid = $price = array();
-		$query = "SELECT `date`, `grille_tarifaire` FROM `tbl_remplissage` WHERE (`date` BETWEEN :start AND :end)";
-		$req = $conn->prepare($query);
-		if (!$req->execute(['start' => $start->format('Y-m-d'), 'end' => $end->format('Y-m-d')]))
+		if (!$results = $conn->get_results(
+			$conn->prepare(
+				"SELECT `date`, `grille_tarifaire` FROM `tbl_remplissage` WHERE (`date` BETWEEN %s AND %s)",
+				[$start->format('Y-m-d'), $end->format('Y-m-d')]
+			),
+			ARRAY_A
+		))
 			throw new Exception("get price grid failed");
-		while ($row = $req->fetch(PDO::FETCH_ASSOC)) {
+		foreach ($results as $row) {
 			$priceGrid[$row['date']] = $row['grille_tarifaire'];
 			$deserialized = unserialize($row['grille_tarifaire']);
 			$latest = self::latestPrice($deserialized[$site_id][$type_id->value][$parking_type->value]);
@@ -328,7 +340,7 @@ class Price implements IShortcode, IParkingmanagement
 	private static function get_extra_price($option): int
 	{
 		if ($option['enabled'] === '1') {
-				return $option['price'];
+			return $option['price'];
 		}
 		return 0;
 	}
@@ -349,6 +361,11 @@ class Price implements IShortcode, IParkingmanagement
 	{
 		wp_enqueue_style('parking-management-booking', pkmgmt_plugin_url('modules/price/css/price.css'));
 		wp_enqueue_style('bootstrap', 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css', array(), '5.3.3');
+	}
+
+	public function setKind(string $kind): void
+	{
+		// TODO: Implement setKind() method.
 	}
 }
 

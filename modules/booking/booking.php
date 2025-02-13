@@ -11,8 +11,12 @@ use Booking\Vehicle;
 use Exception;
 use ParkingManagement\interfaces\IParkingmanagement;
 use ParkingManagement\interfaces\IShortcode;
-use PDOException;
 
+require_once PKMGMT_PLUGIN_MODULES_DIR . DS . "booking" . DS . "types" . DS . "parking_type.php";
+require_once PKMGMT_PLUGIN_MODULES_DIR . DS . "booking" . DS . "types" . DS . "vehicle_type.php";
+require_once PKMGMT_PLUGIN_MODULES_DIR . DS . "booking" . DS . "types" . DS . "iata.php";
+require_once PKMGMT_PLUGIN_MODULES_DIR . DS . "booking" . DS . "types" . DS . "airport.php";
+require_once PKMGMT_PLUGIN_MODULES_DIR . DS . "booking" . DS . "types" . DS . "order_status.php";
 require_once PKMGMT_PLUGIN_MODULES_DIR . DS . "booking" . DS . "includes" . DS . "form.php";
 require_once PKMGMT_PLUGIN_MODULES_DIR . DS . "booking" . DS . "includes" . DS . "home_form.php";
 require_once PKMGMT_PLUGIN_MODULES_DIR . DS . "booking" . DS . "includes" . DS . "member.php";
@@ -24,6 +28,8 @@ class Booking implements IShortcode, IParkingManagement
 
 	private ParkingManagement $pm;
 
+	private string $kind = 'booking';
+
 	public function __construct(ParkingManagement $pm)
 	{
 		$this->pm = $pm;
@@ -34,14 +40,14 @@ class Booking implements IShortcode, IParkingManagement
 		return match ($type) {
 			'form' => $this->shortcode_form(),
 			'home-form' => $this->shortcode_home_form(),
-			'valet' => $this->shortcode_form(true),
 			'default' => '',
 		};
 	}
 
-	private function shortcode_form($forValet = false): string
+	private function shortcode_form(): string
 	{
 		$form = new Form($this->pm);
+		$form->setKind($this->kind);
 		return $this->message() .
 			Html::_div(array('class' => 'form container-md col mt-5'),
 				Html::_div(array('class' => 'row'),
@@ -49,8 +55,8 @@ class Booking implements IShortcode, IParkingManagement
 						Html::_form('reservation', 'reservation', 'post', '', array(),
 							Html::_div(array('class' => 'row'),
 								Html::_div(array('class' => 'col-12'),
-									$form->personal_information($this->pm, $forValet),
-									$form->trip_information($this->pm, $forValet)
+									$form->personal_information($this->pm),
+									$form->trip_information($this->pm)
 								),
 								$form->cancellation_insurance($this->pm),
 								$form->cgv($this->pm),
@@ -102,30 +108,30 @@ class Booking implements IShortcode, IParkingManagement
 	{
 		global $current_shortcode_page;
 		$post = array_merge($_GET, $_POST);
-		$source = 'booking';
+		$kind = 'booking';
 		if ($post['parking_type'] == ParkingType::VALET->value)
-			$source = 'valet';
+			$kind = 'valet';
 		$page = home_url();
 		try {
-			$member = new Member();
+			$member = new Member($kind);
 			$member_id = $member->isMemberExists($post['email']);
 			if (!$member_id)
 				$member_id = $member->create();
 			else
 				$member->patch($member_id, $post);
-			$order = new Order();
+			$order = new Order($kind);
 			$order_id = $order->create($member_id);
 			if ($order_id === 0)
 				exit(0);
-			$vehicle = new Vehicle();
+			$vehicle = new Vehicle($kind);
 			$vehicle->create($order_id);
 
 			$payment = new Payment($this->pm);
-			$payment->setProviderBySource($source);
-			if ($payment->isEnabled()) {
+			$payment->setProviderBySource($kind);
+			if ($payment->isEnabled() && $payment->doRedirect($kind)) {
 				$_GET['order_id'] = $order_id;
-				Logger::debug('booking.create', ["source" => $source, "order_id" => $order_id]);
-				$payment->redirect();
+				Logger::debug('booking.record', ["source" => $kind, "order_id" => $order_id]);
+				$payment->redirect($kind);
 			}
 			$form = $this->pm->prop('form');
 			if ($form['validation_page']['value'] != '' && $post['parking_type'] != ParkingType::VALET->value)
@@ -136,11 +142,16 @@ class Booking implements IShortcode, IParkingManagement
 			wp_redirect($page . '?order_id=' . $order_id);
 			exit(0);
 
-		} catch (Exception|PDOException $e) {
+		} catch (Exception $e) {
 			Logger::error("booking.record", $e->getMessage());
 			unset($post['pkmgmt_action'], $post['submit2']);
 			wp_redirect($current_shortcode_page . '?' . http_build_query($post) . '&message[error]=' . $e->getMessage());
 			return;
 		}
+	}
+
+	public function setKind(string $kind): void
+	{
+		$this->kind = $kind;
 	}
 }

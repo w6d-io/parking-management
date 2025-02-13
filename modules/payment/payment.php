@@ -2,6 +2,7 @@
 
 namespace ParkingManagement;
 
+use Booking\ParkingType;
 use ParkingManagement\interfaces\IParkingmanagement;
 use ParkingManagement\interfaces\IPayment;
 use ParkingManagement\interfaces\IShortcode;
@@ -19,6 +20,8 @@ class Payment implements IShortcode, IParkingManagement
 	private string $provider = '';
 
 	private array $config;
+
+	private string $kind = 'booking';
 
 	public function __construct(ParkingManagement $pm)
 	{
@@ -49,6 +52,7 @@ class Payment implements IShortcode, IParkingManagement
 			return $form_payment;
 		return '';
 	}
+
 	public function setProviderBySource($source): void
 	{
 		$provider = $this->getEnabledProvider($source);
@@ -56,7 +60,6 @@ class Payment implements IShortcode, IParkingManagement
 			return;
 		$this->provider = $provider;
 	}
-
 	public function setProvider($provider): void
 	{
 		$this->provider = match ($provider) {
@@ -64,32 +67,35 @@ class Payment implements IShortcode, IParkingManagement
 			default => ''
 		};
 	}
+
 	public function shortcode(string $type): string
 	{
+
 		if (!array_key_exists('order_id', $_GET) || !is_numeric($_GET['order_id'])
-			|| (array_key_exists('from', $_GET) && $_GET['from'] === 'provider')
+			|| (!array_key_exists('from', $_GET) && $_GET['from'] === 'provider')
 		)
 			return '';
+
 		$this->setProvider($type);
 		if (!$this->isEnabled())
 			return '';
 		return match ($this->provider) {
-			'payplug', 'mypos' => $this->run_provider(),
+			'payplug', 'mypos' => $this->run_provider($this->kind),
 			default => sprintf('[parking-management type="payment" payment_provider="%s"]', $this->provider)
 		};
 
 	}
-
-	public function run_provider(): string
+	public function run_provider(string $kind): string
 	{
 		$instance = $this->getInstanceProvider();
-		return $instance->pay();
+
+		return $instance->pay($kind);
 	}
 
-	public function redirect(): void
+	public function redirect(string $kind): void
 	{
 		$instance = $this->getInstanceProvider();
-		$instance->redirect();
+		$instance->redirect($kind);
 	}
 
 	public function isEnabled(): bool
@@ -99,6 +105,17 @@ class Payment implements IShortcode, IParkingManagement
 		return false;
 	}
 
+	public function doRedirect(string $kind): bool
+	{
+		$form = $this->pm->prop('form');
+		$redirect = match ($kind) {
+			"valet" => $form['valet']['redirect-to-provider'],
+			"booking" => $form['redirect-to-provider'],
+			default => '0'
+		};
+		return ($redirect === '1');
+	}
+
 	public static function validateOnPayment(): bool
 	{
 		$pm = getParkingManagementInstance();
@@ -106,5 +123,9 @@ class Payment implements IShortcode, IParkingManagement
 			return false;
 		$payment = $pm->prop('payment');
 		return $payment['valid-booking-on-payment'] === '1';
+	}
+
+	public function setKind(string $kind): void {
+		$this->kind = $kind;
 	}
 }

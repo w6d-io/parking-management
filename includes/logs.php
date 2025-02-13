@@ -3,13 +3,13 @@
 namespace ParkingManagement;
 
 use ParkingManagement\database\database;
-use PDO;
 use PKMGMT;
+use wpdb;
 
 class Logger
 {
 	private const logDirectory = WP_CONTENT_DIR . DS . 'logs' . DS . 'parking-management';
-	private static bool|PDO $conn = false;
+	private static bool|wpdb $conn = false;
 	private static bool $useDatabase;
 	private static bool $useFile;
 	private static int $retention = 30;
@@ -65,7 +65,7 @@ class Logger
 		if (empty(self::$retention))
 			self::$retention = (int)self::$info['logs']['retention'] ?? 30;
 		if (!self::$conn)
-			self::$conn = database::connect();
+			self::$conn = database::connect('booking');
 		if (self::$useFile && !is_dir(self::logDirectory)) {
 			mkdir(self::logDirectory, 0755, true);
 		}
@@ -114,9 +114,7 @@ class Logger
 
 	private static function logToDatabase($date, $ip, $type, $action, $message): void
 	{
-		$query = "INSERT INTO tbl_logs (date, ip, type, action, message) VALUES (?, ?, ?, ?, ?)";
-		$stmt = self::$conn->prepare($query);
-		$stmt->execute([$date, $ip, $type, $action, $message]);
+		self::$conn->insert('tbl_logs', ['date'=>$date, 'ip'=>$ip, 'type'=>$type, 'action'=>$action, 'message'=>$message]);
 	}
 
 	private static function cleanOldLogs(): void
@@ -144,8 +142,8 @@ class Logger
 	private static function cleanOldDatabaseLogs(): void
 	{
 		$date = date('Y-m-d', strtotime("-" . self::$retention . " days"));
-		$query = "DELETE FROM `tbl_logs` WHERE `date` < ?";
-		$stmt = self::$conn->prepare($query);
-		$stmt->execute([$date]);
+		$query = "DELETE FROM `tbl_logs` WHERE `date` < %s";
+		$stmt = self::$conn->prepare($query, [$date]);
+		self::$conn->query($stmt);
 	}
 }

@@ -4,6 +4,7 @@ namespace Payment;
 
 use Booking\Member;
 use Booking\Order;
+use Booking\ParkingType;
 use Exception;
 use Mypos\IPC\Cart;
 use Mypos\IPC\Config;
@@ -33,35 +34,36 @@ class MyPos implements IPayment
 
 	public function __construct(ParkingManagement $pm)
 	{
+		$post = array_merge($_GET, $_POST);
 		$payment = $pm->prop('payment');
 		$this->config = $payment['providers']['mypos'];
-		$this->order_id = $_GET['order_id'];
-		$this->initPayment();
+		$this->order_id = $post['order_id'];
+		$kind = 'booking';
+		if ($post['parking_type'] == ParkingType::VALET->value)
+			$kind = 'valet';
+		$this->initPayment($kind);
 	}
 
-	public function pay(): string
+	public function pay(string $kind): string
 	{
-		$this->redirect();
 		return Page::form($this->amount, $this->order_id, $this->config);
 	}
 
-	public function redirect(): void
+	public function redirect(string $kind): void
 	{
 		$data = array();
 		try {
 			Logger::debug('mypos.redirect', ['config' => $this->config]);
-			if ($this->config['redirect-to-provider'] != '1')
-				return;
 			$provider = $this->config;
 			$test_enabled = $provider['active-test'] === '1';
 
 			$data['post'] = $_POST;
-			$order = new Order();
+			$order = new Order($kind);
 			$data['order'] = $order->read($this->order_id);
 			$data['order']['id'] = $this->order_id;
 			if ($test_enabled)
 				$data['order']['id'] = generatePassword();
-			$member = new Member();
+			$member = new Member($kind);
 			$data['member'] = $member->read($data['order']['membre_id']);
 			$this->amount = $data['order']['total'];
 			$configPackage = $test_enabled ? self::configTest : $provider['properties']['configuration_package']['value'];
@@ -109,11 +111,11 @@ class MyPos implements IPayment
 		}
 	}
 
-	private function initPayment(): void
+	private function initPayment(string $kind): void
 	{
 		$data = [];
 		try {
-			$order = new Order();
+			$order = new Order($kind);
 			$data['order'] = $order->read($this->order_id);
 			$this->amount = $data['order']['total'];
 

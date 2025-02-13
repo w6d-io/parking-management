@@ -2,12 +2,11 @@
 
 namespace ParkingManagement\API;
 
+use Booking\ParkingType;
 use Exception;
 use ParkingManagement\database\database;
 use ParkingManagement\Logger;
-use PDO;
 use WP_Error;
-use WP_REST_Controller;
 use WP_REST_Response;
 use WP_REST_Server;
 
@@ -44,20 +43,22 @@ class Vehicle extends API
 	public function get_item($request): WP_Error|WP_REST_Response
 	{
 		try {
-			$conn = database::connect();
+			$kind = 'booking';
+			if ($request->has_param('parking_type') && $request['parking_type'] == ParkingType::VALET->value)
+				$kind = 'valet';
+			$conn = database::connect($kind);
 			if (!$conn)
 				return new WP_Error("database_connection", __("Database connection failed.", 'parking-management'));
 			$data = array();
-			$query = "SELECT `tbl_modele`.`id_modele`, `tbl_modele`.`titre`, `tbl_marque`.`titre` as `marque` FROM `tbl_modele` LEFT JOIN `tbl_marque` ON `tbl_marque`.`id_marque` = `tbl_modele`.`marque_id` WHERE (`tbl_modele`.`titre` LiKE :term OR `tbl_modele`.`titre` LiKE :term2) ORDER BY `tbl_marque`.`titre` ASC, `tbl_modele`.`titre` ASC";
-			$req = $conn->prepare($query);
-			if (!$req->execute([
-					'term' => "%" . sansAccent($request['term']) . "%",
-					'term2' => "%" . slug($request['term']) . "%"
-				]
-			)) {
+			if (! $results = $conn->get_results(
+				$conn->prepare(
+					"SELECT `tbl_modele`.`id_modele`, `tbl_modele`.`titre`, `tbl_marque`.`titre` as `marque` FROM `tbl_modele` LEFT JOIN `tbl_marque` ON `tbl_marque`.`id_marque` = `tbl_modele`.`marque_id` WHERE (`tbl_modele`.`titre` LiKE %s OR `tbl_modele`.`titre` LiKE %s) ORDER BY `tbl_marque`.`titre` , `tbl_modele`.`titre` ",
+					["%" . sansAccent($request['term']) . "%", "%" . slug($request['term']) . "%"]
+				), ARRAY_A)
+			) {
 				return new WP_Error("database_error", __("Database error.", 'parking-management'));
 			}
-			while ($row = $req->fetch(PDO::FETCH_ASSOC)) {
+			foreach ($results as $row) {
 				$data[] = array(
 					'category' => stripslashes($row['marque']),
 					'label' => stripslashes($row['titre']),

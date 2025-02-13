@@ -9,6 +9,8 @@ class Form
 {
 	private ParkingManagement $pm;
 
+	private string $kind;
+
 	public function __construct(ParkingManagement $pm)
 	{
 		$this->pm = $pm;
@@ -244,7 +246,7 @@ class Form
 
 	}
 
-	public function common_personal_information(ParkingManagement $pm, $forValet = false): array
+	public function common_personal_information(ParkingManagement $pm): array
 	{
 		$post = array_merge($_GET, $_POST);
 		$vehicle_type = $this->get_vehicle_type($pm);
@@ -324,7 +326,7 @@ class Form
 				),
 			),
 		];
-		if ($forValet) {
+		if ($this->kind === 'valet') {
 			$content[] = Html::_index('hidden', 'type_id', 'type_id', ['value' => VehicleType::CAR->value]);
 		} else {
 			$content[] = self::_row_field('type-id input-group align-items-center',
@@ -377,12 +379,12 @@ class Form
 			]);
 	}
 
-	public function personal_information(ParkingManagement $pm, $forValet = false): string
+	public function personal_information(ParkingManagement $pm): string
 	{
 		$post = array_merge($_GET, $_POST);
 		$parking_type = $this->get_parking_type($pm);
-		$content = $this->common_personal_information($pm, $forValet);
-		if ($forValet) {
+		$content = $this->common_personal_information($pm);
+		if ($this->kind === 'valet') {
 			$content[] = Html::_index('hidden', 'parking_type', 'parking_type', ['value' => ParkingType::VALET->value]);
 		} else {
 			$content[] = self::_row_field('parking_type input-group align-items-center',
@@ -571,11 +573,11 @@ class Form
 		];
 	}
 
-	public function trip_information(ParkingManagement $pm, $forValet = false): string
+	public function trip_information(ParkingManagement $pm): string
 	{
 		$post = array_merge($_GET, $_POST);
 		$content = $this->common_trip($pm);
-		if (!$forValet) {
+		if ($this->kind === 'booking') {
 			$content[] = $this->pax();
 		}
 		return Html::_div(
@@ -737,4 +739,10 @@ EOT;
 			)
 		);
 	}
+
+	public function setKind(string $kind): void
+	{
+		$this->kind = $kind;
+	}
+
 }
