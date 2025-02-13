@@ -799,7 +799,19 @@ class Pages
 				))
 			),
 		);
-		if (empty($mail['templates'])) return;
+		if (empty($mail['templates']))
+			$mail['templates'] = [
+				'confirmation' => [
+					'title' => 'Confirmation',
+					'type' => 'textarea',
+					'value' => ''
+				],
+				'cancellation' => [
+					'title' => 'Cancellation',
+					'type' => 'textarea',
+					'value' => ''
+				],
+			];
 		echo '<div class="' . $box['id'] . '-fields">';
 		echo Html::_label("nav-${name}-tab", 'Templates');
 		echo '<nav>';
