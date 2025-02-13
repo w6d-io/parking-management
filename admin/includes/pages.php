@@ -588,7 +588,7 @@ class Pages
 
 		echo '<div class="row">';
 		echo '<div class="form-check form-switch form-check-inline text-start mx-2">';
-		echo Html::_checkbox('form-valet', 'pkmgmt-form-[valet]', array('class'=>'form-check-input'), 'redirect-to-provider', $form['valet']['redirect-to-provider']);
+		echo Html::_checkbox('form-valet', 'pkmgmt-form[valet]', array('class'=>'form-check-input'), 'redirect-to-provider', $form['valet']['redirect-to-provider']);
 		echo '</div>';
 		echo '</div>';
 
