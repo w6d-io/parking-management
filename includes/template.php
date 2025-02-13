@@ -63,7 +63,6 @@ class Template
 				'payplug' => [
 					'name' => 'payplug',
 					'enabled' => "0",
-					'redirect-to-provider' => '0',
 					'active-test' => '0',
 					'properties' => [
 						'secret_key' => [
@@ -106,7 +105,6 @@ class Template
 				'mypos' => [
 					'name' => 'mypos',
 					'enabled' => "0",
-					'redirect-to-provider' => '0',
 					'active-test' => '0',
 					'properties' => [
 						'configuration_package' => [
@@ -134,7 +132,6 @@ class Template
 				'paypal' => [
 					'name' => 'paypal',
 					'enabled' => "0",
-					'redirect-to-provider' => '0',
 					'active-test' => '0',
 					'properties' => [
 						'email' => [
@@ -176,7 +173,7 @@ class Template
 				'dialog_confirmation' => '0',
 			),
 			'payment' => '',
-			'payment_redirect_to_provider' => '0',
+			'redirect-to-provider' => '0',
 			'valet' => array(
 				'validation_page' => [
 					'title' => 'Validation Page',
@@ -190,7 +187,7 @@ class Template
 					'password' => ""
 				],
 				'payment' => '',
-				'payment_redirect_to_provider' => '0',
+				'redirect-to-provider' => '0',
 			),
 			'indicative' => '',
 			'booking_page' => [

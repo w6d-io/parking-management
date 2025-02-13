@@ -46,7 +46,6 @@ class MyPos implements IPayment
 
 	public function pay(string $kind): string
 	{
-		$this->redirect($kind);
 		return Page::form($this->amount, $this->order_id, $this->config);
 	}
 
@@ -55,8 +54,6 @@ class MyPos implements IPayment
 		$data = array();
 		try {
 			Logger::debug('mypos.redirect', ['config' => $this->config]);
-			if ($this->config['redirect-to-provider'] != '1')
-				return;
 			$provider = $this->config;
 			$test_enabled = $provider['active-test'] === '1';
 

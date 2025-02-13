@@ -363,11 +363,6 @@ class Pages
 			$contents[] = Html::_checkbox($id, $name, array('class'=>'form-check-input'), 'active-test', $payment['active-test']);
 			$contents[] = '</div>';
 		}
-		if (array_key_exists('redirect-to-provider', $payment)) {
-			$contents[] = '<div class="form-check form-switch form-check-inline">';
-			$contents[] = Html::_checkbox($id, $name, array('class'=>'form-check-input'), 'redirect-to-provider', $payment['redirect-to-provider']);
-			$contents[] = '</div>';
-		}
 
 		$contents[] = '</div>';
 		foreach ($payment['properties'] as $key => $params) {
@@ -551,6 +546,13 @@ class Pages
 			 $form['payment']);
 		echo '</div>';
 		echo '</div>';
+		echo '<div class="row">';
+		echo '<div class="form-check form-switch form-check-inline text-start mx-2">';
+		echo Html::_checkbox('form', 'pkmgmt-form', array('class'=>'form-check-input'), 'redirect-to-provider', $form['redirect-to-provider']);
+		echo '</div>';
+		echo '</div>';
+
+
 		echo '</div>';
 
 		echo '<div class="row">';
@@ -585,8 +587,8 @@ class Pages
 		echo '</div>';
 
 		echo '<div class="row">';
-		echo '<div class="form-check form-switch form-check-inline text-start">';
-		echo Html::_checkbox('form-valet-payment-redirect', 'form-valet-payment-redirect', array('class'=>'form-check-input'), 'redirect-to-provider', $form['valet']['payment-redirect-to-provider']);
+		echo '<div class="form-check form-switch form-check-inline text-start mx-2">';
+		echo Html::_checkbox('form-valet', 'pkmgmt-form-[valet]', array('class'=>'form-check-input'), 'redirect-to-provider', $form['valet']['redirect-to-provider']);
 		echo '</div>';
 		echo '</div>';
 

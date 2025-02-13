@@ -128,9 +128,9 @@ class Booking implements IShortcode, IParkingManagement
 
 			$payment = new Payment($this->pm);
 			$payment->setProviderBySource($kind);
-			if ($payment->isEnabled()) {
+			if ($payment->isEnabled() && $payment->doRedirect($kind)) {
 				$_GET['order_id'] = $order_id;
-				Logger::debug('booking.create', ["source" => $kind, "order_id" => $order_id]);
+				Logger::debug('booking.record', ["source" => $kind, "order_id" => $order_id]);
 				$payment->redirect($kind);
 			}
 			$form = $this->pm->prop('form');

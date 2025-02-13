@@ -6,6 +6,7 @@ use Booking\Member;
 use Booking\Order;
 use Booking\ParkingType;
 use Exception;
+use JetBrains\PhpStorm\NoReturn;
 use ParkingManagement\API\PayplugAPI;
 use ParkingManagement\interfaces\IPayment;
 use ParkingManagement\Logger;
@@ -42,18 +43,16 @@ class Payplug implements IPayment
 	 */
 	public function pay(string $kind): string
 	{
+
 		if ($this->payment_url === '')
 			return '';
-		$this->redirect($kind);
 		return Page::form($this->amount, $this->payment_url);
 	}
 
-	public function redirect(string $kind): void
+	#[NoReturn] public function redirect(string $kind): void
 	{
-		if ($this->config['redirect-to-provider'] == '1' && $this->payment_url != '') {
-			wp_redirect($this->payment_url);
-			exit(0);
-		}
+		wp_redirect($this->payment_url);
+		exit(0);
 	}
 
 	private function initPayment($kind): string
@@ -83,8 +82,8 @@ class Payplug implements IPayment
 				'last_name' => $data['post']['nom'] ?? $data['member']['nom'],
 				'email' => $data['post']['email'] ?? $data['member']['email'],
 				'address1' => 'n/c',
-				'postcode' => $data['post']['code_postal'] ?? (!empty($data['member']['code_postal']) ? $data['member']['code_postal']: 'n/c'),
-				'city' => (!empty($data['member']['ville']) ? $data['member']['ville']: 'n/c'),
+				'postcode' => $data['post']['code_postal'] ?? (!empty($data['member']['code_postal']) ? $data['member']['code_postal'] : 'n/c'),
+				'city' => (!empty($data['member']['ville']) ? $data['member']['ville'] : 'n/c'),
 				'country' => 'FR',
 				'language' => "fr"
 			);

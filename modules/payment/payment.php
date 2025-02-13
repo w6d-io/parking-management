@@ -70,6 +70,7 @@ class Payment implements IShortcode, IParkingManagement
 
 	public function shortcode(string $type): string
 	{
+
 		if (!array_key_exists('order_id', $_GET) || !is_numeric($_GET['order_id'])
 			|| (!array_key_exists('from', $_GET) && $_GET['from'] === 'provider')
 		)
@@ -87,6 +88,7 @@ class Payment implements IShortcode, IParkingManagement
 	public function run_provider(string $kind): string
 	{
 		$instance = $this->getInstanceProvider();
+
 		return $instance->pay($kind);
 	}
 
@@ -101,6 +103,17 @@ class Payment implements IShortcode, IParkingManagement
 		if (!empty($this->provider))
 			return $this->config['providers'][$this->provider]['enabled'] == '1';
 		return false;
+	}
+
+	public function doRedirect(string $kind): bool
+	{
+		$form = $this->pm->prop('form');
+		$redirect = match ($kind) {
+			"valet" => $form['valet']['redirect-to-provider'],
+			"booking" => $form['redirect-to-provider'],
+			default => '0'
+		};
+		return ($redirect === '1');
 	}
 
 	public static function validateOnPayment(): bool
