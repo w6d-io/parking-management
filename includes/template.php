@@ -11,6 +11,7 @@ class Template
 			'database' => $template = self::database(),
 			'payment' => $template = self::payment(),
 			'form' => $template = self::form(),
+			'booking' => $template = self::booking(),
 			'booked_dates' => $template = self::booked_dates(),
 			'high_season' => $template = self::high_season(),
 			'notification' => $template = self::notification(),
@@ -168,36 +169,7 @@ class Template
 	private static function form(): array
 	{
 		return array(
-			'booking' => array(
-				'terms_and_conditions' => '0',
-				'dialog_confirmation' => '0',
-			),
-			'payment' => '',
-			'redirect-to-provider' => '0',
-			'valet' => array(
-				'validation_page' => [
-					'title' => 'Validation Page',
-					'value' => ''
-				],
-				'database' => [
-					'name' => "",
-					'host' => "",
-					'port' => "",
-					'user' => "",
-					'password' => ""
-				],
-				'payment' => '',
-				'redirect-to-provider' => '0',
-			),
 			'indicative' => '',
-			'booking_page' => [
-				'title' => 'Booking Page',
-				'value' => ''
-			],
-			'validation_page' => [
-				'title' => 'Validation Page',
-				'value' => ''
-			],
 			'options' => array(
 				'night_extra_charge' => array(
 					'enabled' => "0",
@@ -230,6 +202,72 @@ class Template
 					'price' => 0
 				),
 			),
+		);
+	}
+
+	private static function booking(): array
+	{
+		return array(
+			'options' => array(
+				'terms_and_conditions' => '0',
+				'dialog_confirmation' => '0',
+			),
+			'database' => [
+				'name' => "",
+				'host' => "",
+				'port' => "",
+				'user' => "",
+				'password' => ""
+			],
+			'payment' => [
+				'valid-on-payment' => '0',
+				'redirect-to-provider' => '0',
+				'name' => 'payplug',
+				'enabled' => "0",
+				'active-test' => '0',
+				'properties' => [],
+			],
+			'validation_page' => [
+				'title' => 'Validation Page',
+				'value' => ''
+			],
+			'booking_page' => [
+				'title' => 'Booking Page',
+				'value' => ''
+			],
+		);
+	}
+	private static function valet(): array
+	{
+		return array(
+			'options' => array(
+				'terms_and_conditions' => '0',
+				'dialog_confirmation' => '0',
+			),
+			'database' => [
+				'name' => "",
+				'host' => "",
+				'port' => "",
+				'user' => "",
+				'password' => ""
+			],
+			'payment' => [
+				'valid-on-payment' => '0',
+				'redirect-to-provider' => '0',
+				'name' => 'payplug',
+				'enabled' => "0",
+				'active-test' => '0',
+				'properties' => [],
+			],
+			'validation_page' => [
+				'title' => 'Validation Page',
+				'value' => ''
+			],
+			'booking_page' => [
+				'title' => 'Booking Page',
+				'value' => ''
+			],
+
 		);
 	}
 
