@@ -21,6 +21,8 @@ class Order
 	private int $site_id;
 	private array $data;
 
+	private string $kind;
+
 	private ParkingManagement $pm;
 
 	private bool|wpdb $conn;
@@ -41,6 +43,7 @@ class Order
 	{
 		$pm = getParkingManagementInstance();
 		$this->pm = $pm;
+		$this->kind = $kind;
 		$info = $pm->prop('info');
 		if (empty($info))
 			throw new Exception('Parking management info property is empty.');
@@ -60,14 +63,14 @@ class Order
 			throw new Exception("order creation failed");
 		if ($order_id = $this->isExists($member_id))
 			return $order_id;
-
+//		if ($this->getData('parking_type') == ParkingType::VALET->value)
+//			$kind = 'valet';
 		$date = substr($this->getData('depart'), 0, 10);
 		$row = $this->conn->get_row(
 			$this->conn->prepare(
 				"SELECT `grille_tarifaire` FROM `tbl_remplissage` WHERE `date` = %s",
 				[$date]
 			), ARRAY_A);
-
 
 		$unserialize = unserialize($row['grille_tarifaire']);
 
@@ -110,11 +113,9 @@ class Order
 		$referer = parse_url($_SERVER['HTTP_REFERER']);
 		$referer_host = array_key_exists('host', $referer) ? $referer['host'] : NULL;
 		$price = Price::getPrice($this->data);
+
 		$payment = new Payment($this->pm);
-		$kind = 'booking';
-		if ($this->getData('parking_type') == ParkingType::VALET->value)
-			$kind = 'valet';
-		$payment->setProviderBySource($kind);
+		$payment->setKind($this->kind);
 		$order = array(
 			'resauuid' => uniqid(),
 			'site_id' => $this->site_id,
@@ -143,7 +144,7 @@ class Order
 			'tva_transport' => 10,
 			'coupon_id' => 0,
 			'recherche' => sansAccent($search),
-			'status' => (Payment::validateOnPayment() || $this->getData('parking_type') == ParkingType::VALET->value) && $payment->isEnabled() ? OrderStatus::PENDING->value : OrderStatus::CONFIRMED->value,
+			'status' => (Payment::validateOnPayment($this->kind) || $this->getData('parking_type') == ParkingType::VALET->value) && $payment->isEnabled() ? OrderStatus::PENDING->value : OrderStatus::CONFIRMED->value,
 			'nb_retard' => 0,
 			'ip' => $_SERVER['REMOTE_ADDR'],
 			'host' => $_SERVER['HTTP_USER_AGENT'],
@@ -164,6 +165,8 @@ class Order
 			throw new Exception(__("fail to create order", 'parking-management'));
 		}
 		Logger::info("order.create", ['id' => $id]);
+		// may be useless
+		$payment->setOrderId($id);
 		$order['remarque'] = "Commande Parking " . $this->airport . " / Destination : " . mb_convert_encoding($this->getData('destination'), 'ISO-8859-1', 'UTF-8') . " / Reference : " . $id;
 		$order['facture_id'] = $this->getBillID($id);
 		if (!$this->conn->update(
@@ -228,7 +231,7 @@ class Order
 	 */
 	public function confirmed(int $order_id): void
 	{
-		if (!$this->conn->update(
+		if ( $this->conn->update(
 			'tbl_commande',
 			[
 				'annulation' => 0,
@@ -237,8 +240,8 @@ class Order
 			[
 				'id_commande' => $order_id
 			]
-		))
-			throw new Exception("order confirmation failed");
+		) === false)
+			throw new Exception("order confirmation failed: {$this->conn->last_error}");
 
 	}
 
@@ -247,7 +250,7 @@ class Order
 	 */
 	public function cancel(int $order_id): void
 	{
-		if (!$this->conn->update(
+		if ($this->conn->update(
 			'tbl_commande',
 			[
 				'annulation' => 1,
@@ -256,8 +259,8 @@ class Order
 			[
 				'id_commande' => $order_id
 			]
-		))
-			throw new Exception("order cancellation failed");
+		) === false)
+			throw new Exception("order cancellation failed: {$this->conn->last_error}");
 
 	}
 

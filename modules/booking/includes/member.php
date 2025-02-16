@@ -39,7 +39,6 @@ class Member
 
 	public function isMemberExists($email): bool|string
 	{
-
 		try {
 			$sql = "SELECT `id_membre` FROM `tbl_membre` WHERE `email` = %s";
 			if (!$row = $this->conn->get_row($this->conn->prepare($sql, [$email]), ARRAY_A))

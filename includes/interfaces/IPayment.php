@@ -2,11 +2,9 @@
 
 namespace ParkingManagement\interfaces;
 
-use ParkingManagement\ParkingManagement;
-
 interface IPayment
 {
-	public function __construct(ParkingManagement $pm);
-	public function pay(string $kind): string;
-	public function redirect(string $kind): void;
+	public function __construct(array $config, string $kind, int $order_id);
+	public function pay(): string;
+	public function redirect(): void;
 }

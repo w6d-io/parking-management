@@ -64,6 +64,11 @@ class Html
 		return '<fieldset>' . implode("", $contents) . '</fieldset>';
 	}
 
+	public static function _fieldset_with_attr(array $attr, ...$contents): string
+	{
+		return '<fieldset ' . self::array_to_html_attribute($attr) . '>' . implode("", $contents) . '</fieldset>';
+	}
+
 	public static function _label($for, ...$contents): string
 	{
 		return '<label for="' . esc_attr($for) . '">' . implode(PHP_EOL, $contents) . '</label>';

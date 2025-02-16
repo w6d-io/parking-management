@@ -22,8 +22,7 @@ class database {
 			return false;
 		}
 		$database = match ($kind) {
-			'valet' => $pm->prop('form')['valet']['database'],
-			'booking' => $pm->prop('database'),
+			'valet', 'booking' => $pm->prop($kind)['database'],
 			default => []
 		};
 		if (empty($database)

@@ -3,6 +3,7 @@
 namespace Booking;
 
 use ParkingManagement\Html;
+use ParkingManagement\Logger;
 use ParkingManagement\ParkingManagement;
 
 class Form
@@ -14,7 +15,6 @@ class Form
 	public function __construct(ParkingManagement $pm)
 	{
 		$this->pm = $pm;
-		$this->enqueue();
 	}
 
 	private static function _radio_parking_type_field($div_class, $id, $name, array $elements, $value): string
@@ -230,16 +230,20 @@ class Form
 			),
 			PKMGMT_VERSION);
 		$properties = $this->pm->get_properties();
-		unset($properties['payment']);
-		unset($properties['database']);
-		unset($properties['sms']);
-		unset($properties['response']);
+		unset($properties['booking']['payment']);
+		unset($properties['valet']['payment']);
+		unset($properties['booking']['database']);
+		unset($properties['valet']['database']);
+		unset($properties['booking']['mail_templates']);
+		unset($properties['valet']['mail_templates']);
+		unset($properties['notification']);
 		wp_localize_script('parking-management-booking',
 			'external_object',
 			array(
 				'locale' => $this->pm->locale,
 				'home_url' => home_url(),
 				'form_css' => pkmgmt_plugin_url('modules/booking/css/form.css'),
+				'form_options' => $properties[$this->kind]['options'],
 				'properties' => $properties
 			)
 		);
@@ -379,11 +383,11 @@ class Form
 			]);
 	}
 
-	public function personal_information(ParkingManagement $pm): string
+	public function personal_information(): string
 	{
 		$post = array_merge($_GET, $_POST);
-		$parking_type = $this->get_parking_type($pm);
-		$content = $this->common_personal_information($pm);
+		$parking_type = $this->get_parking_type($this->pm);
+		$content = $this->common_personal_information($this->pm);
 		if ($this->kind === 'valet') {
 			$content[] = Html::_index('hidden', 'parking_type', 'parking_type', ['value' => ParkingType::VALET->value]);
 		} else {
@@ -573,10 +577,10 @@ class Form
 		];
 	}
 
-	public function trip_information(ParkingManagement $pm): string
+	public function trip_information(): string
 	{
 		$post = array_merge($_GET, $_POST);
-		$content = $this->common_trip($pm);
+		$content = $this->common_trip($this->pm);
 		if ($this->kind === 'booking') {
 			$content[] = $this->pax();
 		}
@@ -590,10 +594,10 @@ class Form
 		);
 	}
 
-	public function cgv(ParkingManagement $pm): string
+	public function cgv(): string
 	{
-		$form = $pm->prop('form');
-		if ($form['booking']['terms_and_conditions'] !== '1')
+		$config = $this->pm->prop($this->kind);
+		if ($config['options']['terms_and_conditions'] !== '1')
 			return '';
 		$post = array_merge($_GET, $_POST);
 		$warning_msg = "Merci de valider les conditions générales de vente";
@@ -640,9 +644,9 @@ EOT;
 		);
 	}
 
-	public function submit(ParkingManagement $pm): string
+	public function submit(): string
 	{
-		$info = $pm->prop('info');
+		$info = $this->pm->prop('info');
 		return Html::_div(
 			array(
 				'class' => 'mt-4 row justify-content-md-center',
@@ -662,13 +666,12 @@ EOT;
 		);
 	}
 
-	public function dialog_booking_confirmation(ParkingManagement $pm): string
+	public function dialog_booking_confirmation(): string
 	{
 		$post = array_merge($_GET, $_POST);
-		$form = $pm->prop('form');
-		if (!empty($form) &&
-			isset($form['booking']['dialog_confirmation']) &&
-			$form['booking']['dialog_confirmation'] === '0') {
+		$config = $this->pm->prop($this->kind);
+		if (isset($config['options']['dialog_confirmation']) &&
+			$config['options']['dialog_confirmation'] === '0') {
 			return '';
 		}
 		return '<div id="dialog_booking_confirmation" title="' . esc_html__('Confirmation', 'parking-management') . '">
@@ -701,9 +704,9 @@ EOT;
 </div>';
 	}
 
-	public function cancellation_insurance(ParkingManagement $pm): string
+	public function cancellation_insurance(): string
 	{
-		$form = $pm->prop('form');
+		$form = $this->pm->prop('form');
 		if ($form['options']['cancellation_insurance']['enabled'] !== '1' || $form['options']['cancellation_insurance']['price'] === '0')
 			return '';
 		// Cocher cette case si le client souscrit l'assurance annulation à
@@ -743,6 +746,7 @@ EOT;
 	public function setKind(string $kind): void
 	{
 		$this->kind = $kind;
+		$this->enqueue();
 	}
 
 }

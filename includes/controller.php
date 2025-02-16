@@ -2,7 +2,7 @@
 
 namespace ParkingManagement;
 
-use JetBrains\PhpStorm\NoReturn;
+use Booking\ParkingType;
 
 class controller
 {
@@ -36,16 +36,21 @@ class controller
 			return;
 		}
 		$booking = new Booking($pm);
+		$post = array_merge($_GET, $_POST);
+		$kind = 'booking';
+		if ($post['parking_type'] == ParkingType::VALET->value)
+			$kind = 'valet';
+		$booking->setKind($kind);
 		$booking->record();
 		exit(0);
 	}
-	#[NoReturn] private function home_form_redirect(): void
+	private function home_form_redirect(): void
 	{
 		$post = array_merge($_GET, $_POST);
 		$pm = getParkingManagementInstance();
 		$form = $pm->prop('form');
 		$booking_page = $form['booking_page']['value'];
-		$url = sprintf($booking_page."?depart=%s 00:00&retour=%s 00:00", $post['depart'], $post['retour']);
+		$url = sprintf($booking_page."?parking_type=0&depart=%s 00:00&retour=%s 00:00", $post['depart'], $post['retour']);
 		wp_redirect($url);
 		exit(0);
 	}

@@ -21,27 +21,27 @@ class Payplug implements IPayment
 {
 
 	private array $config;
+	private array $properties;
 	private int $order_id;
 	private string $payment_url;
 	private float $amount;
 
-	public function __construct(ParkingManagement $pm)
+	private string $kind;
+
+	public function __construct(array $config, string $kind, int $order_id)
 	{
 
-		$post = array_merge($_GET, $_POST);
-		$payment = $pm->prop('payment');
-		$this->config = $payment['providers']['payplug'];
-		$this->order_id = $post['order_id'];
-		$kind = 'booking';
-		if ($post['parking_type'] == ParkingType::VALET->value)
-			$kind = 'valet';
-		$this->payment_url = $this->initPayment($kind);
+		$this->order_id = $order_id;
+		$this->config = $config;
+		$this->properties = $config['properties']['payplug'];
+		$this->kind = $kind;
+		$this->payment_url = $this->initPayment();
 	}
 
 	/**
 	 * @throws Exception
 	 */
-	public function pay(string $kind): string
+	public function pay(): string
 	{
 
 		if ($this->payment_url === '')
@@ -49,33 +49,32 @@ class Payplug implements IPayment
 		return Page::form($this->amount, $this->payment_url);
 	}
 
-	#[NoReturn] public function redirect(string $kind): void
+	#[NoReturn] public function redirect(): void
 	{
 		wp_redirect($this->payment_url);
 		exit(0);
 	}
 
-	private function initPayment($kind): string
+	private function initPayment(): string
 	{
 		$data = array();
 		try {
-			$provider = $this->config;
-			$order = new Order($kind);
+			$order = new Order($this->kind);
 			$data['order'] = $order->read($this->order_id);
-			$member = new Member($kind);
+			$member = new Member($this->kind);
 			$data['member'] = $member->read($data['order']['membre_id']);
 			$data['post'] = $_POST;
 			$this->amount = $data['order']['total'];
-			$test_enabled = $provider['active-test'] === '1';
-			$secretKey = $test_enabled ? $provider['properties']['secret_key_test']['value'] : $provider['properties']['secret_key']['value'];
+			$test_enabled = $this->config['active-test'] === '1';
+			$secretKey = $test_enabled ? $this->properties['secret_key_test']['value'] : $this->properties['secret_key']['value'];
 			\Payplug\Payplug::init(array(
 				'secretKey' => $secretKey
 			));
-			$success_url = $provider['properties']['success_page']['value'] . "?from=provider&order_id=" . $this->order_id;
-			$cancel_url = $provider['properties']['cancel_page']['value'] . '?order_id=' . $this->order_id;
+			$success_url = $this->properties['success_page']['value'] . "?from=provider&order_id=" . $this->order_id;
+			$cancel_url = $this->properties['cancel_page']['value'] . '?order_id=' . $this->order_id;
 			$notify_url = home_url() . "/wp-json/pkmgmt/v1/payplug/ipn";
-			if ($provider['properties']['notification_url']['value'] !== '')
-				$notify_url = $provider['properties']['notification_url']['value'];
+			if ($this->properties['notification_url']['value'] !== '')
+				$notify_url = $this->properties['notification_url']['value'];
 			$payload = array(
 				'title' => 'n/c',
 				'first_name' => $data['post']['prenom'] ?? $data['member']['prenom'],

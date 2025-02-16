@@ -10,6 +10,10 @@ class SMS {
 
 	public static function send(string $phone, string $message): bool
 	{
+		if (empty($message)) {
+			Logger::error("Message cannot be empty");
+			return false;
+		}
 		$pm = getParkingManagementInstance();
 		if (!$pm) {
 			Logger::error("sms.send", "failed to find parking management instance");
