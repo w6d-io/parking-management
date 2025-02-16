@@ -28,7 +28,7 @@ class Notification implements IShortcode
 	{
 		if (!array_key_exists('order_id', $_GET) || !is_numeric($_GET['order_id']))
 			return '';
-		if (Payment::validateOnPayment() && (!array_key_exists('from', $_GET) || $_GET['from'] != 'provider'))
+		if (Payment::validateOnPayment($kind) && (!array_key_exists('from', $_GET) || $_GET['from'] != 'provider'))
 			return '';
 		try {
 			$data = $this->getData($this->kind);

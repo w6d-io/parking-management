@@ -129,23 +129,23 @@ document.addEventListener('DOMContentLoaded', function () {
 	});
 
 	// tabs
-
 	// payment
-	$('.tab-links a').on('click', function (e) {
+	$("input[name='pkmgmt-booking[payment][name]'], input[name='pkmgmt-valet[payment][name]']").on('change', function (e) {
 		e.preventDefault();
-		const currentAttrValue = $(this).attr('href');
+		// remove current tab active
+		const toShow = $(this).attr('data-bs-target');
+		const content = $(this).attr('data-bs-content') + ' div';
 
-		// Show/Hide Tabs
-		$('.tab').removeClass('active');
-		$(currentAttrValue).addClass('active');
-
-		// Change/remove current tab to active
-		$('.tab-links li').removeClass('active');
-		$(this).parent('li').addClass('active');
-	});
+		$(content).each(function () {
+			$(this).removeClass('active');
+			$(this).removeClass('show');
+		})
+		$(toShow).addClass('active');
+		$(toShow).addClass('show');
+	})
 
 	// mail template
-	const mailButtons = $('#nav-mail-tab button');
+	const mailButtons = $('#nav-booking-mail-tab button');
 	mailButtons.each(function() {
 		var tabTrigger = new bootstrap.Tab(this);
 		$(this).on('click', function(event) {
@@ -155,7 +155,7 @@ document.addEventListener('DOMContentLoaded', function () {
 	});
 
 	// valet template
-	const valetButtons = $('#nav-valet-tab button');
+	const valetButtons = $('#nav-valet-mail-tab button');
 	valetButtons.each(function() {
 		var tabTrigger = new bootstrap.Tab(this);
 		$(this).on('click', function(event) {
@@ -164,6 +164,7 @@ document.addEventListener('DOMContentLoaded', function () {
 		});
 	});
 
+	// notification template
 	const notificationMailButtons = $('#nav-notification-tab button');
 	notificationMailButtons.each(function() {
 		var tabTrigger = new bootstrap.Tab(this);
@@ -171,10 +172,8 @@ document.addEventListener('DOMContentLoaded', function () {
 		$(this).on('click', function(event) {
 			event.preventDefault();
 			tabTrigger.show();
-		})
-		;
+		});
 	});
-
 	bootstrap.Tab.getInstance(mailButtons[0]).show();
 	bootstrap.Tab.getInstance(valetButtons[0]).show();
 	bootstrap.Tab.getInstance(notificationMailButtons[0]).show();

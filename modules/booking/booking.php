@@ -55,18 +55,18 @@ class Booking implements IShortcode, IParkingManagement
 						Html::_form('reservation', 'reservation', 'post', '', array(),
 							Html::_div(array('class' => 'row'),
 								Html::_div(array('class' => 'col-12'),
-									$form->personal_information($this->pm),
-									$form->trip_information($this->pm)
+									$form->personal_information(),
+									$form->trip_information()
 								),
-								$form->cancellation_insurance($this->pm),
-								$form->cgv($this->pm),
+								$form->cancellation_insurance(),
+								$form->cgv(),
 								$form->total(),
-								$form->submit($this->pm),
+								$form->submit(),
 							)
 						)
 					)
 				),
-				$form->dialog_booking_confirmation($this->pm),
+				$form->dialog_booking_confirmation(),
 			)
 			. $form->spinner();
 	}
@@ -127,7 +127,8 @@ class Booking implements IShortcode, IParkingManagement
 			$vehicle->create($order_id);
 
 			$payment = new Payment($this->pm);
-			$payment->setProviderBySource($kind);
+			$payment->setOrderId($order_id);
+			$payment->setKind($kind);
 			if ($payment->isEnabled() && $payment->doRedirect($kind)) {
 				$_GET['order_id'] = $order_id;
 				Logger::debug('booking.record', ["source" => $kind, "order_id" => $order_id]);

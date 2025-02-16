@@ -23,10 +23,11 @@ class Payment implements IShortcode, IParkingManagement
 
 	private string $kind = 'booking';
 
+	private int $order_id = 0;
+
 	public function __construct(ParkingManagement $pm)
 	{
 		$this->pm = $pm;
-		$this->config = $pm->prop('payment');
 	}
 
 
@@ -34,37 +35,8 @@ class Payment implements IShortcode, IParkingManagement
 	{
 		Logger::debug('payment.getInstanceProvider', ["provider" => $this->provider]);
 		return match ($this->provider) {
-			'payplug' => new Payplug($this->pm),
-			'mypos' => new MyPos($this->pm),
-		};
-	}
-
-	private function getEnabledProvider($form = 'booking'): string
-	{
-
-		$form_payment = match ($form) {
-			'valet' => $this->pm->prop('form')['valet']['payment'],
-			default => $this->pm->prop('form')['payment'],
-		};
-		$this->provider = $form_payment;
-
-		if ($this->isEnabled())
-			return $form_payment;
-		return '';
-	}
-
-	public function setProviderBySource($source): void
-	{
-		$provider = $this->getEnabledProvider($source);
-		if (empty($provider))
-			return;
-		$this->provider = $provider;
-	}
-	public function setProvider($provider): void
-	{
-		$this->provider = match ($provider) {
-			'payplug', 'mypos', 'paypal' => $provider,
-			default => ''
+			'mypos' => new MyPos($this->config, $this->kind, $this->order_id),
+			default => new Payplug($this->config, $this->kind, $this->order_id),
 		};
 	}
 
@@ -72,23 +44,21 @@ class Payment implements IShortcode, IParkingManagement
 	{
 
 		if (!array_key_exists('order_id', $_GET) || !is_numeric($_GET['order_id'])
-			|| (!array_key_exists('from', $_GET) && $_GET['from'] === 'provider')
+			|| (array_key_exists('from', $_GET) && $_GET['from'] === 'provider')
 		)
 			return '';
-
-		$this->setProvider($type);
+		$this->order_id = $_GET['order_id'];
 		if (!$this->isEnabled())
 			return '';
 		return match ($this->provider) {
 			'payplug', 'mypos' => $this->run_provider($this->kind),
-			default => sprintf('[parking-management type="payment" payment_provider="%s"]', $this->provider)
+			default => sprintf('[parking-management type="payment" payment_provider="%s" kind="%s"]', $this->provider, $this->kind)
 		};
 
 	}
 	public function run_provider(string $kind): string
 	{
 		$instance = $this->getInstanceProvider();
-
 		return $instance->pay($kind);
 	}
 
@@ -100,32 +70,31 @@ class Payment implements IShortcode, IParkingManagement
 
 	public function isEnabled(): bool
 	{
-		if (!empty($this->provider))
-			return $this->config['providers'][$this->provider]['enabled'] == '1';
-		return false;
+		return $this->config['enabled'] == '1';
 	}
 
 	public function doRedirect(string $kind): bool
 	{
-		$form = $this->pm->prop('form');
-		$redirect = match ($kind) {
-			"valet" => $form['valet']['redirect-to-provider'],
-			"booking" => $form['redirect-to-provider'],
-			default => '0'
-		};
-		return ($redirect === '1');
+		return $this->config['redirect-to-provider'] == '1';
 	}
 
-	public static function validateOnPayment(): bool
+	public static function validateOnPayment($kind): bool
 	{
 		$pm = getParkingManagementInstance();
 		if (!$pm)
 			return false;
-		$payment = $pm->prop('payment');
+		$payment = $pm->prop($kind)['payment'];
 		return $payment['valid-booking-on-payment'] === '1';
 	}
 
 	public function setKind(string $kind): void {
 		$this->kind = $kind;
+		$this->config = $this->pm->prop($kind)['payment'];
+		$this->provider = $this->config['provider'];
+	}
+
+	public function setOrderId(int $order_id): void
+	{
+		$this->order_id = $order_id;
 	}
 }

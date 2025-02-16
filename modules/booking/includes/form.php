@@ -379,11 +379,11 @@ class Form
 			]);
 	}
 
-	public function personal_information(ParkingManagement $pm): string
+	public function personal_information(): string
 	{
 		$post = array_merge($_GET, $_POST);
-		$parking_type = $this->get_parking_type($pm);
-		$content = $this->common_personal_information($pm);
+		$parking_type = $this->get_parking_type($this->pm);
+		$content = $this->common_personal_information($this->pm);
 		if ($this->kind === 'valet') {
 			$content[] = Html::_index('hidden', 'parking_type', 'parking_type', ['value' => ParkingType::VALET->value]);
 		} else {
@@ -573,10 +573,10 @@ class Form
 		];
 	}
 
-	public function trip_information(ParkingManagement $pm): string
+	public function trip_information(): string
 	{
 		$post = array_merge($_GET, $_POST);
-		$content = $this->common_trip($pm);
+		$content = $this->common_trip($this->pm);
 		if ($this->kind === 'booking') {
 			$content[] = $this->pax();
 		}
@@ -590,9 +590,9 @@ class Form
 		);
 	}
 
-	public function cgv(ParkingManagement $pm): string
+	public function cgv(): string
 	{
-		$form = $pm->prop('form');
+		$form = $this->pm->prop('form');
 		if ($form['booking']['terms_and_conditions'] !== '1')
 			return '';
 		$post = array_merge($_GET, $_POST);
@@ -640,9 +640,9 @@ EOT;
 		);
 	}
 
-	public function submit(ParkingManagement $pm): string
+	public function submit(): string
 	{
-		$info = $pm->prop('info');
+		$info = $this->pm->prop('info');
 		return Html::_div(
 			array(
 				'class' => 'mt-4 row justify-content-md-center',
@@ -662,10 +662,10 @@ EOT;
 		);
 	}
 
-	public function dialog_booking_confirmation(ParkingManagement $pm): string
+	public function dialog_booking_confirmation(): string
 	{
 		$post = array_merge($_GET, $_POST);
-		$form = $pm->prop('form');
+		$form = $this->pm->prop('form');
 		if (!empty($form) &&
 			isset($form['booking']['dialog_confirmation']) &&
 			$form['booking']['dialog_confirmation'] === '0') {
@@ -701,9 +701,9 @@ EOT;
 </div>';
 	}
 
-	public function cancellation_insurance(ParkingManagement $pm): string
+	public function cancellation_insurance(): string
 	{
-		$form = $pm->prop('form');
+		$form = $this->pm->prop('form');
 		if ($form['options']['cancellation_insurance']['enabled'] !== '1' || $form['options']['cancellation_insurance']['price'] === '0')
 			return '';
 		// Cocher cette case si le client souscrit l'assurance annulation à

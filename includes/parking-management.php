@@ -10,17 +10,15 @@ class ParkingManagement
 
 	const post_type = 'parking_management';
 
-	const properties_available = array(
+	const properties_available = [
 		'info' => ['title' => 'Information'],
-		'database' => ['title' => 'Database'],
-		'payment' => ['title' => 'Payment'],
 		'form' => ['title' => 'Form Options'],
 		'booked_dates' => ['title' => 'Booked dates'],
 		'high_season' => ['title'=>'High season'],
 		'notification' => ['title'=>'Notification'],
-//		'mail' => ['title'=>'Mail'],
-//		'sms' => ['title'=>'SMS'],
-	);
+		'booking' => ['title' => 'Booking Options'],
+		'valet' => ['title' => 'Valet Options'],
+	];
 	private static ParkingManagement|null $current = null;
 
 	public int $id;
@@ -28,7 +26,7 @@ class ParkingManagement
 	public string $title;
 	public string $locale = 'en-US';
 
-	private array $properties = array();
+	private array $properties = [];
 
 	public function __construct($post = null)
 	{
@@ -56,7 +54,7 @@ class ParkingManagement
 
 	private function construct_properties(): void
 	{
-		$builtin_properties = array();
+		$builtin_properties = [];
 		foreach (self::properties_available as $property => $config) {
 			$builtin_properties[$property] = Template::get_default($property);
 		}
