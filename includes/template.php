@@ -8,7 +8,6 @@ class Template
 	{
 		match ($prop) {
 			'info' => $template = self::info(),
-			'database' => $template = self::database(),
 			'form' => $template = self::form(),
 			'booked_dates' => $template = self::booked_dates(),
 			'high_season' => $template = self::high_season(),
@@ -41,17 +40,6 @@ class Template
 				'file' => '1',
 				'retention' => '30',
 			]
-		);
-	}
-
-	private static function database(): array
-	{
-		return array(
-			'name' => "",
-			'host' => "",
-			'port' => "",
-			'user' => "",
-			'password' => ""
 		);
 	}
 
@@ -249,53 +237,36 @@ class Template
 		);
 	}
 
+	private static function mail_properties(): array
+	{
+		return [
+			'host' => [
+				'title' => 'Host',
+				'type' => 'text',
+				'value' => ''
+			],
+			'login' => [
+				'title' => 'Login',
+				'type' => 'text',
+				'value' => ''
+			],
+			'password' => [
+				'title' => 'Password',
+				'type' => 'password',
+				'value' => ''
+			],
+			'sender' => [
+				'title' => 'Sender',
+				'type' => 'email',
+				'value' => ''
+			]
+		];
+	}
 	private static function notification(): array
 	{
 		return [
-			'mail' => [
-				'host' => [
-					'title' => 'Host',
-					'type' => 'text',
-					'value' => ''
-				],
-				'login' => [
-					'title' => 'Login',
-					'type' => 'text',
-					'value' => ''
-				],
-				'password' => [
-					'title' => 'Password',
-					'type' => 'password',
-					'value' => ''
-				],
-				'sender' => [
-					'title' => 'Sender',
-					'type' => 'email',
-					'value' => ''
-				]
-			],
-			'valet' => [
-				'host' => [
-					'title' => 'Host',
-					'type' => 'text',
-					'value' => ''
-				],
-				'login' => [
-					'title' => 'Login',
-					'type' => 'text',
-					'value' => ''
-				],
-				'password' => [
-					'title' => 'Password',
-					'type' => 'password',
-					'value' => ''
-				],
-				'sender' => [
-					'title' => 'Sender',
-					'type' => 'email',
-					'value' => ''
-				]
-			],
+			'mail' => self::mail_properties(),
+			'valet' => self::mail_properties(),
 			'sms' => [
 				'type' => 'AWS',
 				'user' => '',

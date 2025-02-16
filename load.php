@@ -137,6 +137,12 @@ function pkmgmt_upgrade(): void
 	if (version_compare($old_version, '3.6.0', '<')) {
 		pkmgmt_migrate_3_1_to_3_6();
 	}
+	if (version_compare($old_version, '3.7.0', '<')) {
+		pkmgmt_migrate_3_6_to_3_7();
+	}
+	if (version_compare($old_version, '4.0.0', '<')) {
+		pkmgmt_migrate_3_7_to_4_0();
+	}
 
 	do_action('pkmgmt_upgrade', $old_version, $new_version);
 	PKMGMT::update_option('version', $new_version);
@@ -330,6 +336,93 @@ function pkmgmt_migrate_3_6_to_3_7(): void
 	}
 }
 
+function pkmgmt_migrate_3_7_to_4_0(): void
+{
+	$pm = getParkingManagementInstance();
+	if (!$pm)
+		return;
+	$props = $pm->get_properties();
+	$props['booking'] = Template::get_default('booking');
+	$props['booking']['validation_page'] = $props['form']['validation_page'];
+	$props['booking']['options'] = $props['form']['booking'];
+	$props['booking']['database'] = $props['database'];
+	$props['booking']['payment'] = [
+		'valid-on-payment' => $props['payment']['valid-booking-on-payment'],
+		'redirect-to-provider' => $props['form']['redirect-to-provider'],
+		'name' => 'payplug',
+		'enabled' => $props['payment']['providers']['payplug']['enabled'],
+		'active-test' => $props['payment']['providers']['payplug']['active-test'],
+		'properties' => [
+			'payplug' => $props['payment']['providers']['payplug']['properties'],
+			'mypos' => $props['payment']['providers']['mypos']['properties'],
+			'paypal' => $props['payment']['providers']['paypal']['properties'],
+		]
+	];
+	$props['booking']['mail_templates'] = [
+		'confirmation' => [
+			'title' => 'Confirmation',
+			'type' => 'textarea',
+			'value' => $props['notification']['mail']['templates']['confirmation'],
+		],
+		'cancellation' => [
+			'title' => 'Cancellation',
+			'type' => 'textarea',
+			'value' => $props['notification']['mail']['templates']['cancellation'],
+		]
+	];
+	$props['booking']['sms_template'] = $props['notification']['sms']['template'];
+
+	$props['valet'] = Template::get_default('valet');
+	$props['valet']['validation_page'] = $props['form']['valet']['validation_page'];
+	$props['valet']['options'] = $props['form']['booking'];
+	$props['valet']['database'] = $props['database'];
+	$props['valet']['payment'] = [
+		'valid-on-payment' => $props['payment']['valid-valet-on-payment'],
+		'redirect-to-provider' => $props['form']['valet']['redirect-to-provider'],
+		'name' => 'payplug',
+		'enabled' => $props['payment']['providers']['payplug']['enabled'],
+		'active-test' => $props['payment']['providers']['payplug']['active-test'],
+		'properties' => [
+			'payplug' => $props['payment']['providers']['payplug']['properties'],
+			'mypos' => $props['payment']['providers']['mypos']['properties'],
+			'paypal' => $props['payment']['providers']['paypal']['properties'],
+		]
+	];
+	$props['valet']['mail_templates'] = [
+		'confirmation' => [
+			'title' => 'Confirmation',
+			'type' => 'textarea',
+			'value' => $props['notification']['valet']['templates']['confirmation'],
+		],
+		'cancellation' => [
+			'title' => 'Cancellation',
+			'type' => 'textarea',
+			'value' => $props['notification']['valet']['templates']['cancellation'],
+		]
+	];
+	$props['valet']['sms_template'] = $props['notification']['sms']['template'];
+	$props['form']['valet_page'] = [
+		'title' => 'Valet Page',
+		'value' => ''
+	];
+	unset($props['payment']);
+	unset($props['database']);
+	unset($props['form']['booking']);
+	unset($props['form']['payment']);
+	unset($props['form']['redirect-to-provider']);
+	unset($props['form']['valet']);
+	unset($props['form']['validation_page']);
+	unset($props['notification']['mail']['templates']);
+	unset($props['notification']['valet']['templates']);
+	unset($props['notification']['sms']['template']);
+	$pm->set_properties($props);
+	try {
+		$pm->save();
+	} catch (Exception $e) {
+		Logger::error("migrate.3.7.to.4.0", $e->getMessage());
+	}
+
+}
 add_action('activate_' . PKMGMT_PLUGIN_BASENAME, 'pkmgmt_install', 9, 0);
 
 
