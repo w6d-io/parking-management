@@ -50,7 +50,7 @@ document.addEventListener('DOMContentLoaded', function () {
 	function switchSubmitBtn() {
 		if (
 			parseInt($('#total_amount').val()) > 0
-			&& (external_object.properties.form.booking.terms_and_conditions == '0' || $('#cgv_reservation').is(':checked'))
+			&& (external_object.form_options.terms_and_conditions == '0' || $('#cgv_reservation').is(':checked'))
 		)
 			$("#submit").removeAttr("disabled");
 		else
@@ -177,7 +177,7 @@ document.addEventListener('DOMContentLoaded', function () {
 				2,
 				function () {
 					getPrice();
-					if (external_object.properties.form.booking.dialog_confirmation === '1') {
+					if (external_object.form_options.dialog_confirmation === '1') {
 						syncValues('#depart', '#depart2');
 						syncValues('#retour', '#retour2');
 					}
@@ -247,7 +247,7 @@ document.addEventListener('DOMContentLoaded', function () {
 	})
 	// Confirmation dialog
 	let dialogConfirm;
-	if (external_object.properties.form.booking.dialog_confirmation === '1') {
+	if (external_object.form_options.dialog_confirmation === '1') {
 
 		$('#email').on('change', function () {
 			$('#email2').val(this.value);
@@ -337,7 +337,7 @@ document.addEventListener('DOMContentLoaded', function () {
 		},
 
 		submitHandler: function (form) {
-			if (external_object.properties.form.booking.dialog_confirmation === '1') {
+			if (external_object.form_options.dialog_confirmation === '1') {
 				easepickCreate(
 					$('#depart2').get(0),
 					$('#retour2').get(0),

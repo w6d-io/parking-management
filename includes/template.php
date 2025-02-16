@@ -274,6 +274,28 @@ class Template
 					'value' => ''
 				]
 			],
+			'valet' => [
+				'host' => [
+					'title' => 'Host',
+					'type' => 'text',
+					'value' => ''
+				],
+				'login' => [
+					'title' => 'Login',
+					'type' => 'text',
+					'value' => ''
+				],
+				'password' => [
+					'title' => 'Password',
+					'type' => 'password',
+					'value' => ''
+				],
+				'sender' => [
+					'title' => 'Sender',
+					'type' => 'email',
+					'value' => ''
+				]
+			],
 			'sms' => [
 				'type' => 'AWS',
 				'user' => '',

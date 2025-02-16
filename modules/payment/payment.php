@@ -2,7 +2,7 @@
 
 namespace ParkingManagement;
 
-use Booking\ParkingType;
+use JetBrains\PhpStorm\NoReturn;
 use ParkingManagement\interfaces\IParkingmanagement;
 use ParkingManagement\interfaces\IPayment;
 use ParkingManagement\interfaces\IShortcode;
@@ -42,7 +42,6 @@ class Payment implements IShortcode, IParkingManagement
 
 	public function shortcode(string $type): string
 	{
-
 		if (!array_key_exists('order_id', $_GET) || !is_numeric($_GET['order_id'])
 			|| (array_key_exists('from', $_GET) && $_GET['from'] === 'provider')
 		)
@@ -51,21 +50,21 @@ class Payment implements IShortcode, IParkingManagement
 		if (!$this->isEnabled())
 			return '';
 		return match ($this->provider) {
-			'payplug', 'mypos' => $this->run_provider($this->kind),
+			'payplug', 'mypos' => $this->run_provider(),
 			default => sprintf('[parking-management type="payment" payment_provider="%s" kind="%s"]', $this->provider, $this->kind)
 		};
 
 	}
-	public function run_provider(string $kind): string
+	public function run_provider(): string
 	{
 		$instance = $this->getInstanceProvider();
-		return $instance->pay($kind);
+		return $instance->pay();
 	}
 
-	public function redirect(string $kind): void
+	#[NoReturn] public function redirect(): void
 	{
 		$instance = $this->getInstanceProvider();
-		$instance->redirect($kind);
+		$instance->redirect();
 	}
 
 	public function isEnabled(): bool
@@ -73,7 +72,7 @@ class Payment implements IShortcode, IParkingManagement
 		return $this->config['enabled'] == '1';
 	}
 
-	public function doRedirect(string $kind): bool
+	public function doRedirect(): bool
 	{
 		return $this->config['redirect-to-provider'] == '1';
 	}
@@ -83,14 +82,16 @@ class Payment implements IShortcode, IParkingManagement
 		$pm = getParkingManagementInstance();
 		if (!$pm)
 			return false;
-		$payment = $pm->prop($kind)['payment'];
-		return $payment['valid-booking-on-payment'] === '1';
+		return match ($kind) {
+			'valet', 'booking' => ($pm->prop($kind)['payment']['valid-booking-on-payment'] === '1'),
+			default => false
+		};
 	}
 
 	public function setKind(string $kind): void {
 		$this->kind = $kind;
 		$this->config = $this->pm->prop($kind)['payment'];
-		$this->provider = $this->config['provider'];
+		$this->provider = $this->config['name'];
 	}
 
 	public function setOrderId(int $order_id): void

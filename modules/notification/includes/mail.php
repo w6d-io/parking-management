@@ -8,7 +8,7 @@ use PHPMailer\PHPMailer\PHPMailer;
 
 class Mail
 {
-	public static function send($to, $subject, $message, $additional_headers = '', $charset = 'UTF-8', $attachmentPaths = [], $isHTML = true): bool
+	public static function send($kind, $to, $subject, $message, $additional_headers = '', $charset = 'UTF-8', $attachmentPaths = [], $isHTML = true): bool
 	{
 		$pm = getParkingManagementInstance();
 		if (!$pm) {

@@ -16,7 +16,7 @@ require_once PKMGMT_PLUGIN_MODULES_DIR . DS . "notification" . DS . "includes" .
 class Notification implements IShortcode
 {
 	private ParkingManagement $pm;
-	private string $kind = 'booking';
+	private string $kind;
 
 	public function __construct(ParkingManagement $pm)
 	{
@@ -28,7 +28,8 @@ class Notification implements IShortcode
 	{
 		if (!array_key_exists('order_id', $_GET) || !is_numeric($_GET['order_id']))
 			return '';
-		if (Payment::validateOnPayment($kind) && (!array_key_exists('from', $_GET) || $_GET['from'] != 'provider'))
+		// TODO add query string into payment validation redirect
+		if (Payment::validateOnPayment($this->kind) && (!array_key_exists('from', $_GET) || $_GET['from'] != 'provider'))
 			return '';
 		try {
 			$data = $this->getData($this->kind);
@@ -47,13 +48,17 @@ class Notification implements IShortcode
 	private function confirmation(array $data, Order $order): string
 	{
 		try {
-		$order->confirmed($_GET['order_id']);
-		$mail = match ($this->kind) {
-			'valet' => $this->pm->prop('notification')['valet'],
-			default => $this->pm->prop('notification')['mail'],
-		};
-		$this->mail($data, esc_html__('Summary of your order', 'parking-management'), $mail['templates']['confirmation']['value']);
-		$this->sms($data);
+			$order->confirmed($_GET['order_id']);
+			$config = match ($this->kind) {
+				'booking', 'valet' => $this->pm->prop($this->kind),
+				default => [],
+			};
+			if (empty($config)) {
+				Logger::error("notification.confirmation", "get config failed");
+				return '';
+			}
+			$this->mail($data, esc_html__('Summary of your order', 'parking-management'), $config['mail_templates']['confirmation']['value']);
+			$this->sms($data, $config['sms_template']);
 		} catch (Exception $e) {
 			Logger::error("notification.confirmation", $e->getMessage());
 		}
@@ -64,11 +69,15 @@ class Notification implements IShortcode
 	{
 		try {
 			$order->cancel($_GET['order_id']);
-			$mail = match ($this->kind) {
-				'valet' => $this->pm->prop('notification')['valet'],
-				default => $this->pm->prop('notification')['mail'],
+			$config = match ($this->kind) {
+				'booking', 'valet' => $this->pm->prop($this->kind),
+				default => [],
 			};
-			$this->mail($data, esc_html__('Order cancelled', 'parking-management'), $mail['templates']['cancellation']['value']);
+			if (empty($config)) {
+				Logger::error("notification.confirmation", "get config failed");
+				return '';
+			}
+			$this->mail($data, esc_html__('Cancellation of your order', 'parking-management'), $config['mail_templates']['cancellation']['value']);
 		} catch (Exception $e) {
 			Logger::error("notification.cancellation", $e->getMessage());
 		}
@@ -83,6 +92,7 @@ class Notification implements IShortcode
 		}
 		$message = replacePlaceholders($template, $data);
 		if (Mail::send(
+			$this->kind,
 			$data['member_email'],
 			$subject,
 			nl2br($message)
@@ -92,10 +102,8 @@ class Notification implements IShortcode
 			Logger::warning("notification.mail", "mail do not sent to {$data['member_email']}");
 	}
 
-	private function sms(array $data): void
+	private function sms(array $data, $template): void
 	{
-		$sms = $this->pm->prop('notification')['sms'];
-		$template = $sms['template'];
 		$message = replacePlaceholders($template, $data);
 		if (SMS::send($data['order_telephone'], $message))
 			Logger::info("notification.sms", "message sent to {$data['order_telephone']}");
