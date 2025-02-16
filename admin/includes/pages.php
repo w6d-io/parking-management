@@ -779,10 +779,6 @@ class Pages
 			esc_html__("Copy and paste this code into your page where you want a notification cancellation after an order.", 'parking-management'),
 			"[parking-management type='notification' action='cancellation' kind='booking']"
 		);
-		$booking['validation_page'] = [
-			'title' => 'Validation Page',
-			'value' => ''
-		];
 		echo self::_fieldset('Pages',
 			Html::_div(
 				[
@@ -846,10 +842,6 @@ class Pages
 			"[parking-management type='notification' action='cancellation' kind='valet']"
 		);
 
-		$valet['validation_page'] = [
-			'title' => 'Validation Page',
-			'value' => ''
-		];
 		echo self::_fieldset('Pages',
 			Html::_div(
 				[
@@ -878,7 +870,6 @@ class Pages
 		echo '<legend class="w-auto mx-2 bg-white position-absolute top-0 start-0 translate-middle-y fs-6">SMS</legend>';
 		self::notification_template($box['id'] . '-sms', 'pkmgmt-valet[sms_template]', $valet['sms_template']);
 		echo '</fieldset>';
-
 	}
 
 	public static function dialog_page_list(): void
