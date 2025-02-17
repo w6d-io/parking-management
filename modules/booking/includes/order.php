@@ -152,9 +152,9 @@ class Order
 		);
 		Logger::info("order.create", ['params' => $order]);
 
-		if (!$this->conn->insert(
+		if ($this->conn->insert(
 			'tbl_commande',
-			$order)) {
+			$order) === false) {
 			Logger::error("order.create", ['message' => $this->conn->last_error, 'params' => $order]);
 			throw new Exception(__("order creation failed in database insertion", 'parking-management'));
 		}
@@ -169,14 +169,14 @@ class Order
 		$payment->setOrderId($id);
 		$order['remarque'] = "Commande Parking " . $this->airport . " / Destination : " . mb_convert_encoding($this->getData('destination'), 'ISO-8859-1', 'UTF-8') . " / Reference : " . $id;
 		$order['facture_id'] = $this->getBillID($id);
-		if (!$this->conn->update(
+		if ($this->conn->update(
 			'tbl_commande',
 			[
 				'remarque' => $order['remarque'],
 				'facture_id' => $order['facture_id']
 			],
 			['id_commande' => $id]
-		))
+		) === false)
 			Logger::error("order.create", ["message" => "error during order update with remarque and facture_id", "facture_id" => $order['facture_id'], "remarque" => $order['remarque']]);
 
 		return $id;
@@ -195,7 +195,7 @@ class Order
 		    , `nb_retard`
 		    , `ip`, `host`, `referer` FROM `tbl_commande` WHERE `id_commande` = %d';
 		$result = $this->conn->get_row($this->conn->prepare($query, [$order_id]), ARRAY_A);
-		if (!$result) {
+		if ($result === null) {
 			throw new Exception("Order not found with id: " . $order_id);
 		}
 		return $result;
@@ -208,7 +208,7 @@ class Order
 	{
 		$bill_id = $this->getBillID($order_id);
 		$date = date('Y-m-d H:i:s');
-		if (!$this->conn->update(
+		if ($this->conn->update(
 			'tbl_commande',
 			[
 				'bill_id' => $bill_id,
@@ -221,7 +221,7 @@ class Order
 			[
 				'id_commande' => $order_id
 			]
-		))
+		) === false)
 			throw new Exception("payment order update failed");
 
 	}
@@ -284,7 +284,7 @@ class Order
 				throw new InvalidArgumentException("Invalid date format provided");
 			}
 
-			if (!$row = $this->conn->get_row(
+			if ($row = $this->conn->get_row(
 				$this->conn->prepare(
 					"SELECT `id_commande` FROM `tbl_commande` WHERE `membre_id` = %d AND `depart` = %s AND `depart_heure` = %s AND `arrivee` = %s AND `arrivee_heure` = %s",
 					[
@@ -295,7 +295,7 @@ class Order
 						$end_hour
 					]
 				),
-				ARRAY_A)) {
+				ARRAY_A) === null) {
 				Logger::error("order.isExists", "Database query execution failed");
 				throw new Exception("Database query execution failed");
 			}
