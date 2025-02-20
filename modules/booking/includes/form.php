@@ -236,12 +236,15 @@ class Form
 		unset($properties['valet']['database']);
 		unset($properties['booking']['mail_templates']);
 		unset($properties['valet']['mail_templates']);
+		unset($properties['booking']['sms_template']);
+		unset($properties['valet']['sms_template']);
 		unset($properties['notification']);
 		wp_localize_script('parking-management-booking',
 			'external_object',
 			array(
 				'locale' => $this->pm->locale,
 				'home_url' => home_url(),
+				'kind' => $this->kind,
 				'form_css' => pkmgmt_plugin_url('modules/booking/css/form.css'),
 				'form_options' => $properties[$this->kind]['options'],
 				'properties' => $properties
@@ -670,8 +673,8 @@ EOT;
 	{
 		$post = array_merge($_GET, $_POST);
 		$config = $this->pm->prop($this->kind);
-		if (isset($config['options']['dialog_confirmation']) &&
-			$config['options']['dialog_confirmation'] === '0') {
+		if (!isset($config['options']['dialog_confirmation']) ||
+			$config['options']['dialog_confirmation'] != '1') {
 			return '';
 		}
 		return '<div id="dialog_booking_confirmation" title="' . esc_html__('Confirmation', 'parking-management') . '">

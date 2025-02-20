@@ -3,6 +3,7 @@
 namespace ParkingManagement\Admin;
 
 use ParkingManagement\Html;
+use ParkingManagement\Logger;
 use ParkingManagement\ParkingManagement;
 use ParkingManagement\Template;
 

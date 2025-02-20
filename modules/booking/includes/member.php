@@ -73,7 +73,6 @@ class Member
 				'date' => date('Y-m-d'),
 				'email' => strtolower($post['email']),
 				'password' => strrev(md5($password)),
-				'reseau' => 0, // Reseau
 				'nom' => ucwords($post['nom']),
 				'prenom' => ucwords($post['prenom']),
 				'code_postal' => $post['code_postal'],
@@ -98,7 +97,7 @@ class Member
 					throw new Exception("Required field missing: $field");
 				}
 			}
-			if (!$this->conn->insert('tbl_membre', $this->member)) {
+			if ($this->conn->insert('tbl_membre', $this->member) === false ) {
 				Logger::error("member.create.execute", [
 					'errorInfo' => $this->conn->last_error,
 					'data' => array_diff_key($this->member, array_flip(['password']))
