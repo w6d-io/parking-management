@@ -22,7 +22,7 @@ class PayplugAPI extends API
 
 	public function __construct()
 	{
-		add_action('rest_api_init',[$this, 'register_routes']);
+		add_action('rest_api_init', [$this, 'register_routes']);
 	}
 
 	public function register_routes(): void
@@ -47,14 +47,23 @@ class PayplugAPI extends API
 	 */
 	public function create_item($request): WP_Error|WP_REST_Response
 	{
-		Logger::info("payplug.api.create_item", ['request' =>
-			[
-				'body' => $request->get_body(),
-				'params' => $request->get_params(),
-				'method' => $request->get_method(),
-			]
-		]);
+//		Logger::info("payplug.api.create_item", ['request' =>
+//			[
+//				'body' => $request->get_body(),
+//				'params' => $request->get_params(),
+//				'method' => $request->get_method(),
+//			]
+//		]);
 
+		$kind = $request->get_param('kind');
+		if ($kind === null) {
+			Logger::error("payplug.api.create_item", ["message" => "missing kind"]);
+			return new WP_Error(
+				'payplug-notification-error',
+				'Missing parameter',
+				array('status' => WP_Http::BAD_REQUEST)
+			);
+		}
 		$pm = getParkingManagementInstance();
 		if (!$pm)
 			return new WP_Error(
@@ -62,32 +71,41 @@ class PayplugAPI extends API
 				__('failed to get parking management instance', 'parking-management'),
 				array('status' => WP_Http::BAD_REQUEST)
 			);
-		$payment = $pm->prop('payment');
-		$provider = $payment['providers']['payplug'];
-		$test_enabled = $provider['active-test'] === '1';
-		$secretKey = $test_enabled ? $provider['properties']['secret_key_test']['value'] : $provider['properties']['secret_key']['value'];
+		$payment = $pm->prop($kind)['payment'];
+		$provider = $payment['properties']['payplug'];
+		$test_enabled = ($payment['active-test'] == '1');
+		$secretKey = $test_enabled ? $provider['secret_key_test']['value'] : $provider['secret_key']['value'];
+		if (empty($secretKey)) {
+			Logger::warning("payplug.api.create_item", ["message" => "missing secret key"]);
+			return new WP_REST_Response(null, WP_Http::NO_CONTENT);
+		}
 		try {
 			Payplug::init(array(
 				'secretKey' => $secretKey
 			));
+			Logger::debug("payplug.api.create_item", $request->get_body());
+
 			$resource = Notification::treat($request->get_body());
 			Logger::info("payplug.api.create_item", ['resource' => $resource]);
 			if ($resource instanceof APIResource && $resource->is_paid) {
 				$order_id = $resource->metadata['id_commande'];
 				$payment_date = date('Y-m-d H:i:s', $resource->hosted_payment->paid_at);
+
 				$amount = ($resource->amount / 100);
 				$payment_id = PaymentID::PAYPLUG;
-				$order = new Order();
+				$order = new Order($kind);
 				$order->update_payment((int)$order_id, $payment_date, $amount, $payment_id);
 				Logger::info("payplug.api.create_item", "record payment status recorded");
 				return new WP_REST_Response(null, WP_Http::NO_CONTENT);
 			}
-			if ($resource->failure) {
-				Logger::error("payplug.api.create_item", ["failure" => ["code"=>$resource->failure->code, "message" => $resource->failure->message]]);
+			if ($resource instanceof APIResource && $resource->failure) {
+				Logger::error("payplug.api.create_item", ["failure" => ["code" => $resource->failure->code, "message" => $resource->failure->message]]);
 				return new WP_REST_Response(null, WP_Http::NO_CONTENT);
 			}
 		} catch (PayplugException|Exception $e) {
-			Logger::error("payplug.api.create_item", $e->getMessage());
+			Logger::warning("payplug.api.create_item", $e->getMessage());
+			if ( $e->getMessage() == "The resource you requested could not be found.")
+				new WP_REST_Response(null, WP_Http::NO_CONTENT);
 			return new WP_Error(
 				'payplug-notification-error',
 				$e->getMessage(),

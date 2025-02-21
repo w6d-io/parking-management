@@ -53,7 +53,15 @@ class MyPosAPI extends API
 				'method' => $request->get_method(),
 			]
 		]);
-
+		$kind = $request->get_param('kind');
+		if ($kind === null) {
+			Logger::error("mypos.api.create_item", ["message" => "missing kind"]);
+			return new WP_Error(
+				'mypos-notification-error',
+				'Missing parameter',
+				array('status' => WP_Http::BAD_REQUEST)
+			);
+		}
 		$pm = getParkingManagementInstance();
 		if (!$pm)
 			return new WP_Error(
@@ -61,10 +69,10 @@ class MyPosAPI extends API
 				__('failed to get parking management instance', 'parking-management'),
 				array('status' => WP_Http::BAD_REQUEST)
 			);
-		$payment = $pm->prop('payment');
+		$payment = $pm->prop($kind)['payment'];
 		$provider = $payment['providers']['mypos'];
-		$test_enabled = $provider['active-test'] === '1';
-		$configPackage = $test_enabled ? MyPos::configTest : $provider['properties']['configuration_package']['value'];
+		$test_enabled = $payment['active-test'] == '1';
+		$configPackage = $test_enabled ? MyPos::configTest : $provider['configuration_package']['value'];
 		$ipcURL = $test_enabled ? MyPos::ipcTestURL : MyPos::ipcURL;
 
 		try {

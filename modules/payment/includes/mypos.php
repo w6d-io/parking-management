@@ -84,7 +84,7 @@ class MyPos implements IPayment
 
 			$success_url = $this->properties['success_page']['value'] . '?from=provider&order_id=' . $this->order_id;
 			$cancel_url = $this->properties['cancel_page']['value'] . '?order_id=' . $this->order_id;
-			$notify_url = home_url() . "/wp-json/pkmgmt/v1/mypos/ipn";
+			$notify_url = home_url() . "/wp-json/pkmgmt/v1/mypos/ipn?kind={$this->kind}";
 			if ($this->properties['notification_url']['value'] !== '')
 				$notify_url = $this->properties['notification_url']['value'];
 
@@ -96,6 +96,7 @@ class MyPos implements IPayment
 			$purchase->setCurrency('EUR');
 			$purchase->setCustomer($customer);
 			$purchase->setCart($cart);
+
 
 			$purchase->setCardTokenRequest(Purchase::CARD_TOKEN_REQUEST_PAY_AND_STORE);
 			$purchase->setPaymentParametersRequired(Purchase::PURCHASE_TYPE_FULL);
