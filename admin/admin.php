@@ -20,12 +20,11 @@ class Admin
 			10, 0
 		);
 
-		add_action('admin_menu', array($this, 'menu'), 9, 0);
-		add_action('pkmgmt_admin_notices', array('ParkingManagement\Admin\Pages', 'notices_message'), 10, 3);
-
 		// CSS and Javascript
 		add_action('admin_enqueue_scripts', array($this, 'enqueue_scripts'));
 
+		add_action('admin_menu', array($this, 'menu'), 9, 0);
+		add_action('pkmgmt_admin_notices', array('ParkingManagement\Admin\Pages', 'notices_message'), 10, 3);
 	}
 
 	public static function enqueue_scripts($hook_suffix): void
@@ -33,6 +32,8 @@ class Admin
 		if (!str_contains($hook_suffix, 'pkmgmt')) {
 			return;
 		}
+		global $plugin_page;
+		$screen_id = $plugin_page;
 		// CSS
 		wp_enqueue_style('parking-management-admin', pkmgmt_plugin_url('admin/css/admin.css'));
 		wp_enqueue_style('parking-management-admin-rtl', pkmgmt_plugin_url('admin/css/admin-rtl.css'));
@@ -61,6 +62,18 @@ class Admin
 				'parking-management-luxon',
 			),
 			PKMGMT_VERSION);
+		wp_enqueue_script(
+			'parking-management-admin-bottom',
+			pkmgmt_plugin_url('admin/js/admin_bottom.js'),
+			['parking-management-jquery', 'postbox'],
+			PKMGMT_VERSION,
+			true
+		);
+		wp_localize_script(
+			'parking-management-admin-bottom',
+			'config',
+			['screen_id' => $screen_id]
+		);
 	}
 
 	public function menu(): void
@@ -130,7 +143,7 @@ class Admin
 		$data = array();
 
 		foreach (ParkingManagement::properties_available as $property => $config) {
-			$data[$property] =$_POST['pkmgmt-'.$property] ?? Template::get_default($property);
+			$data[$property] = $_POST['pkmgmt-' . $property] ?? Template::get_default($property);
 		}
 
 		$args = array_merge(
@@ -216,7 +229,7 @@ class Admin
 			add_meta_box(
 				$prop,
 				__($config['title'], 'parking-management'),
-				['ParkingManagement\Admin\Pages', $prop.'_box'],
+				['ParkingManagement\Admin\Pages', $prop . '_box'],
 				null,
 				$prop,
 				'core'

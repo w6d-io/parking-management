@@ -46,11 +46,15 @@ class MyPosAPI extends API
 	 */
 	public function create_item($request): WP_Error|WP_REST_Response
 	{
-		Logger::info("mypos.api.create_item", ['request' =>
+		if (is_string($request->get_body())) {
+			parse_str($request->get_body(), $_POST);
+		}
+		Logger::debug("mypos.api.create_item", ['request' =>
 			[
 				'body' => $request->get_body(),
 				'params' => $request->get_params(),
 				'method' => $request->get_method(),
+				'POST' => $_POST,
 			]
 		]);
 		$kind = $request->get_param('kind');
@@ -74,15 +78,18 @@ class MyPosAPI extends API
 		$test_enabled = $payment['active-test'] == '1';
 		$configPackage = $test_enabled ? MyPos::configTest : $provider['configuration_package']['value'];
 		$ipcURL = $test_enabled ? MyPos::ipcTestURL : MyPos::ipcURL;
+		Logger::debug('mypos.api.create_item', ['ipcURL' => $ipcURL, 'test_enabled' => $test_enabled ? '1' : '0']);
 
 		try {
+			if (empty($_POST))
+				throw new Exception("Post is empty");
 			$cnf = new Config();
 			$cnf->setIpcURL($ipcURL);
 			$cnf->setLang('en');
 			$cnf->setVersion('1.4');
 			$cnf->loadConfigurationPackage($configPackage);
 
-			$response = Response::getInstance($cnf, $request->get_params(), Defines::COMMUNICATION_FORMAT_POST);
+			$response = Response::getInstance($cnf, $_POST, Defines::COMMUNICATION_FORMAT_POST);
 			$data = $response->getData();
 			if ($data['IPCmethod'] === 'IPCPurchaseNotify') {
 				$order_id = $data['OrderID'];
@@ -93,7 +100,7 @@ class MyPosAPI extends API
 				$payment_date = $data['RequestDateTime'];
 				$amount = $data['Amount'];
 				$payment_id = PaymentID::MYPOS;
-				$order = new Order();
+				$order = new Order($kind);
 				$order->update_payment((int)$order_id, $payment_date, $amount, $payment_id);
 				Logger::info("mypos.api.create", "record payment status recorded");
 				echo "OK";
