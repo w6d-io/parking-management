@@ -44,3 +44,8 @@ if (!defined('PKMGMT_LANGUAGES_DIR'))
 	define('PKMGMT_LANGUAGES_DIR', PKMGMT_PLUGIN_DIR . DS . 'languages');
 if (!defined('PKMGMT_PLUGIN_TEMPLATES'))
 	define('PKMGMT_PLUGIN_TEMPLATES', PKMGMT_PLUGIN_DIR . DS . "templates");
+
+if (getenv('PKMGMT_DEBUG') == "true")
+	define('PKMGMT_DEBUG', true);
+else
+	define('PKMGMT_DEBUG', false);

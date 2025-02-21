@@ -43,7 +43,8 @@ class Logger
 
 	public static function debug(string $action, mixed $message): void
 	{
-		self::log('debug', $action, $message);
+		if (PKMGMT_DEBUG)
+			self::log('debug', $action, $message);
 	}
 
 	public static function warning(string $action, mixed $message): void

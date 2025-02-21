@@ -26,18 +26,18 @@ msgstr "Plugin de gestion de réservation de stationnement"
 msgid "David ALEXANDRE"
 msgstr ""
 
-#: admin/admin.php:73
+#: admin/admin.php:86
 #: admin/includes/pages.php:16
 #: includes/parking-management.php:106
 #: includes/parking-management.php:107
 msgid "Parking Management"
 msgstr "Parking Management"
 
-#: admin/admin.php:74
+#: admin/admin.php:87
 msgid "Car park"
 msgstr "Parking"
 
-#: admin/admin.php:128
+#: admin/admin.php:141
 msgid "You are not allowed to edit this page."
 msgstr "Vous n'avez pas le droit d'éditer cette page"
 
@@ -45,139 +45,139 @@ msgstr "Vous n'avez pas le droit d'éditer cette page"
 msgid "Configuration saved."
 msgstr "Configuration sauvegardé"
 
-#: admin/includes/pages.php:88
+#: admin/includes/pages.php:90
 msgid "Title"
 msgstr "Titre"
 
-#: admin/includes/pages.php:96
-#: admin/includes/pages.php:462
+#: admin/includes/pages.php:98
+#: admin/includes/pages.php:464
 #: modules/booking/includes/form.php:263
 msgid "Name"
 msgstr "Nom"
 
-#: admin/includes/pages.php:108
+#: admin/includes/pages.php:110
 msgid "Copy and paste this code into your page to include booking form."
 msgstr "Copier et coller ce code dans votre page pour inclure un formulaire de réservation"
 
-#: admin/includes/pages.php:114
+#: admin/includes/pages.php:116
 msgid "Copy and paste this code into your page to include valet booking form."
 msgstr "Copier/Coller ce code dans votre page pour inclure un formulaire de réservation de valet"
 
-#: admin/includes/pages.php:120
+#: admin/includes/pages.php:122
 msgid "Copy and paste this code into your page to include home booking form."
 msgstr "Copier et coller ce code dans votre page pour inclure un formulaire de réservation en page d'accueil"
 
-#: admin/includes/pages.php:138
+#: admin/includes/pages.php:140
 msgid "Copy and paste this code into your page to include booked message."
 msgstr "Copier et coller ce code dans votre page pour inclure un message de parking complet"
 
-#: admin/includes/pages.php:144
+#: admin/includes/pages.php:146
 msgid "Copy and paste this code into your page to include high-season message."
 msgstr "Copier et coller ce code dans votre page pour inclure un message sur les hautes saisons"
 
-#: admin/includes/pages.php:774
-#: admin/includes/pages.php:836
+#: admin/includes/pages.php:776
+#: admin/includes/pages.php:838
 msgid "Copy and paste this code into your page where you want a notification confirmation after an order."
 msgstr "Copier et coller ce code dans votre page pour envoyer des notifications de confirmation de réservation"
 
-#: admin/includes/pages.php:780
-#: admin/includes/pages.php:842
+#: admin/includes/pages.php:782
+#: admin/includes/pages.php:844
 msgid "Copy and paste this code into your page where you want a notification cancellation after an order."
 msgstr "Copier et coller ce code dans votre page pour envoyer une notification d'annulation de réservation"
 
-#: admin/includes/pages.php:768
-#: admin/includes/pages.php:830
+#: admin/includes/pages.php:770
+#: admin/includes/pages.php:832
 msgid "Copy and paste this code into your page to include paypal payment form."
 msgstr "Copier et coller ce code dans votre page pour inclure un formulaire Paypal"
 
-#: admin/includes/pages.php:756
-#: admin/includes/pages.php:818
+#: admin/includes/pages.php:758
+#: admin/includes/pages.php:820
 msgid "Copy and paste this code into your page to include payplug payment form."
 msgstr "Copier et coller ce code dans votre page pour inclure un formulaire Payplug"
 
-#: admin/includes/pages.php:762
-#: admin/includes/pages.php:824
+#: admin/includes/pages.php:764
+#: admin/includes/pages.php:826
 msgid "Copy and paste this code into your page to include mypos payment form."
 msgstr "Copier et coller ce code dans votre page pour inclure un formulaire MyPOS"
 
-#: admin/includes/pages.php:150
+#: admin/includes/pages.php:152
 msgid "Save"
 msgstr "Sauvegarder"
 
-#: admin/includes/pages.php:281
+#: admin/includes/pages.php:283
 msgid "Browse page"
 msgstr "Selectionner une page"
 
-#: admin/includes/pages.php:422
+#: admin/includes/pages.php:424
 msgid "Address"
 msgstr "Adresse"
 
-#: admin/includes/pages.php:425
+#: admin/includes/pages.php:427
 msgid "Mobile"
 msgstr "Mobile"
 
-#: admin/includes/pages.php:428
+#: admin/includes/pages.php:430
 msgid "RCS"
 msgstr "RCS"
 
-#: admin/includes/pages.php:431
+#: admin/includes/pages.php:433
 #: modules/booking/includes/form.php:326
 #: modules/booking/includes/form.php:693
 msgid "Email"
 msgstr "Email"
 
-#: admin/includes/pages.php:434
+#: admin/includes/pages.php:436
 msgid "Terminal"
 msgstr "Terminal"
 
-#: admin/includes/pages.php:442
+#: admin/includes/pages.php:444
 msgid "Vehicle Type supported"
 msgstr "Type de véhicule supporté"
 
-#: admin/includes/pages.php:445
+#: admin/includes/pages.php:447
 msgid "Vehicle storage mode"
 msgstr "Mode de garde"
 
-#: admin/includes/pages.php:463
+#: admin/includes/pages.php:465
 msgid "Host"
 msgstr "Adresse"
 
-#: admin/includes/pages.php:464
+#: admin/includes/pages.php:466
 msgid "Port"
 msgstr "Port"
 
-#: admin/includes/pages.php:465
-#: admin/includes/pages.php:595
+#: admin/includes/pages.php:467
+#: admin/includes/pages.php:597
 msgid "Username"
 msgstr "Utilisateur"
 
-#: admin/includes/pages.php:466
-#: admin/includes/pages.php:598
+#: admin/includes/pages.php:468
+#: admin/includes/pages.php:600
 msgid "Password"
 msgstr "Mot de passe"
 
-#: admin/includes/pages.php:618
+#: admin/includes/pages.php:620
 msgid "Indicative"
 msgstr "Indicatif"
 
-#: admin/includes/pages.php:635
-#: admin/includes/pages.php:667
+#: admin/includes/pages.php:637
+#: admin/includes/pages.php:669
 msgid "Add a date"
 msgstr "Ajouter une date"
 
-#: admin/includes/pages.php:581
+#: admin/includes/pages.php:583
 msgid "Type"
 msgstr "Type"
 
-#: admin/includes/pages.php:601
+#: admin/includes/pages.php:603
 msgid "Sender"
 msgstr "Émetteur"
 
-#: admin/includes/pages.php:414
+#: admin/includes/pages.php:416
 msgid "Template"
 msgstr "Modèle"
 
-#: admin/includes/pages.php:883
+#: admin/includes/pages.php:885
 msgid "Select a page"
 msgstr "Sélectionner une page"
 
@@ -301,7 +301,7 @@ msgstr "Parking complet le "
 msgid "Summary of your order"
 msgstr "Récapitulatif de votre commande"
 
-#: modules/payment/includes/mypos/api.php:69
+#: modules/payment/includes/mypos/api.php:73
 #: modules/payment/includes/payplug/api.php:71
 msgid "failed to get parking management instance"
 msgstr "La récupération de la configuration a échoué"
@@ -345,8 +345,8 @@ msgstr "Prix des options"
 msgid "person"
 msgstr "personne"
 
-#: admin/admin.php:83
-#: admin/admin.php:84
+#: admin/admin.php:96
+#: admin/admin.php:97
 msgid "Configuration"
 msgstr "Configuration"
 
@@ -418,11 +418,11 @@ msgstr "Valet"
 msgid "vehicle creation failed"
 msgstr "Échec lors de la création de votre véhicule"
 
-#: admin/includes/pages.php:126
+#: admin/includes/pages.php:128
 msgid "Copy and paste this code into your page to include price booking table."
 msgstr "Copier et coller ce code dans votre page pour inclure un tableau des prix pour les réservations de parking"
 
-#: admin/includes/pages.php:132
+#: admin/includes/pages.php:134
 msgid "Copy and paste this code into your page to include price valet table."
 msgstr "Copier et coller ce code dans votre page pour inclure un tableau des prix pour les réservations de voiturier"
 
