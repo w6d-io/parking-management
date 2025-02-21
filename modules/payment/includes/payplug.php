@@ -72,7 +72,7 @@ class Payplug implements IPayment
 			));
 			$success_url = $this->properties['success_page']['value'] . "?from=provider&order_id=" . $this->order_id;
 			$cancel_url = $this->properties['cancel_page']['value'] . '?order_id=' . $this->order_id;
-			$notify_url = home_url() . "/wp-json/pkmgmt/v1/payplug/ipn";
+			$notify_url = home_url() . "/wp-json/pkmgmt/v1/payplug/ipn?kind={$this->kind}";
 			if ($this->properties['notification_url']['value'] !== '')
 				$notify_url = $this->properties['notification_url']['value'];
 			$payload = array(
@@ -97,7 +97,8 @@ class Payplug implements IPayment
 				),
 				'notification_url' => $notify_url,
 				'metadata' => array(
-					'id_commande' => $this->order_id
+					'id_commande' => $this->order_id,
+					'kind' => $this->kind,
 				)
 			));
 

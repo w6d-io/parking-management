@@ -156,6 +156,9 @@ class Order
 			'tbl_commande',
 			$order) === false) {
 			Logger::error("order.create", ['message' => $this->conn->last_error, 'params' => $order]);
+			if ( str_contains($this->conn->last_error, 'Duplicate entry')) {
+				throw new Exception(__("Order already exist", 'parking-management'));
+			}
 			throw new Exception(__("order creation failed in database insertion", 'parking-management'));
 		}
 
@@ -167,7 +170,7 @@ class Order
 		Logger::info("order.create", ['id' => $id]);
 		// may be useless
 		$payment->setOrderId($id);
-		$order['remarque'] = "Commande Parking " . $this->airport . " / Destination : " . mb_convert_encoding($this->getData('destination'), 'ISO-8859-1', 'UTF-8') . " / Reference : " . $id;
+		$order['remarque'] = sansAccent("Commande Parking " . $this->airport . " / Destination : " . $this->getData('destination') . " / Reference : " . $id);
 		$order['facture_id'] = $this->getBillID($id);
 		if ($this->conn->update(
 			'tbl_commande',
@@ -211,9 +214,9 @@ class Order
 		if ($this->conn->update(
 			'tbl_commande',
 			[
-				'bill_id' => $bill_id,
-				'paid' => $amount,
-				'payment_date' => $payment_date,
+				'facture_id' => $bill_id,
+				'paye' => $amount,
+				'date_paiement' => $payment_date,
 				'paiement_id' => $payment_id->value,
 				'status' => OrderStatus::PAID->value,
 				'date' => $date,
@@ -221,8 +224,10 @@ class Order
 			[
 				'id_commande' => $order_id
 			]
-		) === false)
+		) === false) {
+			Logger::error("order.update_payment", ['message' => $this->conn->last_error, 'params' => $order_id]);
 			throw new Exception("payment order update failed");
+		}
 
 	}
 
@@ -240,9 +245,10 @@ class Order
 			[
 				'id_commande' => $order_id
 			]
-		) === false)
-			throw new Exception("order confirmation failed: {$this->conn->last_error}");
-
+		) === false) {
+			Logger::error("order.confirmed", ['message' => $this->conn->last_error, 'params' => $order_id]);
+			throw new Exception("order confirmation failed");
+		}
 	}
 
 	/**
