@@ -46,7 +46,6 @@ class Pages
 	private static function config_form(ParkingManagement $pm): void
 	{
 		global $plugin_page;
-
 		echo '<form id="pkmgmt-admin-config" method="post">';
 		settings_fields(ParkingManagement::post_type);
 		do_settings_sections(ParkingManagement::post_type);
@@ -57,6 +56,9 @@ class Pages
 		foreach (ParkingManagement::properties_available as $property => $config) {
 			do_meta_boxes(null, $property, $pm->prop($property));
 		}
+		wp_nonce_field( 'meta-box-order', 'meta-box-order-nonce', false );
+		wp_nonce_field( 'closedpostboxes', 'closedpostboxesnonce', false );
+
 		echo '</div>';
 		echo '</form>';
 		self::dialog_page_list();
