@@ -27,7 +27,6 @@ class Page implements IParkingmanagement
 		$info = $this->pm->prop('info');
 		$form = $this->pm->prop('form');
 		$is_valet = $this->kind === 'valet';
-//		print_log(['kind' => $this->kind, 'is_valet' => $is_valet ? 'yes' : 'no']);
 		$div_class = ($info['type']['ext'] + $info['type']['int']) === 2 ? 'col-md-6' : 'col';
 		return Html::_div(
 			array('class' => 'row'),
