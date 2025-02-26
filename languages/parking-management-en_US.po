@@ -123,7 +123,7 @@ msgstr ""
 
 #: admin/includes/pages.php:433
 #: modules/booking/includes/form.php:326
-#: modules/booking/includes/form.php:693
+#: modules/booking/includes/form.php:694
 msgid "Email"
 msgstr ""
 
@@ -206,7 +206,7 @@ msgstr ""
 msgid "Inside"
 msgstr ""
 
-#: modules/booking/includes/form.php:419
+#: modules/booking/includes/form.php:420
 msgid "Personal Information"
 msgstr ""
 
@@ -222,75 +222,75 @@ msgstr ""
 msgid "Mobile phone"
 msgstr ""
 
-#: modules/booking/includes/form.php:343
+#: modules/booking/includes/form.php:344
 msgid "Type of vehicle"
 msgstr ""
 
-#: modules/booking/includes/form.php:360
+#: modules/booking/includes/form.php:361
 msgid "Car model"
 msgstr ""
 
-#: modules/booking/includes/form.php:377
+#: modules/booking/includes/form.php:378
 msgid "Immatriculation"
 msgstr ""
 
-#: modules/booking/includes/form.php:401
+#: modules/booking/includes/form.php:402
 msgid "Car Park"
 msgstr ""
 
-#: modules/booking/includes/form.php:593
+#: modules/booking/includes/form.php:594
 msgid "Trip Information"
 msgstr ""
 
-#: modules/booking/includes/form.php:474
+#: modules/booking/includes/form.php:475
 msgid "Destination"
 msgstr ""
 
-#: modules/booking/includes/form.php:517
+#: modules/booking/includes/form.php:518
 msgid "Terminal departure"
 msgstr ""
 
-#: modules/booking/includes/form.php:533
+#: modules/booking/includes/form.php:534
 msgid "Terminal return"
 msgstr ""
 
-#: modules/booking/includes/form.php:551
-#: modules/booking/includes/form.php:684
-#: modules/booking/includes/home_form.php:76
+#: modules/booking/includes/form.php:552
+#: modules/booking/includes/form.php:685
+#: modules/booking/includes/home_form.php:80
 msgid "Dropping off at"
 msgstr ""
 
-#: modules/booking/includes/form.php:568
-#: modules/booking/includes/form.php:688
-#: modules/booking/includes/home_form.php:93
+#: modules/booking/includes/form.php:569
+#: modules/booking/includes/form.php:689
+#: modules/booking/includes/home_form.php:97
 msgid "Landing at the airport"
 msgstr ""
 
-#: modules/booking/includes/form.php:429
+#: modules/booking/includes/form.php:430
 msgid "Number of pax"
 msgstr ""
 
-#: modules/booking/includes/form.php:644
+#: modules/booking/includes/form.php:645
 msgid "Order amount"
 msgstr ""
 
-#: modules/booking/includes/form.php:663
+#: modules/booking/includes/form.php:664
 msgid "Validate your order"
 msgstr ""
 
-#: modules/booking/includes/form.php:680
+#: modules/booking/includes/form.php:681
 msgid "Confirmation"
 msgstr ""
 
-#: modules/booking/includes/form.php:701
+#: modules/booking/includes/form.php:702
 msgid "Confirm your order"
 msgstr ""
 
-#: modules/booking/includes/form.php:717
+#: modules/booking/includes/form.php:718
 msgid "I hereby subscribe to the cancellation insurance for "
 msgstr ""
 
-#: modules/booking/includes/form.php:743
+#: modules/booking/includes/form.php:744
 msgid "Loading..."
 msgstr ""
 
@@ -303,7 +303,7 @@ msgid "Summary of your order"
 msgstr ""
 
 #: modules/payment/includes/mypos/api.php:73
-#: modules/payment/includes/payplug/api.php:71
+#: modules/payment/includes/payplug/api.php:63
 msgid "failed to get parking management instance"
 msgstr ""
 
@@ -311,38 +311,38 @@ msgstr ""
 msgid "Checkout"
 msgstr ""
 
-#: modules/price/includes/page.php:37
+#: modules/price/includes/page.php:34
 msgid "Outside lots"
 msgstr ""
 
-#: modules/price/includes/page.php:38
+#: modules/price/includes/page.php:35
 msgid "Inside lots"
 msgstr ""
 
-#: modules/price/includes/page.php:71
+#: modules/price/includes/page.php:69
 msgid "Number of days"
 msgstr ""
 
-#: modules/price/includes/page.php:72
+#: modules/price/includes/page.php:70
 msgid "Price"
 msgstr ""
 
-#: modules/price/includes/page.php:73
+#: modules/price/includes/page.php:71
 msgid "High Season Price"
 msgstr ""
 
-#: modules/price/includes/page.php:88
+#: modules/price/includes/page.php:107
 msgid "Options price"
 msgstr ""
 
-#: modules/price/includes/page.php:92
-#: modules/price/includes/page.php:96
-#: modules/price/includes/page.php:100
-#: modules/price/includes/page.php:104
+#: modules/price/includes/page.php:89
+#: modules/price/includes/page.php:93
+#: modules/price/includes/page.php:98
+#: modules/price/includes/page.php:102
 msgid "person"
 msgstr ""
 
-#: modules/payment/includes/payplug/api.php:119
+#: modules/payment/includes/payplug/api.php:111
 msgid "payment status not recorded"
 msgstr ""
 
@@ -366,31 +366,31 @@ msgstr ""
 msgid "Amount of the reservation :"
 msgstr ""
 
-#: modules/price/includes/page.php:91
+#: modules/price/includes/page.php:88
 msgid "Shuffle with more than 4 persons"
 msgstr ""
 
-#: modules/price/includes/page.php:95
+#: modules/price/includes/page.php:97
 msgid "Days late"
 msgstr ""
 
-#: modules/price/includes/page.php:99
+#: modules/price/includes/page.php:101
 msgid "Holidays (on leave and/or return)"
 msgstr ""
 
-#: modules/price/includes/page.php:103
+#: modules/price/includes/page.php:92
 msgid "Things forgotten in the vehicle"
 msgstr ""
 
-#: modules/booking/includes/home_form.php:104
+#: modules/booking/includes/home_form.php:108
 msgid "Your quote in 2 clicks"
 msgstr ""
 
-#: modules/booking/includes/form.php:501
+#: modules/booking/includes/form.php:502
 msgid "Departure"
 msgstr ""
 
-#: modules/booking/includes/form.php:507
+#: modules/booking/includes/form.php:508
 msgid "Return"
 msgstr ""
 
@@ -398,11 +398,11 @@ msgstr ""
 msgid "Failed to create member"
 msgstr ""
 
-#: modules/booking/includes/order.php:162
+#: modules/booking/includes/order.php:164
 msgid "order creation failed in database insertion"
 msgstr ""
 
-#: modules/booking/includes/order.php:168
+#: modules/booking/includes/order.php:170
 msgid "fail to create order"
 msgstr ""
 
@@ -411,10 +411,11 @@ msgid "Copy and paste this code into your page to include valet booking form."
 msgstr ""
 
 #: modules/booking/includes/form.php:90
+#: modules/price/includes/page.php:36
 msgid "Valet"
 msgstr ""
 
-#: modules/booking/includes/vehicle.php:64
+#: modules/booking/includes/vehicle.php:69
 msgid "vehicle creation failed"
 msgstr ""
 
@@ -430,6 +431,6 @@ msgstr ""
 msgid "Cancellation of your order"
 msgstr ""
 
-#: modules/booking/includes/order.php:160
+#: modules/booking/includes/order.php:162
 msgid "Order already exist"
 msgstr ""

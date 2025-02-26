@@ -13,36 +13,34 @@ class Page implements IParkingmanagement
 {
 
 	private array $priceGrid;
+	private string $kind;
 
 	private ParkingManagement $pm;
 
-	/**
-	 * @throws Exception
-	 */
 	public function __construct(ParkingManagement $pm)
 	{
 		$this->pm = $pm;
-		$info = $pm->prop('info');
-		$priceGrid = Price::priceGrid(Order::getSiteID($info['terminal']), 1, date('Y-m-d'), date('Y-m-d'));
-		$this->priceGrid = unserialize($priceGrid['grille']);
 	}
 
 	public function table(): string
 	{
 		$info = $this->pm->prop('info');
 		$form = $this->pm->prop('form');
+		$is_valet = $this->kind === 'valet';
+//		print_log(['kind' => $this->kind, 'is_valet' => $is_valet ? 'yes' : 'no']);
 		$div_class = ($info['type']['ext'] + $info['type']['int']) === 2 ? 'col-md-6' : 'col';
 		return Html::_div(
 			array('class' => 'row'),
-			$this->elem($div_class, esc_html__('Outside lots', 'parking-management'), 0, $info['type']['ext']),
-			$this->elem($div_class, esc_html__('Inside lots', 'parking-management'), 1, $info['type']['int']),
+			$this->elem($div_class, esc_html__('Outside lots', 'parking-management'), 0, ($info['type']['ext'] === '1' && !$is_valet)),
+			$this->elem($div_class, esc_html__('Inside lots', 'parking-management'), 1, ($info['type']['int'] === '1' && !$is_valet)),
+			$this->elem($div_class, esc_html__('Valet', 'parking-management'), 2, $is_valet),
 			$this->options($form['options'])
 		);
 	}
 
-	private function elem(string $div_class, string $title, int $parking_type, $enabled): string
+	private function elem(string $div_class, string $title, int $parking_type, bool $enabled): string
 	{
-		if ($enabled === '0')
+		if (!$enabled)
 			return '';
 		$info = $this->pm->prop('info');
 		$high_season = $this->pm->prop('high_season')['price'];
@@ -70,7 +68,7 @@ class Page implements IParkingmanagement
 				'<tr>',
 				'<th class="align-middle text-center bg-primary col-1">' . esc_html__("Number of days", 'parking-management') . '</th>',
 				'<th class="align-middle text-center bg-primary">' . esc_html__("Price", "parking-management") . '</th>',
-				($high_season !== '0') ? '<th class="align-middle text-center bg-warning col-4">'.esc_html__("High Season Price", 'parking-management').'</th>' : '',
+				($high_season !== '0') ? '<th class="align-middle text-center bg-warning col-4">' . esc_html__("High Season Price", 'parking-management') . '</th>' : '',
 				'</tr>',
 				'</thead>',
 				'<tbody>',
@@ -83,27 +81,47 @@ class Page implements IParkingmanagement
 
 	private function options(array $options): string
 	{
-			return Html::_div(
-				array('class' => 'col mt-5'),
-				'<h3 class="option">' . esc_html__("Options price", 'parking-management') . '</h3>',
-				Html::_ul(array('class' => 'list-group list-group-flush'),
-					Html::_li(array('class' => 'list-group-item'),
-						esc_html__("Shuffle with more than 4 persons", 'parking-management') . " <strong>{$options['shuttle']['price']} € / "
-						. esc_html__("person", 'parking-management') . "</strong>"
-					),
-					Html::_li(array('class' => 'list-group-item'),
-						esc_html__("Days late", 'parking-management') . " <strong>{$options['late']['price']} € / "
-						. esc_html__("person", 'parking-management') . "</strong>"
-					),
-					Html::_li(array('class' => 'list-group-item'),
-						esc_html__("Holidays (on leave and/or return)", 'parking-management') . " <strong>{$options['holiday']['price']} € / "
-						. esc_html__("person", 'parking-management') . "</strong>"
-					),
-					Html::_li(array('class' => 'list-group-item'),
-						esc_html__("Things forgotten in the vehicle", 'parking-management') . " <strong>{$options['forgetting']['price']} € / "
-						. esc_html__("person", 'parking-management') . "</strong>"
-					),
-				)
+		$ul_contents = [];
+		$is_valet = $this->kind === 'valet';
+		if (!$is_valet) {
+			$ul_contents[] = Html::_li(array('class' => 'list-group-item'),
+				esc_html__("Shuffle with more than 4 persons", 'parking-management') . " <strong>{$options['shuttle']['price']} € / "
+				. esc_html__("person", 'parking-management') . "</strong>"
 			);
+			$ul_contents[] = 				Html::_li(array('class' => 'list-group-item'),
+				esc_html__("Things forgotten in the vehicle", 'parking-management') . " <strong>{$options['forgetting']['price']} € / "
+				. esc_html__("person", 'parking-management') . "</strong>"
+			);
+		}
+		$ul_contents[] = Html::_li(array('class' => 'list-group-item'),
+			esc_html__("Days late", 'parking-management') . " <strong>{$options['late']['price']} € / "
+			. esc_html__("person", 'parking-management') . "</strong>"
+		);
+		$ul_contents[] = Html::_li(array('class' => 'list-group-item'),
+			esc_html__("Holidays (on leave and/or return)", 'parking-management') . " <strong>{$options['holiday']['price']} € / "
+			. esc_html__("person", 'parking-management') . "</strong>"
+		);
+
+		return Html::_div(
+			array('class' => 'col mt-5'),
+			'<h3 class="option">' . esc_html__("Options price", 'parking-management') . '</h3>',
+			Html::_ul(array('class' => 'list-group list-group-flush'),
+				...$ul_contents
+			)
+		);
+	}
+
+	/**
+	 * @throws Exception
+	 */
+	public function setKind(string $kind): void
+	{
+		$this->kind = $kind;
+		$info = $this->pm->prop('info');
+		$price = new Price($this->pm);
+		$price->setKind($kind);
+		$priceGrid = $price->priceGrid(Order::getSiteID($info['terminal']), 1, date('Y-m-d'), date('Y-m-d'));
+		$this->priceGrid = unserialize($priceGrid['grille']);
+
 	}
 }

@@ -22,6 +22,7 @@ require_once PKMGMT_PLUGIN_MODULES_DIR . DS . "price" . DS . "includes" . DS . "
 class Price implements IShortcode, IParkingmanagement
 {
 	private ParkingManagement $pm;
+	private string $kind;
 
 	public function __construct(ParkingManagement $pm)
 	{
@@ -33,6 +34,7 @@ class Price implements IShortcode, IParkingmanagement
 		try {
 			$this->enqueue();
 			$page = new Page($this->pm);
+			$page->setKind($this->kind);
 			return Html::_div(array('class' => 'container-md mt-5'),
 				$page->table(),
 			);
@@ -47,7 +49,7 @@ class Price implements IShortcode, IParkingmanagement
 	 * @param array|WP_REST_Request $data Request data containing booking details
 	 * @return array Price calculation results or empty array on error
 	 */
-	public static function getPrice(array|WP_REST_Request $data): array
+	public function getPrice(array|WP_REST_Request $data): array
 	{
 		try {
 
@@ -55,21 +57,12 @@ class Price implements IShortcode, IParkingmanagement
 			$info = $pm->prop('info');
 			$form = $pm->prop('form');
 			$high_season = $pm->prop('high_season');
-			$instance = new self($pm);
 
 			// Extract and validate dates
-			$start = substr($instance->getData($data, 'depart'), 0, 10);
-			$start_hour = substr($instance->getData($data, 'depart'), 11, 5);
-			$end = substr($instance->getData($data, 'retour'), 0, 10);
-			$end_hour = substr($instance->getData($data, 'retour'), 11, 5);
-			$kind = 'booking';
-
-			if (
-				(
-					($data instanceof WP_REST_Request && $data->has_param('parking_type')) ||
-					(is_array($data) && array_key_exists('parking_type', $data))
-				) && $data['parking_type'] == ParkingType::VALET->value)
-				$kind = 'valet';
+			$start = substr($this->getData($data, 'depart'), 0, 10);
+			$start_hour = substr($this->getData($data, 'depart'), 11, 5);
+			$end = substr($this->getData($data, 'retour'), 0, 10);
+			$end_hour = substr($this->getData($data, 'retour'), 11, 5);
 
 			if (!$start || !$end) {
 				Logger::error("price.getPrice.dates", [
@@ -90,8 +83,8 @@ class Price implements IShortcode, IParkingmanagement
 			$realNumberOfDay = $numberOfDay = Order::nbRealDay($start, $end);
 			// Get lot availability
 			$siteId = Order::getSiteID($info['terminal']);
-			$maxLot = Booked::getMaxLot($kind, $start, $end, $siteId);
-			$usedLot = Booked::usedLot($kind, $start, $end, $siteId);
+			$maxLot = Booked::getMaxLot($this->kind, $start, $end, $siteId);
+			$usedLot = Booked::usedLot($this->kind, $start, $end, $siteId);
 			$maxUsedLot = max($usedLot);
 
 			Logger::info("price.getPrice.lots", [
@@ -135,7 +128,7 @@ class Price implements IShortcode, IParkingmanagement
 			}
 
 			// Process vehicle type
-			$type_id = $instance->getData($data, 'type_id');
+			$type_id = $this->getData($data, 'type_id');
 			$type_id = !empty($type_id) && is_numeric($type_id) ? $type_id : '1';
 			if (!is_numeric($type_id)) {
 				$type_id = '1';
@@ -143,7 +136,7 @@ class Price implements IShortcode, IParkingmanagement
 			$type_id = VehicleType::fromInt((int)$type_id);
 
 			$site_id = Order::getSiteID($info['terminal'])->value;
-			$parking_type = ParkingType::fromInt((int)$instance->getData($data, 'parking_type'));
+			$parking_type = ParkingType::fromInt((int)$this->getData($data, 'parking_type'));
 
 			if ($type_id == VehicleType::TRUCK) {
 				$parking_type = ParkingType::OUTSIDE;
@@ -160,7 +153,7 @@ class Price implements IShortcode, IParkingmanagement
 
 			// Get price grid
 			try {
-				$priceGrid = self::priceGrid(Order::getSiteID($info['terminal']), $numberOfDay, $start, $end, $type_id, $parking_type);
+				$priceGrid = $this->priceGrid(Order::getSiteID($info['terminal']), $numberOfDay, $start, $end, $type_id, $parking_type);
 				$priceGrid = unserialize($priceGrid['grille']);
 			} catch (Exception $e) {
 				Logger::error("price.getPrice.priceGrid", [
@@ -182,14 +175,14 @@ class Price implements IShortcode, IParkingmanagement
 
 			// Apply holiday surcharge
 			try {
-				if (self::isHoliday($kind, $start)) {
+				if ($this->isHoliday($start)) {
 					$price['holiday'] = 1;
-					$price['total'] += self::get_extra_price($form['options']['holiday']);
+					$price['total'] += $this->get_extra_price($form['options']['holiday']);
 					Logger::info("price.getPrice.holiday", ['start_date' => $start]);
 				}
-				if (self::isHoliday($kind, $end)) {
+				if ($this->isHoliday($end)) {
 					$price['holiday'] = 1;
-					$price['total'] += self::get_extra_price($form['options']['holiday']);
+					$price['total'] += $this->get_extra_price($form['options']['holiday']);
 					Logger::info("price.getPrice.holiday", ['end_date' => $end]);
 				}
 			} catch (Exception $e) {
@@ -208,9 +201,9 @@ class Price implements IShortcode, IParkingmanagement
 				]);
 			}
 
-			$nb_pax = $instance->getData($data, 'nb_pax');
+			$nb_pax = $this->getData($data, 'nb_pax');
 			if (!empty($nb_pax) && $nb_pax > 4) {
-				$extra = ($nb_pax - 4) * self::get_extra_price($form['options']['shuttle']);
+				$extra = ($nb_pax - 4) * $this->get_extra_price($form['options']['shuttle']);
 				$price['total'] += $extra;
 				Logger::info("price.getPrice.passengers", [
 					'passengers' => $nb_pax,
@@ -218,8 +211,8 @@ class Price implements IShortcode, IParkingmanagement
 				]);
 			}
 
-			$night_start = self::night_extra($start_hour, $form['options']['night_extra_charge']);
-			$night_end = self::night_extra($end_hour, $form['options']['night_extra_charge']);
+			$night_start = $this->night_extra($start_hour, $form['options']['night_extra_charge']);
+			$night_end = $this->night_extra($end_hour, $form['options']['night_extra_charge']);
 			$price['total'] += $night_start + $night_end;
 
 			if ($night_start || $night_end) {
@@ -231,7 +224,7 @@ class Price implements IShortcode, IParkingmanagement
 				]);
 			}
 
-			$assurance_annulation = $instance->getData($data, 'assurance_annulation');
+			$assurance_annulation = $this->getData($data, 'assurance_annulation');
 			if (!empty($assurance_annulation) && ($assurance_annulation == '1')) {
 				$insurance_price = (int)$form['options']['cancellation_insurance']['price'];
 				$price['total'] += $insurance_price;
@@ -260,9 +253,9 @@ class Price implements IShortcode, IParkingmanagement
 	/**
 	 * @throws Exception
 	 */
-	public static function isHoliday(string $kind, string $date): bool
+	public function isHoliday(string $date): bool
 	{
-		$conn = database::connect($kind);
+		$conn = database::connect($this->kind);
 		if ($conn === false)
 			throw new Exception("Database connection failed");
 		if ($row = $conn->get_row(
@@ -277,13 +270,10 @@ class Price implements IShortcode, IParkingmanagement
 	/**
 	 * @throws Exception
 	 */
-	public static function priceGrid(Airport $site = Airport::ORLY, $numberOfDay = 0, $start = NULL, $end = NULL, VehicleType $type_id = VehicleType::CAR, ParkingType $parking_type = ParkingType::OUTSIDE): array
+	public function priceGrid(Airport $site = Airport::ORLY, $numberOfDay = 0, $start = NULL, $end = NULL, VehicleType $type_id = VehicleType::CAR, ParkingType $parking_type = ParkingType::OUTSIDE): array
 	{
-		$kind = 'booking';
-		if ($parking_type === ParkingType::VALET)
-			$kind = 'valet';
 		$site_id = $site->value;
-		$conn = database::connect($kind);
+		$conn = database::connect($this->kind);
 		if ($conn === false) {
 			Logger::error("price.priceGrid", database::getError());
 			throw new Exception("Database connection failed");
@@ -327,7 +317,7 @@ class Price implements IShortcode, IParkingmanagement
 		return $day - 1;
 	}
 
-	private static function night_extra($hour, $night_extra_charge): int
+	private function night_extra($hour, $night_extra_charge): int
 	{
 		if ($night_extra_charge['enabled'] === '1') {
 			$hour = (int)str_replace(":", "", $hour);
@@ -337,7 +327,7 @@ class Price implements IShortcode, IParkingmanagement
 		return 0;
 	}
 
-	private static function get_extra_price($option): int
+	private function get_extra_price($option): int
 	{
 		if ($option['enabled'] === '1') {
 			return $option['price'];
@@ -365,7 +355,7 @@ class Price implements IShortcode, IParkingmanagement
 
 	public function setKind(string $kind): void
 	{
-		// TODO: Implement setKind() method.
+		$this->kind = $kind;
 	}
 }
 

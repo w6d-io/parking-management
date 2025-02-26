@@ -13,9 +13,11 @@ class Vehicle
 
 	private array $data;
 	private wpdb $conn;
+	private string $kind;
 
 	public function __construct(string $kind)
 	{
+		$this->kind = $kind;
 		if (!$conn = database::connect($kind)) {
 			Logger::error("member.database.connect", database::getError());
 			return;
@@ -33,7 +35,10 @@ class Vehicle
 			throw new Exception("vehicle creation failed: order_id required");
 		if ($vehicule_id = $this->isExists($order_id))
 			return $vehicule_id;
-		$price = Price::getPrice($this->data);
+
+		$priceInstance = new Price(getParkingManagementInstance());
+		$priceInstance->setKind($this->kind);
+		$price = $priceInstance->getPrice($this->data);
 		$params = array(
 			'commande_id' => $order_id
 		, 'type_id' => $this->getData('type_id')
