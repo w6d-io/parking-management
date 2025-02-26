@@ -333,6 +333,7 @@ class Form
 				),
 			),
 		];
+		$content[] = Html::_index('hidden', 'kind', 'kind', ['value' => $this->kind]);
 		if ($this->kind === 'valet') {
 			$content[] = Html::_index('hidden', 'type_id', 'type_id', ['value' => VehicleType::CAR->value]);
 		} else {

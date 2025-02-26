@@ -38,13 +38,18 @@ class PriceAPI extends API
 							'type' => "string",
 							'required' => true,
 						),
+						'kind' => [
+							'description' => "The kind of the price",
+							'type' => "string",
+							'required' => true,
+						],
 						'nb_pax' => array(
 							'description' => "Number of passenger",
 							'type' => "int",
 							'required' => false,
 						),
 						'type_id' => array(
-							'description' => "Parking type",
+							'description' => "Vehicle type",
 							'type' => "int",
 							'required' => false,
 						),
@@ -75,7 +80,19 @@ class PriceAPI extends API
 			]
 		]);
 		try {
-			$data = Price::getPrice($request);
+			$kind = $request->get_param('kind');
+			if ($kind === null) {
+				Logger::error("price.api.create_item", ["message" => "missing kind"]);
+				return new WP_Error(
+					'price-notification-error',
+					'Missing parameter',
+					array('status' => WP_Http::BAD_REQUEST)
+				);
+			}
+			$pm = getParkingManagementInstance();
+			$price = new Price($pm);
+			$price->setKind($kind);
+			$data = $price->getPrice($request);
 		} catch (Exception $e) {
 			Logger::error("price.api.get_item", $e->getMessage());
 			return new WP_Error('error', $e->getMessage());

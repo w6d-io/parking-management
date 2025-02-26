@@ -112,7 +112,9 @@ class Order
 		);
 		$referer = parse_url($_SERVER['HTTP_REFERER']);
 		$referer_host = array_key_exists('host', $referer) ? $referer['host'] : NULL;
-		$price = Price::getPrice($this->data);
+		$priceInstance = new Price($this->pm);
+		$priceInstance->setKind($this->kind);
+		$price = $priceInstance->getPrice($this->data);
 
 		$payment = new Payment($this->pm);
 		$payment->setKind($this->kind);
