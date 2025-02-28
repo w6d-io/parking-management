@@ -117,10 +117,16 @@ class Pages
 			"[parking-management type='form' kind='valet']"
 		);
 		echo self::_shortcode_field(
-			'shortcode-home-form',
-			'shortcode-home-form',
+			'shortcode-home-form-booking',
+			'shortcode-home-form-booking',
 			esc_html__("Copy and paste this code into your page to include home booking form.", 'parking-management'),
-			"[parking-management type='home-form']"
+			"[parking-management type='home-form' kind='booking']"
+		);
+		echo self::_shortcode_field(
+			'shortcode-home-form-valet',
+			'shortcode-home-form-valet',
+			esc_html__("Copy and paste this code into your page to include home valet form.", 'parking-management'),
+			"[parking-management type='home-form' kind='valet']"
 		);
 		echo self::_shortcode_field(
 			'shortcode-price-booking',

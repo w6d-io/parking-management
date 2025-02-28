@@ -49,8 +49,11 @@ class controller
 		$post = array_merge($_GET, $_POST);
 		$pm = getParkingManagementInstance();
 		$form = $pm->prop('form');
-		$booking_page = $form['booking_page']['value'];
-		$url = sprintf($booking_page."?parking_type=0&depart=%s 00:00&retour=%s 00:00", $post['depart'], $post['retour']);
+		$page = match ($post['kind']){
+			'booking' => $form['booking_page']['value'],
+			'valet' => $form['valet_page']['value'],
+		};
+		$url = sprintf($page."?parking_type=0&depart=%s 00:00&retour=%s 00:00", $post['depart'], $post['retour']);
 		wp_redirect($url);
 		exit(0);
 	}
