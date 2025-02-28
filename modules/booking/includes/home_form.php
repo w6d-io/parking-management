@@ -59,6 +59,9 @@ class HomeForm
 		$contents[] = Html::_index('hidden', 'pkmgmt_action', 'pkmgmt_action', array('value' => 'home-form'));
 		$contents[] = Html::_index('hidden', 'type_id', 'type_id', array('value' => '1'));
 		$contents[] = Html::_index('hidden', 'kind', 'kind', array('value' => $kind));
+		if ($kind === 'valet') {
+			$contents[] = Html::_index('hidden', 'parking_type', 'parking_type', array('value' => '2'));
+		}
 		$contents[] = Html::_index('hidden', 'site_id', 'site_id', array('value' => Order::getSiteID($info['terminal'])->value));
 		$contents[] = Html::_index('hidden', 'aeroport', 'aeroport', array('value' => Order::getSiteID($info['terminal'])->value));
 		return implode("", $contents);
