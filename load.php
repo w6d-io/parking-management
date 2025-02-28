@@ -143,6 +143,9 @@ function pkmgmt_upgrade(): void
 	if (version_compare($old_version, '4.0.0', '<')) {
 		pkmgmt_migrate_3_7_to_4_0();
 	}
+	if (version_compare($old_version, '4.2.1', '<')) {
+		pkmgmt_migrate_to_4_2_1();
+	}
 
 	do_action('pkmgmt_upgrade', $old_version, $new_version);
 	PKMGMT::update_option('version', $new_version);
@@ -294,7 +297,7 @@ function pkmgmt_migrate_3_6_to_3_7(): void
 		'password' => ""
 	];
 	$props['form']['valet']['redirect-to-provider'] = '0';
-	$props['notification']['valet'] =  [
+	$props['notification']['valet'] = [
 		'host' => [
 			'title' => 'Host',
 			'type' => 'text',
@@ -423,6 +426,23 @@ function pkmgmt_migrate_3_7_to_4_0(): void
 	}
 
 }
+
+function pkmgmt_migrate_to_4_2_1(): void
+{
+	$pm = getParkingManagementInstance();
+	if (!$pm)
+		return;
+	$props = $pm->get_properties();
+	if (!array_key_exists('valet', $props['form']['type']))
+		$props['form']['type']['valet'] = 0;
+	$pm->set_properties($props);
+	try {
+		$pm->save();
+	} catch (Exception $e) {
+		Logger::error("migrate.to.4.2.1", $e->getMessage());
+	}
+}
+
 add_action('activate_' . PKMGMT_PLUGIN_BASENAME, 'pkmgmt_install', 9, 0);
 
 
