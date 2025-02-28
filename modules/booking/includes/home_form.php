@@ -52,13 +52,13 @@ class HomeForm
 		$this->enqueue($pm);
 	}
 
-	public function hidden(ParkingManagement $pm): string
+	public function hidden(ParkingManagement $pm, string $kind): string
 	{
 		$info = $pm->prop('info');
 		$contents = array();
 		$contents[] = Html::_index('hidden', 'pkmgmt_action', 'pkmgmt_action', array('value' => 'home-form'));
 		$contents[] = Html::_index('hidden', 'type_id', 'type_id', array('value' => '1'));
-		$contents[] = Html::_index('hidden', 'kind', 'kind', array('value' => 'booking'));
+		$contents[] = Html::_index('hidden', 'kind', 'kind', array('value' => $kind));
 		$contents[] = Html::_index('hidden', 'site_id', 'site_id', array('value' => Order::getSiteID($info['terminal'])->value));
 		$contents[] = Html::_index('hidden', 'aeroport', 'aeroport', array('value' => Order::getSiteID($info['terminal'])->value));
 		return implode("", $contents);

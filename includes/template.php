@@ -33,7 +33,8 @@ class Template
 			],
 			'type' => [
 				'ext' => 0,
-				'int' => 0
+				'int' => 0,
+				'valet' => 0,
 			],
 			'logs' => [
 				'database' => '0',
@@ -201,10 +202,10 @@ class Template
 				'password' => ""
 			],
 			'payment' => [
+				'enabled' => "0",
 				'valid-on-payment' => '0',
 				'redirect-to-provider' => '0',
 				'name' => 'payplug',
-				'enabled' => "0",
 				'active-test' => '0',
 				'properties' => self::payment_properties(),
 			],

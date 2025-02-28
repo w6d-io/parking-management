@@ -94,7 +94,7 @@ class Booking implements IShortcode, IParkingManagement
 			Html::_div(array('class' => 'row'),
 				Html::_div(array('class' => 'col-12'),
 					Html::_form('quote', 'quote', 'post', '', array(),
-						$home_form->hidden($this->pm),
+						$home_form->hidden($this->pm, $this->kind),
 						Html::_div(array('class' => 'row row-cols-3'),
 							$home_form->quote($this->pm),
 						)
