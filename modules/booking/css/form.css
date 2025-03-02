@@ -361,6 +361,109 @@ form#reservation select.form-select {
 }
 
 /*
+** custom select
+ */
+
+div.btn-group > span.input-group-text {
+	border-radius: 0;
+}
+
+button.btn-time, button.btn-time:hover, button.btn-time:focus {
+	background-color: #ffffff;
+	color: #888d93;
+	border-radius: 0.357rem;
+	border: 1px solid #dee2e6;
+	font-size: 1em;
+	font-weight: 700;
+	font-style: normal;
+	line-height: 1.5em;
+	height: 42px;
+	padding-left: 0.9em;
+	cursor: default;
+	width: 100%;
+}
+
+.time-icon {
+	margin-right: 8px;
+	opacity: 0.7;
+}
+
+.dropdown-toggle .button-content {
+	display: flex;
+	align-items: center;
+	justify-content: flex-start;
+	width: 100%;
+}
+
+.selected-text {
+	flex-grow: 1;
+	text-align: left;
+}
+
+.height-limited-dropdown .dropdown-menu {
+	max-height: 200px;
+	overflow-y: auto;
+	padding-left: 0.9em;
+}
+
+.scrollable-dropdown.dropdown {
+	position: relative;
+}
+
+.scrollable-dropdown .dropdown-menu {
+	margin-top: 0 !important;
+}
+.scrollable-dropdown .dropdown-menu {
+	top: calc(100% - 1px) !important;
+}
+.scrollable-dropdown .dropdown-menu {
+	inset-inline: 0 !important;
+	min-width: 100% !important;
+}
+
+.height-limited-dropdown .dropdown-menu::-webkit-scrollbar {
+	width: 6px;
+}
+
+.height-limited-dropdown .dropdown-menu::-webkit-scrollbar-track {
+	background: #f1f1f1;
+	border-radius: 3px;
+}
+
+.height-limited-dropdown .dropdown-menu::-webkit-scrollbar-thumb {
+	background: #adb5bd;
+	border-radius: 3px;
+}
+
+.height-limited-dropdown .dropdown-menu::-webkit-scrollbar-thumb:hover {
+	background: #6c757d;
+}
+
+.height-limited-dropdown .dropdown-menu {
+	scrollbar-width: thin;
+	scrollbar-color: #adb5bd #f1f1f1;
+}
+
+.height-limited-dropdown .dropdown-item {
+	padding: 0.5rem 1rem;
+	cursor: default;
+}
+
+.height-limited-dropdown .dropdown-item:active,
+.height-limited-dropdown .dropdown-item.active {
+	background-color: #0d6efd;
+	color: white;
+}
+
+.height-limited-dropdown .dropdown-item:hover {
+	background-color: #f8f9fa;
+}
+
+.height-limited-dropdown {
+	width: 280px;
+}
+
+/*
 ** radio
  */
 

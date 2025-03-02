@@ -48,6 +48,11 @@ class Html
 		return '<li ' . self::array_to_html_attribute($args) . '>' . implode(PHP_EOL, $contents) . '</li>';
 	}
 
+	public static function _a($args, ...$contents): string
+	{
+		return '<a ' . self::array_to_html_attribute($args) . '>' . implode(PHP_EOL, $contents) . '</a>';
+	}
+
 	public static function _password(string $id, string $name, array $div_args, array $args): string
 	{
 		return Html::_div($div_args,
@@ -164,6 +169,74 @@ class Html
 				],
 			)
 		);
+	}
+
+	// TODO: Add max-height in CSS file
+	public static function _dropdown(string $id, string $name, string $placeholder, string $button_class, array $options, string $value): string
+	{
+		// 				<div class="btn-group w-100">
+		//                    <span class="input-group-text">
+		//                        <i class="bi bi-clock time-icon"></i>
+		//                    </span>
+		//					<button class="btn ${settings.buttonClass} dropdown-toggle w-100 d-flex justify-content-between align-items-center"
+		//							type="button"
+		//							id="${buttonId}"
+		//							data-bs-toggle="dropdown"
+		//							aria-expanded="false">
+		//						<span id="${textId}">${settings.placeholder}</span>
+		//					</button>
+		//					<ul class="dropdown-menu" aria-labelledby="${buttonId}" style="max-height: ${settings.maxHeight}px;">
+		//						${options.map(option =>
+		//			`<li><a class="dropdown-item" href="#" data-value="${option.value}">${option.label}</a></li>`
+		//		).join('')}
+		//					</ul>
+		//
+		//					<input type="hidden" id="${inputId}" name="${settings.name}" value="">
+		//				</div>
+
+		$contents = [];
+		foreach ($options as $key => $option) {
+
+			$contents[] = self::_li([],
+				self::_a(
+					[
+						'class' => 'dropdown-item',
+						'href' => '#',
+						'data-value' => $option['value'],
+					],
+					$option['label'],
+				),
+			);
+		}
+		return self::_div(
+			['class' => 'btn-group w-100'],
+			self::_span(
+				['class' => 'input-group-text'],
+				'<i class="bi bi-clock time-icon"></i>',
+			),
+			self::_button(
+				[
+					'class' => 'btn ' . $button_class . ' dropdown-toggle w-100 d-flex justify-content-between align-items-center',
+					'type' => 'button',
+					'id' => $id . '-button',
+					'data-bs-toggle' => 'dropdown',
+					'aria-expanded' => 'false',
+				],
+				self::_span(
+					['id' => $id . '-span'],
+					$placeholder,
+				)
+			),
+			self::_ul(
+				[
+					'class' => 'dropdown-menu',
+					'aria-labelledby' => $id . '-button'
+				],
+				...$contents
+			),
+			self::_index('hidden', $id, $name, ['value' => $value])
+		);
+
 	}
 
 }

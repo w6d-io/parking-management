@@ -205,6 +205,7 @@ class Form
 		wp_enqueue_style('parking-management-booking', pkmgmt_plugin_url('modules/booking/css/form.css'));
 		wp_enqueue_style('font-awesome', 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css', array(), '6.0.0-beta3');
 		wp_enqueue_style('bootstrap', 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css', array(), '5.3.3');
+		wp_enqueue_style('bootstrap-icon', 'https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css', array(), '1.11.1');
 		wp_enqueue_style('parking-management-easepick', 'https://cdn.jsdelivr.net/npm/@easepick/bundle@1.2.1/dist/index.css');
 		wp_enqueue_style('parking-management-jquery-ui', 'https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.14.1/themes/base/jquery-ui.min.css');
 		wp_enqueue_style('parking-management-intl-tel-input', 'https://cdn.jsdelivr.net/npm/intl-tel-input@23.1.0/build/css/intlTelInput.css');
@@ -216,6 +217,7 @@ class Form
 		wp_enqueue_script('parking-management-intl-tel-input', 'https://cdn.jsdelivr.net/npm/intl-tel-input@23.1.0/build/js/intlTelInput.min.js', array('parking-management-jquery'));
 		wp_enqueue_script('parking-management-easepick', 'https://cdn.jsdelivr.net/npm/@easepick/bundle@1.2.1/dist/index.umd.min.js');
 		wp_enqueue_script('parking-management-luxon', 'https://cdn.jsdelivr.net/npm/luxon/build/global/luxon.min.js');
+		wp_enqueue_script('parking-management-dropdown', pkmgmt_plugin_url('modules/booking/js/dropdown.js'), array(), '', false);
 		wp_enqueue_script(
 			'parking-management-booking',
 			pkmgmt_plugin_url('modules/booking/js/form.js'),
@@ -227,6 +229,7 @@ class Form
 				'parking-management-easepick',
 				'parking-management-luxon',
 				'parking-management-intl-tel-input',
+				'parking-management-dropdown',
 			),
 			PKMGMT_VERSION);
 		$properties = $this->pm->get_properties();
@@ -470,6 +473,15 @@ class Form
 	private function common_trip(ParkingManagement $pm): array
 	{
 		$post = array_merge($_GET, $_POST);
+
+		if (!array_key_exists('depart', $post) || empty($post['depart'])) {
+			$post['depart'] = currentDateTimeRounded();
+		}
+		if (!array_key_exists('retour', $post) || empty($post['retour'])) {
+			$post['retour'] = currentDateTimeRounded();
+		}
+		list($depart_date, $depart_time) = explode(' ', $post['depart']);
+		list($retour_date, $retour_time) = explode(' ', $post['retour']);
 		return [
 			self::_row_field('destination',
 				self::_label('destination', esc_html__('Destination', 'parking-management')),
@@ -551,12 +563,45 @@ class Form
 								'depart',
 								esc_html__('Dropping off at', 'parking-management')
 							),
-							Html::_index('text', 'depart', 'depart', array(
-								'class' => 'departure regular required border rounded form-control py-2',
-								'autocomplete' => 'off',
-								'tabindex' => "12",
-								'value' => $post['depart'] ?? '',
-							)),
+							Html::_index('hidden', 'depart', 'depart', array('value' => $post['depart'])),
+							Html::_div(
+								['class' => 'row'],
+								Html::_div(
+									['class' => 'col'],
+									Html::_div(
+										['class' => 'input-group mb-3'],
+										Html::_span(
+											['class' => 'input-group-text', 'id' => 'span-depart-date'],
+											'<i class="bi bi-calendar-date"></i>',
+										),
+										Html::_index('text', 'departure-date', 'departure[date]', array(
+												'class' => 'departure regular required border form-control py-2',
+												'aria-describedby' => 'span-depart-date',
+												'autocomplete' => 'off',
+												'tabindex' => "12",
+												'value' => $depart_date ?? '',
+											)
+										),
+										Html::_div(
+											[
+												'id' => 'div-departure-time',
+												'class' => 'height-limited-dropdown dropdown',
+											],
+											Html::_dropdown(
+												'departure-time',
+												'departure[time]',
+												'HH:MM',
+												'btn-time',
+												generateTimeArray(),
+												$depart_time
+											)
+										),
+									),
+								),
+//								Html::_div(
+//									['class' => 'col'],
+//								),
+							),
 
 						),
 						Html::_div(
@@ -569,7 +614,7 @@ class Form
 								esc_html__('Landing at the airport', 'parking-management')
 							),
 							Html::_index('text', 'retour', 'retour', array(
-								'class' => 'return regular required border rounded form-control py-2',
+								'class' => 'arrival return regular required border rounded form-control py-2',
 								'autocomplete' => 'off',
 								'tabindex' => "-1",
 								'value' => $post['retour'] ?? '',
