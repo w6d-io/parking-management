@@ -46,7 +46,9 @@ document.addEventListener('DOMContentLoaded', function () {
 			}
 		});
 	}
+
 	getPrice();
+
 	function switchSubmitBtn() {
 		if (
 			parseInt($('#total_amount').val()) > 0
@@ -64,6 +66,24 @@ document.addEventListener('DOMContentLoaded', function () {
 		getPrice();
 	})
 
+	const timeOptions = generateTimeOptions();
+
+	const timeDropdown = initCustomDropdown('div-departure-time', 'departure-time', {
+		placeholder: 'HH:MM',
+		onChange: (value, text) => {
+			console.log(`Time selected: ${text}`);
+		}
+	});
+	// const timeDropdown = createCustomDropdown('div-departure-time', timeOptions, {
+	// 	placeholder: 'HH:MM',
+	// 	name: 'departure-time',
+	// 	maxHeight: 250,
+	// 	buttonClass: 'btn-time',
+	// 	onChange: (value, text) => {
+	// 		console.log(`Time selected: ${text}`);
+	// 	}
+	// });
+
 	// Date picker
 	const DateTime = easepick.DateTime;
 	let highSeason = [];
@@ -76,8 +96,7 @@ document.addEventListener('DOMContentLoaded', function () {
 			console.error("get high season failed", f);
 		},
 		success: function (data) {
-			if (data instanceof Array)
-			{
+			if (data instanceof Array) {
 				highSeason = data.map(d => {
 					if (d instanceof Array) {
 						const start = new DateTime(d[0], 'YYYY-MM-DD');
@@ -100,8 +119,7 @@ document.addEventListener('DOMContentLoaded', function () {
 			console.error("get booked failed", f);
 		},
 		success: function (data) {
-			if (data instanceof Array)
-			{
+			if (data instanceof Array) {
 				bookedDates = data.map(d => {
 					if (d instanceof Array) {
 						const start = new DateTime(d[0], 'YYYY-MM-DD');
@@ -113,6 +131,7 @@ document.addEventListener('DOMContentLoaded', function () {
 			}
 		}
 	});
+
 	function syncValues(source, target) {
 		$(target).val($(source).val());
 	}
@@ -141,7 +160,7 @@ document.addEventListener('DOMContentLoaded', function () {
 				picker.on('view', (evt) => {
 
 					const {view, date, target} = evt.detail;
-					if ( view === 'CalendarDay' && date.inArray(highSeason, '[]') ) {
+					if (view === 'CalendarDay' && date.inArray(highSeason, '[]')) {
 						target.classList.add('high-season');
 					}
 					// target.append();
@@ -170,6 +189,45 @@ document.addEventListener('DOMContentLoaded', function () {
 		});
 	}
 
+	function easepickCreate2(DateInput, calendars, callback) {
+		return new easepick.create({
+			element: DateInput,
+			lang: 'fr-FR',
+			autoApply: true,
+			locale: {
+				apply: "OK"
+			},
+			calendars: calendars,
+			grid: calendars,
+			plugins: ['LockPlugin'],
+			css: [
+				'https://cdn.jsdelivr.net/npm/@easepick/bundle@1.2.1/dist/index.css',
+				external_object.form_css,
+			],
+			format: 'YYYY-MM-DD',
+			zIndex: 50,
+			setup(picker) {
+				picker.on('select', () => {
+					callback();
+				});
+				picker.on('view', (evt) => {
+					const {view, date, target} = evt.detail;
+					if (view === 'CalendarDay' && date.inArray(highSeason, '[]')) {
+						target.classList.add('high-season');
+					}
+				});
+
+			},
+			LockPlugin: {
+				minDate: new Date(),
+				inseparable: false,
+				filter(date) {
+					return date.inArray(bookedDates, '[]');
+				},
+			}
+		});
+	}
+
 	function initializeDateTimePickers() {
 
 		$('#depart').each(function () {
@@ -186,6 +244,30 @@ document.addEventListener('DOMContentLoaded', function () {
 				}
 			);
 		});
+
+		// const arrival = easepickCreate2(
+		// 	$('.arrival').get(0),
+		// 	2,
+		// 	function () {
+		// 	}
+		// );
+		const departure = easepickCreate2(
+			$('.departure').get(0),
+			2,
+			function () {
+				getPrice();
+				if (external_object.form_options.dialog_confirmation === '1') {
+					syncValues('#depart', '#depart2');
+					syncValues('#retour', '#retour2');
+				}
+				// console.log('departure',$('input[name=departure-time]').val());
+				const departure_time = $('input[name=departure-time]');
+				if (departure_time.val() === '') {
+					console.log($('#departure-time > div > button')[0]);
+					bootstrap.Dropdown.getOrCreateInstance($('#departure-time > div > button')[0]).toggle();
+				}
+			}
+		);
 	}
 
 	initializeDateTimePickers();

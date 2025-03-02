@@ -1,5 +1,6 @@
 <?php
 
+use ParkingManagement\Logger;
 use ParkingManagement\ParkingManagement;
 use enshrined\svgSanitize\Sanitizer;
 
@@ -278,6 +279,51 @@ function inline_svg($file_path)
 		return sanitize_svg($svg);
 	}
 	return 'SVG not found';
+}
+
+function currentDateTimeRounded(): string
+{
+	$datetime_obj = new DateTime();
+	Logger::debug('currentDateTimeRounded', ['datetime' => $datetime_obj]);
+	try {
+		$minutes = (int)$datetime_obj->format('i');
+		$roundedMinutes = ceil($minutes / 15) * 15;
+		if ($roundedMinutes == 60) {
+			$datetime_obj->modify('+1 hour');
+			$datetime_obj->setTime(
+				(int)$datetime_obj->format('H'),
+				0
+			);
+		} else {
+			$datetime_obj->setTime(
+				(int)$datetime_obj->format('H'),
+				$roundedMinutes
+			);
+		}
+	}
+	catch (\Exception $e) {
+		Logger::error('currentDateTimeRounded', $e->getMessage());
+		$datetime_obj = new DateTime();
+	}
+	return $datetime_obj->format('Y-m-d H:i');
+}
+
+function generateTimeArray(): array {
+	$timeArray = [];
+
+	for ($hour = 0; $hour < 24; $hour++) {
+		for ($minute = 0; $minute < 60; $minute += 15) {
+			$formattedHour = str_pad($hour, 2, '0', STR_PAD_LEFT);
+			$formattedMinute = str_pad($minute, 2, '0', STR_PAD_LEFT);
+			$timeString = "$formattedHour:$formattedMinute";
+			$timeArray[] = [
+				'value' => $timeString,
+				'label' => $timeString
+			];
+		}
+	}
+
+	return $timeArray;
 }
 
 function isEmptyOrTrue(mixed $value): bool
