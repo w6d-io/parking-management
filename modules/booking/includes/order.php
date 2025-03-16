@@ -238,6 +238,9 @@ class Order
 	 */
 	public function confirmed(int $order_id): void
 	{
+		$order = $this->read($order_id);
+		if ($order['status'] === OrderStatus::PAID->value)
+			return;
 		if ( $this->conn->update(
 			'tbl_commande',
 			[
@@ -262,7 +265,7 @@ class Order
 			'tbl_commande',
 			[
 				'annulation' => 1,
-				'status' => OrderStatus::CONFIRMED->value,
+				'status' => OrderStatus::PENDING->value,
 			],
 			[
 				'id_commande' => $order_id

@@ -84,7 +84,7 @@ class MyPos implements IPayment
 
 			$success_url = $this->properties['success_page']['value'] . '?from=provider&order_id=' . $this->order_id;
 			$cancel_url = $this->properties['cancel_page']['value'] . '?order_id=' . $this->order_id;
-			$notify_url = home_url() . "/wp-json/pkmgmt/v1/mypos/ipn?kind={$this->kind}";
+			$notify_url = home_url() . "/wp-json/pkmgmt/v1/mypos/ipn?kind={$this->kind}&order_id={$this->order_id}";
 			if ($this->properties['notification_url']['value'] !== '')
 				$notify_url = $this->properties['notification_url']['value'];
 
