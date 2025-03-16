@@ -262,7 +262,7 @@ class Order
 			'tbl_commande',
 			[
 				'annulation' => 1,
-				'status' => OrderStatus::CONFIRMED->value,
+				'status' => OrderStatus::PENDING->value,
 			],
 			[
 				'id_commande' => $order_id

@@ -1,193 +1,82 @@
+function switchSubmitBtn() {
+	if (
+		parseInt($('#total_amount').val()) > 0
+		&& (external_object.form_options.terms_and_conditions == '0' || $('#cgv_reservation').is(':checked'))
+	)
+		$("#submit").removeAttr("disabled");
+	else
+		$("#submit").attr("disabled", "disabled");
+}
+
+function priceSuccess(data) {
+	if (data.toolong === 0) {
+		if (data.complet === 0) {
+			const total = parseInt(!isNaN(parseFloat(data.total)) ? data.total : '0');
+			$('#total_amount').val(total);
+			$('div.total span').html(total + ' €');
+
+		} else {
+			console.error(data.complet);
+			$('#total_amount').val('0');
+			$('div.total span').html('0 €');
+		}
+	} else {
+		console.log(data);
+		$('#total_amount').val('0');
+		$('div.total span').html('0 €');
+	}
+	switchSubmitBtn();
+}
+
+function showDropdown(buttonId) {
+	const dtb = document.getElementById(buttonId);
+	bootstrap.Dropdown.getOrCreateInstance(dtb).show();
+}
+
 document.addEventListener('DOMContentLoaded', function () {
 
-	function loadScript(url) {
-		const script = document.createElement("script");
-		script.type = "text/javascript";
-		script.src = url;
-		document.getElementsByTagName("head")[0].appendChild(script);
-	}
-
-	// Price
-	function getPrice() {
-		if (
-			$('#depart').val().length === 0
-			|| $('#retour').val().length === 0
-		)
-			return;
-		// On fait la liste des options dans une variables javascript
-		$.ajax({
-			type: 'GET',
-			url: '/wp-json/pkmgmt/v1/prices',
-			data: $('#reservation').serialize(),
-			processData: true,
-			dataType: 'json',
-			async: false,
-			error: function (e, f, g) {
-				console.error("get price failed", f);
-			},
-			success: function (data) {
-				if (data.toolong === 0) {
-					if (data.complet === 0) {
-						const total = parseInt(!isNaN(parseFloat(data.total)) ? data.total : '0');
-						$('#total_amount').val(total);
-						$('div.total span').html(total + ' €');
-
-					} else {
-						console.error(data.complet);
-						$('#total_amount').val('0');
-						$('div.total span').html('0 €');
-					}
-				} else {
-					console.error(data.toolong);
-					$('#total_amount').val('0');
-					$('div.total span').html('0 €');
-				}
-				switchSubmitBtn();
-			}
-		});
-	}
-
-	getPrice();
-
-	function switchSubmitBtn() {
-		if (
-			parseInt($('#total_amount').val()) > 0
-			&& (external_object.form_options.terms_and_conditions == '0' || $('#cgv_reservation').is(':checked'))
-		)
-			$("#submit").removeAttr("disabled");
-		else
-			$("#submit").attr("disabled", "disabled");
-	}
+	getPrice('reservation', {onSuccess: priceSuccess});
 
 	$('#cgv_reservation').on('change', function () {
 		switchSubmitBtn($(this).is(':checked'))
 	});
+
 	$('#depart, #return, #nb_pax, #assurance_annulation, input.type-id, input.parking-type').on('change', function () {
-		getPrice();
+		getPrice('reservation', {onSuccess: priceSuccess});
 	})
 
-	const timeOptions = generateTimeOptions();
+	const retourConfig = {
+		dateField: '#return-date',
+		timeField: '#return-time',
+		targetField: '#retour'
+	};
+	const departConfig = {
+		dateField: '#departure-date',
+		timeField: '#departure-time',
+		targetField: '#depart'
+	};
 
-	const timeDropdown = initCustomDropdown('div-departure-time', 'departure-time', {
-		placeholder: 'HH:MM',
-		onChange: (value, text) => {
-			console.log(`Time selected: ${text}`);
-		}
-	});
-	// const timeDropdown = createCustomDropdown('div-departure-time', timeOptions, {
-	// 	placeholder: 'HH:MM',
-	// 	name: 'departure-time',
-	// 	maxHeight: 250,
-	// 	buttonClass: 'btn-time',
-	// 	onChange: (value, text) => {
-	// 		console.log(`Time selected: ${text}`);
-	// 	}
-	// });
 
-	// Date picker
-	const DateTime = easepick.DateTime;
-	let highSeason = [];
-	$.ajax({
-		type: 'GET',
-		url: '/wp-json/pkmgmt/v1/high-season',
-		dataType: 'json',
-		async: false,
-		error: function (e, f, g) {
-			console.error("get high season failed", f);
-		},
-		success: function (data) {
-			if (data instanceof Array) {
-				highSeason = data.map(d => {
-					if (d instanceof Array) {
-						const start = new DateTime(d[0], 'YYYY-MM-DD');
-						const end = new DateTime(d[1], 'YYYY-MM-DD');
-						return [start, end];
-					}
-					return new DateTime(d, 'YYYY-MM-DD');
-				});
-			}
-		}
-	});
-
-	let bookedDates = [];
-	$.ajax({
-		type: 'GET',
-		url: '/wp-json/pkmgmt/v1/booked',
-		dataType: 'json',
-		async: false,
-		error: function (e, f, g) {
-			console.error("get booked failed", f);
-		},
-		success: function (data) {
-			if (data instanceof Array) {
-				bookedDates = data.map(d => {
-					if (d instanceof Array) {
-						const start = new DateTime(d[0], 'YYYY-MM-DD');
-						const end = new DateTime(d[1], 'YYYY-MM-DD');
-						return [start, end];
-					}
-					return new DateTime(d, 'YYYY-MM-DD');
-				});
-			}
-		}
-	});
+    // Date picker
+	const dateTime = easepick.DateTime;
+	const highSeason = getHighSeason();
+	const bookedDates = getBookedDates();
 
 	function syncValues(source, target) {
 		$(target).val($(source).val());
 	}
 
-	function easepickCreate(startDateInput, endDateInput, calendars, callback) {
-		new easepick.create({
-			element: startDateInput,
-			lang: 'fr-FR',
-			autoApply: false,
-			locale: {
-				apply: "OK"
+	function easepickCreate2(DateInput, calendars, config = {}) {
+		const defaults = {
+			onSelect: function () {
 			},
-			calendars: calendars,
-			grid: calendars,
-			plugins: ['RangePlugin', 'LockPlugin', 'TimePlugin'],
-			css: [
-				'https://cdn.jsdelivr.net/npm/@easepick/bundle@1.2.1/dist/index.css',
-				external_object.form_css,
-			],
-			format: 'YYYY-MM-DD HH:mm',
-			zIndex: 50,
-			setup(picker) {
-				picker.on('select', () => {
-					callback();
-				});
-				picker.on('view', (evt) => {
-					const {view, date, target} = evt.detail;
-					if (view === 'CalendarDay' && date.inArray(highSeason, '[]')) {
-						target.classList.add('high-season');
-					}
-					// target.append();
-				});
+			onClear: function () {
+			},
+			minDate: null
+		}
+		const minDate = defaults.minDate || new Date();
+		const settings = {...defaults, ...config}
 
-			},
-			RangePlugin: {
-				elementEnd: endDateInput,
-				minDate: new Date(),
-				locale: {
-					one: "jour",
-					other: "jours"
-				}
-			},
-			LockPlugin: {
-				minDate: new Date(),
-				inseparable: false,
-				filter(date) {
-					return date.inArray(bookedDates, '[]');
-				},
-			},
-			TimePlugin: {
-				format: 'HH:mm',
-			}
-		});
-	}
-
-	function easepickCreate2(DateInput, calendars, callback) {
 		return new easepick.create({
 			element: DateInput,
 			lang: 'fr-FR',
@@ -206,7 +95,7 @@ document.addEventListener('DOMContentLoaded', function () {
 			zIndex: 50,
 			setup(picker) {
 				picker.on('select', () => {
-					callback();
+					settings.onSelect();
 				});
 				picker.on('view', (evt) => {
 					const {view, date, target} = evt.detail;
@@ -214,10 +103,12 @@ document.addEventListener('DOMContentLoaded', function () {
 						target.classList.add('high-season');
 					}
 				});
-
+				picker.on('clear', () => {
+					settings.onClear();
+				});
 			},
 			LockPlugin: {
-				minDate: new Date(),
+				minDate: minDate,
 				inseparable: false,
 				filter(date) {
 					return date.inArray(bookedDates, '[]');
@@ -227,49 +118,90 @@ document.addEventListener('DOMContentLoaded', function () {
 	}
 
 	function initializeDateTimePickers() {
-
-		$('#depart').each(function () {
-			easepickCreate(
-				$('#depart').get(0),
-				$('#retour').get(0),
-				2,
-				function () {
-					getPrice();
+		const retourPick = easepickCreate2(
+			$('.return').get(0),
+			1,
+			{
+				onSelect: function () {
+					$('#return-date').attr('data-status', 'updated');
+					updateCombinedDateTime(retourConfig);
+					getPrice('reservation', {onSuccess: priceSuccess});
 					if (external_object.form_options.dialog_confirmation === '1') {
 						syncValues('#depart', '#depart2');
 						syncValues('#retour', '#retour2');
 					}
+					if ($('#return-time').attr('data-status') !== 'updated') {
+						setTimeout(function () {
+							showDropdown('return-time-button')
+						}, 500);
+					}
 				}
-			);
-		});
-
-		// const arrival = easepickCreate2(
-		// 	$('.arrival').get(0),
-		// 	2,
-		// 	function () {
-		// 	}
-		// );
+			}
+		);
 		const departure = easepickCreate2(
 			$('.departure').get(0),
-			2,
-			function () {
-				getPrice();
+			1,
+			{
+				onSelect: function () {
+					updateCombinedDateTime(departConfig);
+					const lp = retourPick.PluginManager.getInstance('LockPlugin');
+					const departDateTime = new dateTime($('#depart').val(), 'YYYY-MM-DD HH:mm');
+					console.log('previous return lockplugin options', lp.options);
+					lp.options.minDate = departDateTime.toJSDate();
+					console.log('set min in return', departDateTime.toJSDate());
+					console.log('after return lockplugin options', lp.options);
+					if (external_object.form_options.dialog_confirmation === '1') {
+						syncValues('#depart', '#depart2');
+						syncValues('#retour', '#retour2');
+					}
+					if ($('#departure-time').attr('data-status') !== 'updated') {
+						setTimeout(function () {
+							showDropdown('departure-time-button')
+						}, 500);
+					}
+				}
+			}
+		);
+		const retourCustom = initCustomDropdown('div-return-time', 'return-time', {
+			onChange: (value, text) => {
+				$('#return-time').attr('data-status', 'updated');
+				updateCombinedDateTime(departConfig);
+				getPrice('reservation', {onSuccess: priceSuccess});
 				if (external_object.form_options.dialog_confirmation === '1') {
 					syncValues('#depart', '#depart2');
 					syncValues('#retour', '#retour2');
 				}
-				// console.log('departure',$('input[name=departure-time]').val());
-				const departure_time = $('input[name=departure-time]');
-				if (departure_time.val() === '') {
-					console.log($('#departure-time > div > button')[0]);
-					bootstrap.Dropdown.getOrCreateInstance($('#departure-time > div > button')[0]).toggle();
-				}
 			}
-		);
+		});
+		initCustomDropdown('div-departure-time', 'departure-time', {
+			onChange: (value, text) => {
+				$('#departure-time').attr('data-status', 'updated');
+				updateCombinedDateTime(departConfig);
+				getPrice('reservation', {onSuccess: priceSuccess});
+				if (external_object.form_options.dialog_confirmation === '1') {
+					syncValues('#depart', '#depart2');
+					syncValues('#retour', '#retour2');
+				}
+
+				const departDateTime = new dateTime($('#depart').val(), 'YYYY-MM-DD HH:mm');
+				const retourDateTime = new dateTime($('#retour').val(), 'YYYY-MM-DD HH:mm');
+				if (retourDateTime.isBefore(departDateTime))
+				{
+					console.log('return is before departure');
+					// const lp = retourPick.PluginManager.getInstance('LockPlugin');
+					// lp.options.minDate = departDateTime.toJSDate();
+					$('#return-date').attr('data-status', '');
+					retourCustom.setValue(departDateTime.format('HH:mm'))
+				}
+				if ($('#return-date').attr('data-status') !== 'updated') {
+					retourPick.show();
+				}
+
+			}
+		});
 	}
 
 	initializeDateTimePickers();
-
 
 	// Zip Codes
 	$("#code_postal").catcomplete({
@@ -367,12 +299,12 @@ document.addEventListener('DOMContentLoaded', function () {
 		"Vérifiez le numéro de téléphone"
 	);
 
-	if (external_object.locale === 'fr_FR')
-		loadScript("https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.20.0/localization/messages_fr.min.js");
-	if (external_object.locale === 'de_DE')
-		loadScript("https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.20.0/localization/messages_de.min.js");
-	if (external_object.locale === 'nl_NL')
-		loadScript("https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.20.0/localization/messages_nl.min.js");
+	const locale = external_object.locale;
+	if (['fr_FR', 'de_DE', 'nl_NL'].includes(locale)) {
+		const localeCode = locale.split('_')[0]; // Extract 'fr', 'de', 'nl'
+		loadScript(`https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.20.0/localization/messages_${localeCode}.min.js`);
+	}
+
 	$("#reservation").validate({
 		rules: {
 			nom: {
@@ -419,22 +351,22 @@ document.addEventListener('DOMContentLoaded', function () {
 		},
 
 		submitHandler: function (form) {
-			if (external_object.form_options.dialog_confirmation === '1') {
-				easepickCreate(
-					$('#depart2').get(0),
-					$('#retour2').get(0),
-					1,
-					function () {
-						syncValues('#depart2', '#depart');
-						syncValues('#retour2', '#retour');
-						getPrice();
-					}
-				);
-				dialogConfirm.dialog("open");
-			} else {
+			// if (external_object.form_options.dialog_confirmation === '1') {
+			// 	easepickCreate(
+			// 		$('#depart2').get(0),
+			// 		$('#retour2').get(0),
+			// 		1,
+			// 		function () {
+			// 			syncValues('#depart2', '#depart');
+			// 			syncValues('#retour2', '#retour');
+			// 			getPrice('reservation', {onSuccess: priceSuccess});
+			// 		}
+			// 	);
+			// 	dialogConfirm.dialog("open");
+			// } else {
 				$('#spinner-container').css('display', 'flex');
 				form.submit();
-			}
+			// }
 		}
 	})
 });

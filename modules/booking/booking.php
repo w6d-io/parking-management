@@ -17,6 +17,7 @@ require_once PKMGMT_PLUGIN_MODULES_DIR . DS . "booking" . DS . "types" . DS . "v
 require_once PKMGMT_PLUGIN_MODULES_DIR . DS . "booking" . DS . "types" . DS . "iata.php";
 require_once PKMGMT_PLUGIN_MODULES_DIR . DS . "booking" . DS . "types" . DS . "airport.php";
 require_once PKMGMT_PLUGIN_MODULES_DIR . DS . "booking" . DS . "types" . DS . "order_status.php";
+
 require_once PKMGMT_PLUGIN_MODULES_DIR . DS . "booking" . DS . "includes" . DS . "form.php";
 require_once PKMGMT_PLUGIN_MODULES_DIR . DS . "booking" . DS . "includes" . DS . "home_form.php";
 require_once PKMGMT_PLUGIN_MODULES_DIR . DS . "booking" . DS . "includes" . DS . "member.php";

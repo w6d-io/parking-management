@@ -19,6 +19,7 @@ class HomeForm
 		wp_enqueue_script('parking-management-jquery', 'https://code.jquery.com/jquery-3.7.1.min.js');
 		wp_enqueue_script('parking-management-jquery-ui', 'https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.14.1/jquery-ui.min.js', array('parking-management-jquery'));
 		wp_enqueue_script('parking-management-easepick', 'https://cdn.jsdelivr.net/npm/@easepick/bundle@1.2.1/dist/index.umd.min.js');
+		wp_enqueue_script('parking-management-booking', pkmgmt_plugin_url('modules/booking/js/booking.js'), array(), '', false);
 		wp_enqueue_script(
 			'parking-management-home-form',
 			pkmgmt_plugin_url('modules/booking/js/home_form.js'),
@@ -26,6 +27,7 @@ class HomeForm
 				'parking-management-jquery',
 				'parking-management-jquery-ui',
 				'parking-management-easepick',
+				'parking-management-booking',
 			),
 			PKMGMT_VERSION
 		);
