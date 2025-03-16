@@ -91,11 +91,15 @@ class MyPosAPI extends API
 
 			$response = Response::getInstance($cnf, $_POST, Defines::COMMUNICATION_FORMAT_POST);
 			$data = $response->getData();
+			Logger::debug("mypos.api.create", ['data'=> $data]);
 			if ($data['IPCmethod'] === 'IPCPurchaseNotify') {
 				$order_id = $data['OrderID'];
-				if (!is_numeric($order_id) && $test_enabled) {
-					echo "OK";
-					exit(0);
+				if (!is_numeric($data['OrderID']) && $test_enabled) {
+					$order_id = $request->get_param('order_id');
+					if ( $order_id === null) {
+						echo "OK";
+						exit(0);
+					}
 				}
 				$payment_date = $data['RequestDateTime'];
 				$amount = $data['Amount'];
