@@ -36,7 +36,7 @@ class Mail
 			$mail->Password = $mailConfig['password']['value']; // SMTP password
 			$mail->SMTPSecure = 'tls'; // Enable TLS encryption, `ssl` also accepted
 			$mail->Port = 587; // TCP port to connect to
-
+			$mail->addCustomHeader('X-SES-CONFIGURATION-SET', 'EmailTrackingSet');
 			// Set CharSet
 			$mail->CharSet = $charset;
 

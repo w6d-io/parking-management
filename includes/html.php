@@ -187,25 +187,6 @@ class Html
 	// TODO: Add max-height in CSS file
 	public static function _dropdown(string $id, string $name, string $placeholder, string $button_class, array $options, string $value): string
 	{
-		// 				<div class="btn-group w-100">
-		//                    <span class="input-group-text">
-		//                        <i class="bi bi-clock time-icon"></i>
-		//                    </span>
-		//					<button class="btn ${settings.buttonClass} dropdown-toggle w-100 d-flex justify-content-between align-items-center"
-		//							type="button"
-		//							id="${buttonId}"
-		//							data-bs-toggle="dropdown"
-		//							aria-expanded="false">
-		//						<span id="${textId}">${settings.placeholder}</span>
-		//					</button>
-		//					<ul class="dropdown-menu" aria-labelledby="${buttonId}" style="max-height: ${settings.maxHeight}px;">
-		//						${options.map(option =>
-		//			`<li><a class="dropdown-item" href="#" data-value="${option.value}">${option.label}</a></li>`
-		//		).join('')}
-		//					</ul>
-		//
-		//					<input type="hidden" id="${inputId}" name="${settings.name}" value="">
-		//				</div>
 
 		$contents = [];
 		foreach ($options as $key => $option) {
@@ -247,7 +228,7 @@ class Html
 				],
 				...$contents
 			),
-			self::_index('hidden', $id, $name, ['value' => $value])
+			self::_index('hidden', $id, $name, ['value' => $value, 'data-status' => ''])
 		);
 
 	}
