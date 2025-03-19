@@ -46,10 +46,6 @@ class SMS {
 			'version' => 'latest'
 		];
 
-		Logger::info('sms.aws.debug', [
-			'sms' => array_merge($sms, ['password' => '************']), // Hide sensitive data
-			'phone' => $phone
-		]);
 		try {
 			$snsClient = new SnsClient($awsConfig);
 			$result = $snsClient->publish([

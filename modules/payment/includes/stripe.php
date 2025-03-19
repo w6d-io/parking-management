@@ -49,24 +49,25 @@ class Stripe implements IPayment
 		exit(0);
 	}
 
-	public function updatePaymentStatus(): void
+	public static function updatePaymentStatus($config, $kind, $order_id): void
 	{
 		try {
+			$properties = $config['properties']['stripe'];
 			$session_id = $_GET['session_id'];
-			$test_enabled = $this->config['active-test'] === '1';
-			$secretKey = $test_enabled ? $this->properties['secret_key_test']['value'] : $this->properties['secret_key']['value'];
+			$test_enabled = $config['active-test'] === '1';
+			$secretKey = $test_enabled ? $properties['secret_key_test']['value'] : $properties['secret_key']['value'];
 			$stripe = new StripeClient($secretKey);
 			$session = $stripe->checkout->sessions->retrieve($session_id);
 			$amount = $session->amount_total / 100;
 			$payment_id = PaymentID::STRIPE;
 			$status = OrderStatus::PAID;
-			if ($session->payment_status !== 'paid') {
+			if ($session->payment_status != 'paid') {
 				$payment_id = PaymentID::UNKNOWN;
 				$amount = 0;
 				$status = OrderStatus::PENDING;
 			}
-			$order = new Order($this->kind);
-			$order->update_payment($this->order_id, date('Y-m-d H:i:s'), $amount, $payment_id, $status);
+			$order = new Order($kind);
+			$order->update_payment($order_id, date('Y-m-d H:i:s'), $amount, $payment_id, $status);
 			Logger::info("stripe.updatePaymentStatus", "update payment status recorded");
 
 
@@ -108,7 +109,7 @@ class Stripe implements IPayment
 			$stripe = new StripeClient($secretKey);
 			$checkout_session = $stripe->checkout->sessions->create([
 				'customer' => $customer->id,
-				'customer_update' => ['address'=>'auto'],
+				'customer_update' => ['address' => 'auto'],
 				'line_items' => [[
 					'price_data' => [
 						'currency' => 'eur',
