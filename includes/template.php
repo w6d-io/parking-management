@@ -106,33 +106,28 @@ class Template
 					'value' => ''
 				],
 			],
-//			'paypal' => [
-//				'email' => [
-//					'title' => 'Email',
-//					'type' => 'email',
-//					'value' => ''
-//				],
-//				'login' => [
-//					'title' => 'Login',
-//					'type' => 'text',
-//					'value' => ''
-//				],
-//				'password' => [
-//					'title' => 'Password',
-//					'type' => 'password',
-//					'value' => ''
-//				],
-//				'signature' => [
-//					'title' => 'Signature',
-//					'type' => 'password',
-//					'value' => ''
-//				],
-//				'notification_url' => [
-//					'title' => 'Notification URL',
-//					'type' => 'url',
-//					'value' => ''
-//				],
-//			],
+			'stripe' => [
+				'secret_key' => [
+					'title' => 'Secret Key',
+					'type' => 'password',
+					'value' => ''
+				],
+				'secret_key_test' => [
+					'title' => 'Secret Test Key',
+					'type' => 'password',
+					'value' => ''
+				],
+				'success_page' => [
+					'title' => 'Success Page',
+					'type' => 'page',
+					'value' => ''
+				],
+				'cancel_page' => [
+					'title' => 'Cancel Page',
+					'type' => 'page',
+					'value' => ''
+				],
+			],
 		];
 	}
 

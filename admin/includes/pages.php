@@ -771,10 +771,10 @@ class Pages
 			"[parking-management type='payment' payment_provider='mypos' kind='booking']"
 		);
 		echo self::_shortcode_field(
-			'shortcode-payment-paypal-booking',
-			'shortcode-payment-paypal-booking',
-			esc_html__("Copy and paste this code into your page to include paypal payment form.", 'parking-management'),
-			"[parking-management type='payment' payment_provider='paypal' kind='booking']"
+			'shortcode-payment-stripe-booking',
+			'shortcode-payment-stripe-booking',
+			esc_html__("Copy and paste this code into your page to include stripe payment form.", 'parking-management'),
+			"[parking-management type='payment' payment_provider='stripe' kind='booking']"
 		);
 		echo self::_shortcode_field(
 			'shortcode-notification-confirmation-booking',
@@ -833,10 +833,10 @@ class Pages
 			"[parking-management type='payment' payment_provider='mypos' kind='valet']"
 		);
 		echo self::_shortcode_field(
-			'shortcode-payment-paypal-valet',
-			'shortcode-payment-paypal-valet',
-			esc_html__("Copy and paste this code into your page to include paypal payment form.", 'parking-management'),
-			"[parking-management type='payment' payment_provider='paypal' kind='valet']"
+			'shortcode-payment-stripe-valet',
+			'shortcode-payment-stripe-valet',
+			esc_html__("Copy and paste this code into your page to include stripe payment form.", 'parking-management'),
+			"[parking-management type='payment' payment_provider='stripe' kind='valet']"
 		);
 		echo self::_shortcode_field(
 			'shortcode-notification-confirmation-valet',

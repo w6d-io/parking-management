@@ -4,13 +4,11 @@ namespace Payment;
 
 use Booking\Member;
 use Booking\Order;
-use Booking\ParkingType;
 use Exception;
 use JetBrains\PhpStorm\NoReturn;
 use ParkingManagement\API\PayplugAPI;
 use ParkingManagement\interfaces\IPayment;
 use ParkingManagement\Logger;
-use ParkingManagement\ParkingManagement;
 use Payplug\Page;
 use Payplug\Payment;
 
@@ -19,7 +17,6 @@ require_once PKMGMT_PLUGIN_MODULES_DIR . DS . "payment" . DS . "includes" . DS .
 
 class Payplug implements IPayment
 {
-
 	private array $config;
 	private array $properties;
 	private int $order_id;
@@ -70,8 +67,8 @@ class Payplug implements IPayment
 			\Payplug\Payplug::init(array(
 				'secretKey' => $secretKey
 			));
-			$success_url = $this->properties['success_page']['value'] . "?from=provider&order_id=" . $this->order_id;
-			$cancel_url = $this->properties['cancel_page']['value'] . '?order_id=' . $this->order_id;
+			$success_url = $this->properties['success_page']['value'] . "?from=provider&kind={$this->kind}&order_id={$this->order_id}";
+			$cancel_url = $this->properties['cancel_page']['value'] . "?kind={$this->kind}&order_id={$this->order_id}";
 			$notify_url = home_url() . "/wp-json/pkmgmt/v1/payplug/ipn?kind={$this->kind}";
 			if ($this->properties['notification_url']['value'] !== '')
 				$notify_url = $this->properties['notification_url']['value'];
@@ -104,7 +101,11 @@ class Payplug implements IPayment
 
 			return $payment->hosted_payment->payment_url;
 		} catch (Exception $e) {
-			Logger::error("payplug.initPayment", ['data' => $data, 'payload' => $payload ?? 'n/c', 'exception' => $e->getMessage()]);
+			Logger::error("payplug.initPayment", [
+				'data' => $data,
+				'payload' => $payload ?? 'n/c',
+				'exception' => $e->getMessage(),
+			]);
 			return '';
 		}
 	}
