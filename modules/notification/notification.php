@@ -51,6 +51,7 @@ class Notification implements IShortcode
 		try {
 			$payment = new Payment($this->pm);
 			$payment->setKind($this->kind);
+			$payment->setOrderId($_GET['order_id']);
 			$payment->updatePaymentStatus();
 			$order->confirmed($_GET['order_id']);
 			$config = match ($this->kind) {
