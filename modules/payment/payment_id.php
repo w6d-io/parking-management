@@ -10,5 +10,6 @@ enum PaymentID: int
 	case PAYPLUG = 3;
 	case CASH = 4;
 	case MYPOS = 5;
+	case STRIPE = 12;
 
 }

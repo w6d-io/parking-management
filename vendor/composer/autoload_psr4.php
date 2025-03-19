@@ -8,6 +8,7 @@ $baseDir = dirname($vendorDir);
 return array(
     'enshrined\\svgSanitize\\' => array($vendorDir . '/enshrined/svg-sanitize/src'),
     'Symfony\\Polyfill\\Mbstring\\' => array($vendorDir . '/symfony/polyfill-mbstring'),
+    'Stripe\\' => array($vendorDir . '/stripe/stripe-php/lib'),
     'Psr\\Http\\Message\\' => array($vendorDir . '/psr/http-factory/src', $vendorDir . '/psr/http-message/src'),
     'Psr\\Http\\Client\\' => array($vendorDir . '/psr/http-client/src'),
     'Payplug\\' => array($vendorDir . '/payplug/payplug-php/lib/Payplug'),

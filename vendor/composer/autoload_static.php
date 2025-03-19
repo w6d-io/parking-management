@@ -23,6 +23,7 @@ class ComposerStaticInit205e318d8cd760b7fa7a554a38f8c528
         'S' => 
         array (
             'Symfony\\Polyfill\\Mbstring\\' => 26,
+            'Stripe\\' => 7,
         ),
         'P' => 
         array (
@@ -59,6 +60,10 @@ class ComposerStaticInit205e318d8cd760b7fa7a554a38f8c528
         'Symfony\\Polyfill\\Mbstring\\' => 
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-mbstring',
+        ),
+        'Stripe\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/stripe/stripe-php/lib',
         ),
         'Psr\\Http\\Message\\' => 
         array (

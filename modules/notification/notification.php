@@ -32,6 +32,7 @@ class Notification implements IShortcode
 		if (Payment::validateOnPayment($this->kind) && (!array_key_exists('from', $_GET) || $_GET['from'] != 'provider'))
 			return '';
 		try {
+
 			$data = $this->getData($this->kind);
 			$order = new Order($this->kind);
 			return match ($type) {
@@ -48,6 +49,9 @@ class Notification implements IShortcode
 	private function confirmation(array $data, Order $order): string
 	{
 		try {
+			$payment = new Payment($this->pm);
+			$payment->setKind($this->kind);
+			$payment->updatePaymentStatus();
 			$order->confirmed($_GET['order_id']);
 			$config = match ($this->kind) {
 				'booking', 'valet' => $this->pm->prop($this->kind),

@@ -8,10 +8,12 @@ use ParkingManagement\interfaces\IPayment;
 use ParkingManagement\interfaces\IShortcode;
 use Payment\MyPos;
 use Payment\Payplug;
+use Payment\Stripe;
 
 require_once PKMGMT_PLUGIN_MODULES_DIR . DS . "payment" . DS . "payment_id.php";
 require_once PKMGMT_PLUGIN_MODULES_DIR . DS . "payment" . DS . "includes" . DS . "payplug.php";
 require_once PKMGMT_PLUGIN_MODULES_DIR . DS . "payment" . DS . "includes" . DS . "mypos.php";
+require_once PKMGMT_PLUGIN_MODULES_DIR . DS . "payment" . DS . "includes" . DS . "stripe.php";
 
 class Payment implements IShortcode, IParkingManagement
 {
@@ -36,6 +38,7 @@ class Payment implements IShortcode, IParkingManagement
 		Logger::debug('payment.getInstanceProvider', ["provider" => $this->provider]);
 		return match ($this->provider) {
 			'mypos' => new MyPos($this->config, $this->kind, $this->order_id),
+			'stripe' => new Stripe($this->config, $this->kind, $this->order_id),
 			default => new Payplug($this->config, $this->kind, $this->order_id),
 		};
 	}
@@ -50,7 +53,7 @@ class Payment implements IShortcode, IParkingManagement
 		if (!$this->isEnabled())
 			return '';
 		return match ($this->provider) {
-			'payplug', 'mypos' => $this->run_provider(),
+			'payplug', 'mypos', 'stripe' => $this->run_provider(),
 			default => sprintf('[parking-management type="payment" payment_provider="%s" kind="%s"]', $this->provider, $this->kind)
 		};
 
@@ -97,5 +100,12 @@ class Payment implements IShortcode, IParkingManagement
 	public function setOrderId(int $order_id): void
 	{
 		$this->order_id = $order_id;
+	}
+
+	public function updatePaymentStatus(): void
+	{
+		if ( ($this->provider !== 'stripe') || (empty($_GET['session_id']))) return;
+		$stripe = new Stripe($this->config, $this->kind, $this->order_id);
+		$stripe->updatePaymentStatus();
 	}
 }

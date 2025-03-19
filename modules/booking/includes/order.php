@@ -209,7 +209,7 @@ class Order
 	/**
 	 * @throws Exception
 	 */
-	public function update_payment(int $order_id, string $payment_date, float $amount, PaymentID $payment_id): void
+	public function update_payment(int $order_id, string $payment_date, float $amount, PaymentID $payment_id, OrderStatus $status = OrderStatus::PAID): void
 	{
 		$bill_id = $this->getBillID($order_id);
 		$date = date('Y-m-d H:i:s');
@@ -220,7 +220,7 @@ class Order
 				'paye' => $amount,
 				'date_paiement' => $payment_date,
 				'paiement_id' => $payment_id->value,
-				'status' => OrderStatus::PAID->value,
+				'status' => $status->value,
 				'date' => $date,
 			],
 			[
