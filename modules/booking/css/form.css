@@ -342,8 +342,8 @@ form#reservation select.form-select {
 	display: block;
 	width: 100%;
 	padding: .375rem 2.25rem .375rem .75rem;
-	font-size: 1rem;
-	font-weight: 400;
+	font-size: 1.2em;
+	font-weight: 500;
 	line-height: 1.5;
 	color: var(--bs-body-color);
 	-webkit-appearance: none;
@@ -446,4 +446,15 @@ label.error {
 }
 .calendar > .days-grid > .locked.high-season {
 	background-color: initial;
+}
+
+#reservation .form-label {
+	color: black;
+	font-weight: bold;
+	font-size: 1.7em;
+}
+
+#reservation input {
+	color: black;
+	font-size: 1.2em;
 }
