@@ -248,13 +248,11 @@ msgstr "Terminal de départ"
 msgid "Terminal return"
 msgstr "Terminal de retour"
 
-#: modules/booking/includes/form.php:552
 #: modules/booking/includes/form.php:685
 #: modules/booking/includes/home_form.php:79
 msgid "Dropping off at"
 msgstr "Dépôt à"
 
-#: modules/booking/includes/form.php:569
 #: modules/booking/includes/form.php:689
 #: modules/booking/includes/home_form.php:96
 msgid "Landing at the airport"
@@ -292,7 +290,7 @@ msgstr "Chargement..."
 msgid "Car park is full on "
 msgstr "Parking complet le "
 
-#: modules/notification/notification.php:61
+#: modules/notification/notification.php:65
 msgid "Summary of your order"
 msgstr "Récapitulatif de votre commande"
 
@@ -425,7 +423,7 @@ msgstr "Copier et coller ce code dans votre page pour inclure un tableau des pri
 msgid "Copy and paste this code into your page to include price valet table."
 msgstr "Copier et coller ce code dans votre page pour inclure un tableau des prix pour les réservations voiturier"
 
-#: modules/notification/notification.php:81
+#: modules/notification/notification.php:85
 msgid "Cancellation of your order"
 msgstr "Annulation de votre réservation"
 
@@ -435,9 +433,13 @@ msgstr "Cette réservation existe déjà"
 
 #: admin/includes/pages.php:128
 msgid "Copy and paste this code into your page to include home valet form."
-msgstr ""
+msgstr "Copier et coller ce code dans votre page pour inclure un formulaire Voiturier en page d'accueil"
 
 #: admin/includes/pages.php:776
 #: admin/includes/pages.php:838
 msgid "Copy and paste this code into your page to include stripe payment form."
-msgstr ""
+msgstr "Copier et coller ce code dans votre page pour inclure un paiement Stripe"
+
+#: modules/booking/includes/form.php:552
+msgid "Journey"
+msgstr "Séjour"

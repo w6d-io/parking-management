@@ -315,6 +315,7 @@ form#reservation div.type-id label:hover {
 	cursor: pointer;
 }
 
+
 form#reservation div.type-id div label {
 	padding: 15px 25px;
 	margin-bottom: 10px;
@@ -323,7 +324,6 @@ form#reservation div.type-id div label {
 
 	display: flex;
 	align-items: center;
-
 }
 
 /*
@@ -457,4 +457,25 @@ label.error {
 #reservation input {
 	color: black;
 	font-size: 1.2em;
+}
+
+#reservation .hyphen {
+	background-color: white;
+	border-right: 0 !important;
+	border-left: 0 !important;
+}
+#reservation #depart, #reservation #retour {
+	text-align: center;
+	max-width: 250px;
+	width: 100%;
+}
+#reservation #depart {
+	border-right: 0 !important;
+}
+#reservation #retour {
+	border-left: 0 !important;
+}
+
+#reservation div.journey {
+	max-width: 530px;
 }
