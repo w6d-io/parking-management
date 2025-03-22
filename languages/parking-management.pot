@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-03-19T12:42:30+00:00\n"
+"POT-Creation-Date: 2025-03-22T15:27:05+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.10.0\n"
 "X-Domain: parking-management\n"
@@ -298,15 +298,7 @@ msgid "Terminal return"
 msgstr ""
 
 #: modules/booking/includes/form.php:552
-#: modules/booking/includes/form.php:685
-#: modules/booking/includes/home_form.php:79
-msgid "Dropping off at"
-msgstr ""
-
-#: modules/booking/includes/form.php:569
-#: modules/booking/includes/form.php:689
-#: modules/booking/includes/home_form.php:96
-msgid "Landing at the airport"
+msgid "Journey"
 msgstr ""
 
 #: modules/booking/includes/form.php:594
@@ -323,6 +315,16 @@ msgstr ""
 
 #: modules/booking/includes/form.php:681
 msgid "Confirmation"
+msgstr ""
+
+#: modules/booking/includes/form.php:685
+#: modules/booking/includes/home_form.php:79
+msgid "Dropping off at"
+msgstr ""
+
+#: modules/booking/includes/form.php:689
+#: modules/booking/includes/home_form.php:96
+msgid "Landing at the airport"
 msgstr ""
 
 #: modules/booking/includes/form.php:702
@@ -365,11 +367,11 @@ msgstr ""
 msgid "vehicle creation failed"
 msgstr ""
 
-#: modules/notification/notification.php:61
+#: modules/notification/notification.php:65
 msgid "Summary of your order"
 msgstr ""
 
-#: modules/notification/notification.php:81
+#: modules/notification/notification.php:85
 msgid "Cancellation of your order"
 msgstr ""
 

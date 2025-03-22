@@ -28,7 +28,7 @@ class Form
 				Html::_radio($id . '_' . $element['id'], $name, $element['value'], array('class' => 'parking-type', 'tabindex' => "9"), $value == $element['value']),
 				Html::_label_with_attr(
 					array(
-						'class' => 'px-md-5 px-3',
+						'class' => 'px-md-5 px-3 label form-label',
 					),
 					$id . '_' . $element['id'], $element['label']),
 			);
@@ -310,7 +310,7 @@ class Form
 					'value' => $post['tel_port'] ?? '',
 				]),
 				Html::_label_with_attr(
-					array('class' => 'mobile col-sm-3'),
+					array('class' => 'mobile col-sm-3 label form-label'),
 					'mobile',
 					esc_html__('Mobile phone', 'parking-management')
 				),
@@ -339,7 +339,7 @@ class Form
 		} else {
 			$content[] = self::_row_field('type-id input-group align-items-center',
 				Html::_label_with_attr(
-					array('class' => 'type_id col-sm-3'),
+					array('class' => 'type_id col-sm-3 form form-label'),
 					'type_id',
 					esc_html__('Type of vehicle', 'parking-management')
 				),
@@ -397,7 +397,7 @@ class Form
 		} else {
 			$content[] = self::_row_field('parking_type input-group align-items-center',
 				Html::_label_with_attr(
-					array('class' => 'parking_type col-sm-3'),
+					array('class' => 'parking_type col-sm-3 form form-label'),
 					'parking_type',
 					esc_html__('Car Park', 'parking-management')
 				),
@@ -545,35 +545,37 @@ class Form
 					Html::_div(
 						array('class' => 'row',),
 						Html::_div(
-							array('class' => 'col',),
-							Html::_label_with_attr(
-								array('class' => 'form-label'),
-								'depart',
-								esc_html__('Dropping off at', 'parking-management')
-							),
-							Html::_index('text', 'depart', 'depart', array(
-								'class' => 'departure regular required border rounded form-control py-2',
-								'autocomplete' => 'off',
-								'tabindex' => "12",
-								'value' => $post['depart'] ?? '',
-							)),
+							array('class' => 'col ',),
+							Html::_div(
+								['class' => 'd-flex flex-column align-items-center mt-1'],
 
-						),
-						Html::_div(
-							array('class' => 'col',),
-							Html::_label_with_attr(
-								array(
-									'class' => 'form-label'
+								Html::_label_with_attr(
+									array('class' => 'form-label'),
+									'depart',
+									esc_html__('Journey', 'parking-management')
 								),
-								'retour',
-								esc_html__('Landing at the airport', 'parking-management')
+								Html::_div(
+									['class' => 'input-group journey'],
+
+									Html::_index('text', 'depart', 'depart', array(
+										'class' => 'departure regular required form-control border py-2',
+										'autocomplete' => 'off',
+										'tabindex' => "12",
+										'value' => $post['depart'] ?? '',
+									)),
+									Html::_span(
+										['class' => 'input-group-text hyphen border-right-0 border-left-0 border-top border-bottom'],
+										'-'
+									),
+									Html::_index('text', 'retour', 'retour', array(
+										'class' => 'return regular required form-control border py-2',
+										'autocomplete' => 'off',
+										'tabindex' => "-1",
+										'value' => $post['retour'] ?? '',
+									)),
+
+								),
 							),
-							Html::_index('text', 'retour', 'retour', array(
-								'class' => 'return regular required border rounded form-control py-2',
-								'autocomplete' => 'off',
-								'tabindex' => "-1",
-								'value' => $post['retour'] ?? '',
-							)),
 						),
 					),
 				),

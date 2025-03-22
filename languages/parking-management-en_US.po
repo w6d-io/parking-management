@@ -249,13 +249,11 @@ msgstr ""
 msgid "Terminal return"
 msgstr ""
 
-#: modules/booking/includes/form.php:552
 #: modules/booking/includes/form.php:685
 #: modules/booking/includes/home_form.php:79
 msgid "Dropping off at"
 msgstr ""
 
-#: modules/booking/includes/form.php:569
 #: modules/booking/includes/form.php:689
 #: modules/booking/includes/home_form.php:96
 msgid "Landing at the airport"
@@ -293,7 +291,7 @@ msgstr ""
 msgid "Car park is full on "
 msgstr ""
 
-#: modules/notification/notification.php:61
+#: modules/notification/notification.php:65
 msgid "Summary of your order"
 msgstr ""
 
@@ -425,7 +423,7 @@ msgstr ""
 msgid "Copy and paste this code into your page to include price valet table."
 msgstr ""
 
-#: modules/notification/notification.php:81
+#: modules/notification/notification.php:85
 msgid "Cancellation of your order"
 msgstr ""
 
@@ -440,4 +438,8 @@ msgstr ""
 #: admin/includes/pages.php:776
 #: admin/includes/pages.php:838
 msgid "Copy and paste this code into your page to include stripe payment form."
+msgstr ""
+
+#: modules/booking/includes/form.php:552
+msgid "Journey"
 msgstr ""
