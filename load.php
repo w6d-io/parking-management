@@ -149,6 +149,9 @@ function pkmgmt_upgrade(): void
 	if (version_compare($old_version, '4.3.0', '<')) {
 		pkmgmt_migrate_to_4_3_0();
 	}
+	if (version_compare($old_version, '4.3.5', '<')) {
+		pkmgmt_migrate_to_4_3_5();
+	}
 
 	do_action('pkmgmt_upgrade', $old_version, $new_version);
 	PKMGMT::update_option('version', $new_version);
@@ -466,7 +469,7 @@ function pkmgmt_migrate_to_4_3_0(): void
 	}
 }
 
-function pkmgmt_migrate_to_4_3_4(): void
+function pkmgmt_migrate_to_4_3_5(): void
 {
 	try {
 		$pm = getParkingManagementInstance();
@@ -480,7 +483,7 @@ function pkmgmt_migrate_to_4_3_4(): void
 		$pm->set_properties($props);
 		$pm->save();
 	} catch (Exception $e) {
-		Logger::error("migrate.to.4.3.4", $e->getMessage());
+		Logger::error("migrate.to.4.3.5", $e->getMessage());
 	}
 }
 
