@@ -7,6 +7,7 @@ use Booking\Order;
 use Booking\OrderStatus;
 use Exception;
 use JetBrains\PhpStorm\NoReturn;
+use ParkingManagement\API\StripeAPI;
 use ParkingManagement\interfaces\IPayment;
 use ParkingManagement\Logger;
 use ParkingManagement\PaymentID;
@@ -16,6 +17,7 @@ use Stripe\Page;
 use Stripe\StripeClient;
 
 require_once PKMGMT_PLUGIN_MODULES_DIR . DS . "payment" . DS . "includes" . DS . "stripe" . DS . "page.php";
+require_once PKMGMT_PLUGIN_MODULES_DIR . DS . "payment" . DS . "includes" . DS . "stripe" . DS . "api.php";
 
 class Stripe implements IPayment
 {
@@ -49,7 +51,7 @@ class Stripe implements IPayment
 		exit(0);
 	}
 
-	public static function updatePaymentStatus($config, $kind, $order_id): void
+	public static function updatePaymentStatus($config, $kind, $order_id): bool
 	{
 		try {
 			$properties = $config['properties']['stripe'];
@@ -66,11 +68,16 @@ class Stripe implements IPayment
 				$amount = 0;
 				$status = OrderStatus::PENDING;
 			}
+			Logger::debug('stripe.updatePaymentStatus', [
+				'session' => $session,
+				'amount' => $amount,
+				'payment_id' => $payment_id,
+				'status' => $status,
+			]);
 			$order = new Order($kind);
 			$order->update_payment($order_id, date('Y-m-d H:i:s'), $amount, $payment_id, $status);
 			Logger::info("stripe.updatePaymentStatus", "update payment status recorded");
-
-
+			return true;
 		} catch (Exception|ApiErrorException $e) {
 			$message = [
 				'payload' => $payload ?? 'n/c',
@@ -88,6 +95,7 @@ class Stripe implements IPayment
 			}
 			Logger::error("stripe.initPayment", $message);
 		}
+		return false;
 	}
 
 	private function initPayment(): string
@@ -181,3 +189,5 @@ class Stripe implements IPayment
 	}
 
 }
+
+new StripeAPI();

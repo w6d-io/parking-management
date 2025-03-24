@@ -112,6 +112,11 @@ class Template
 					'type' => 'password',
 					'value' => ''
 				],
+				'webhook_secret_key' => [
+					'title' => 'Webhook Secret Key',
+					'type' => 'password',
+					'value' => ''
+				],
 				'secret_key_test' => [
 					'title' => 'Secret Test Key',
 					'type' => 'password',
