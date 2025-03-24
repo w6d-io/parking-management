@@ -102,9 +102,9 @@ class Payment implements IShortcode, IParkingManagement
 		$this->order_id = $order_id;
 	}
 
-	public function updatePaymentStatus(): void
+	public function updatePaymentStatus(): bool
 	{
-		if ( ($this->provider !== 'stripe') || (empty($_GET['session_id']))) return;
-		Stripe::updatePaymentStatus($this->config, $this->kind, $this->order_id);
+		if ( ($this->provider !== 'stripe') || (empty($_GET['session_id']))) return false;
+		return Stripe::updatePaymentStatus($this->config, $this->kind, $this->order_id);
 	}
 }

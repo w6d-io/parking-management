@@ -466,6 +466,24 @@ function pkmgmt_migrate_to_4_3_0(): void
 	}
 }
 
+function pkmgmt_migrate_to_4_3_4(): void
+{
+	try {
+		$pm = getParkingManagementInstance();
+		if (!$pm)
+			return;
+		$payment = Template::payment_properties();
+		$props = $pm->get_properties();
+		$props['booking']['payment']['properties']['stripe']['webhook_secret_key'] = $payment['stripe']['webhook_secret_key'];
+		$props['valet']['payment']['properties']['stripe']['webhook_secret_key'] = $payment['stripe']['webhook_secret_key'];
+
+		$pm->set_properties($props);
+		$pm->save();
+	} catch (Exception $e) {
+		Logger::error("migrate.to.4.3.4", $e->getMessage());
+	}
+}
+
 add_action('activate_' . PKMGMT_PLUGIN_BASENAME, 'pkmgmt_install', 9, 0);
 
 
