@@ -552,7 +552,7 @@ class Form
 								Html::_label_with_attr(
 									array('class' => 'form-label'),
 									'depart',
-									esc_html__('Journey', 'parking-management')
+									esc_html__('Date and hour', 'parking-management')
 								),
 								Html::_div(
 									['class' => 'input-group journey'],
@@ -663,7 +663,7 @@ EOT;
 				Html::_index('hidden', 'aeroport', 'aeroport', array('value' => Order::getSiteID($info['terminal'])->value)),
 				Html::_index('hidden', 'pkmgmt_action', 'pkmgmt_action', array('value' => 'booking')),
 				'<button type="submit" tabindex="17" id="submit" name="submit" class="form-control btn btn-primary text-center" disabled>'
-				. esc_html__('Validate your order', 'parking-management')
+				. esc_html__('Pay and validate', 'parking-management')
 				. ' <i class="fa-regular fa-circle-right"></i>'
 				. '</button>'
 

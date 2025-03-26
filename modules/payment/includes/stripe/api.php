@@ -3,12 +3,14 @@
 namespace ParkingManagement\API;
 
 use Booking\Order;
+use Exception;
 use ParkingManagement\Logger;
 use ParkingManagement\PaymentID;
 use Stripe\Checkout\Session;
 use Stripe\Exception\SignatureVerificationException;
 use Stripe\Stripe;
 use Stripe\Webhook;
+use UnexpectedValueException;
 use WP_Error;
 use WP_Http;
 use WP_REST_Request;
@@ -103,7 +105,7 @@ class StripeAPI extends API
 				}
 			}
 			return new WP_REST_Response(null, WP_Http::NO_CONTENT);
-		} catch (\UnexpectedValueException|SignatureVerificationException $e) {
+		} catch (UnexpectedValueException|SignatureVerificationException|Exception $e) {
 			Logger::warning("stripe.api.create_item", $e->getMessage());
 			if ( $e->getMessage() == "The resource you requested could not be found.")
 				new WP_REST_Response(null, WP_Http::NO_CONTENT);

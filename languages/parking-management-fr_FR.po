@@ -117,7 +117,7 @@ msgstr "RCS"
 
 #: admin/includes/pages.php:439
 #: modules/booking/includes/form.php:326
-#: modules/booking/includes/form.php:694
+#: modules/booking/includes/form.php:696
 msgid "Email"
 msgstr "Email"
 
@@ -232,7 +232,7 @@ msgstr "Immatriculation"
 msgid "Car Park"
 msgstr "Parking"
 
-#: modules/booking/includes/form.php:594
+#: modules/booking/includes/form.php:596
 msgid "Trip Information"
 msgstr "Voyage"
 
@@ -248,12 +248,12 @@ msgstr "Terminal de départ"
 msgid "Terminal return"
 msgstr "Terminal de retour"
 
-#: modules/booking/includes/form.php:685
+#: modules/booking/includes/form.php:687
 #: modules/booking/includes/home_form.php:79
 msgid "Dropping off at"
 msgstr "Dépôt à"
 
-#: modules/booking/includes/form.php:689
+#: modules/booking/includes/form.php:691
 #: modules/booking/includes/home_form.php:96
 msgid "Landing at the airport"
 msgstr "Arrivée à l'aéroport"
@@ -262,27 +262,23 @@ msgstr "Arrivée à l'aéroport"
 msgid "Number of pax"
 msgstr "Nombre de passager"
 
-#: modules/booking/includes/form.php:645
+#: modules/booking/includes/form.php:647
 msgid "Order amount"
 msgstr "Montant de la commande"
 
-#: modules/booking/includes/form.php:664
-msgid "Validate your order"
-msgstr "Valider votre commande"
-
-#: modules/booking/includes/form.php:681
+#: modules/booking/includes/form.php:683
 msgid "Confirmation"
 msgstr "Confirmation"
 
-#: modules/booking/includes/form.php:702
+#: modules/booking/includes/form.php:704
 msgid "Confirm your order"
 msgstr "Confirmer votre commande"
 
-#: modules/booking/includes/form.php:718
+#: modules/booking/includes/form.php:720
 msgid "I hereby subscribe to the cancellation insurance for "
 msgstr "Je souhaite souscrire à l'assurance annulation pour "
 
-#: modules/booking/includes/form.php:744
+#: modules/booking/includes/form.php:746
 msgid "Loading..."
 msgstr "Chargement..."
 
@@ -296,6 +292,7 @@ msgstr "Récapitulatif de votre commande"
 
 #: modules/payment/includes/mypos/api.php:73
 #: modules/payment/includes/payplug/api.php:63
+#: modules/payment/includes/stripe/api.php:64
 msgid "failed to get parking management instance"
 msgstr "La récupération de la configuration a échoué"
 
@@ -440,6 +437,10 @@ msgstr "Copier et coller ce code dans votre page pour inclure un formulaire Voit
 msgid "Copy and paste this code into your page to include stripe payment form."
 msgstr "Copier et coller ce code dans votre page pour inclure un paiement Stripe"
 
-#: modules/booking/includes/form.php:552
-msgid "Journey"
-msgstr "Séjour"
+#: modules/booking/includes/form.php:555
+msgid "Date and hour"
+msgstr "Date et heure"
+
+#: modules/booking/includes/form.php:666
+msgid "Pay and validate"
+msgstr "Payer et valider"
