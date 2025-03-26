@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-03-22T15:27:05+00:00\n"
+"POT-Creation-Date: 2025-03-26T18:04:39+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.10.0\n"
 "X-Domain: parking-management\n"
@@ -121,7 +121,7 @@ msgstr ""
 
 #: admin/includes/pages.php:439
 #: modules/booking/includes/form.php:326
-#: modules/booking/includes/form.php:694
+#: modules/booking/includes/form.php:696
 msgid "Email"
 msgstr ""
 
@@ -297,45 +297,45 @@ msgstr ""
 msgid "Terminal return"
 msgstr ""
 
-#: modules/booking/includes/form.php:552
-msgid "Journey"
+#: modules/booking/includes/form.php:555
+msgid "Date and hour"
 msgstr ""
 
-#: modules/booking/includes/form.php:594
+#: modules/booking/includes/form.php:596
 msgid "Trip Information"
 msgstr ""
 
-#: modules/booking/includes/form.php:645
+#: modules/booking/includes/form.php:647
 msgid "Order amount"
 msgstr ""
 
-#: modules/booking/includes/form.php:664
-msgid "Validate your order"
+#: modules/booking/includes/form.php:666
+msgid "Pay and validate"
 msgstr ""
 
-#: modules/booking/includes/form.php:681
+#: modules/booking/includes/form.php:683
 msgid "Confirmation"
 msgstr ""
 
-#: modules/booking/includes/form.php:685
+#: modules/booking/includes/form.php:687
 #: modules/booking/includes/home_form.php:79
 msgid "Dropping off at"
 msgstr ""
 
-#: modules/booking/includes/form.php:689
+#: modules/booking/includes/form.php:691
 #: modules/booking/includes/home_form.php:96
 msgid "Landing at the airport"
 msgstr ""
 
-#: modules/booking/includes/form.php:702
+#: modules/booking/includes/form.php:704
 msgid "Confirm your order"
 msgstr ""
 
-#: modules/booking/includes/form.php:718
+#: modules/booking/includes/form.php:720
 msgid "I hereby subscribe to the cancellation insurance for "
 msgstr ""
 
-#: modules/booking/includes/form.php:744
+#: modules/booking/includes/form.php:746
 msgid "Loading..."
 msgstr ""
 
@@ -377,6 +377,7 @@ msgstr ""
 
 #: modules/payment/includes/mypos/api.php:73
 #: modules/payment/includes/payplug/api.php:63
+#: modules/payment/includes/stripe/api.php:64
 msgid "failed to get parking management instance"
 msgstr ""
 

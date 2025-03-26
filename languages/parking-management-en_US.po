@@ -118,7 +118,7 @@ msgstr ""
 
 #: admin/includes/pages.php:439
 #: modules/booking/includes/form.php:326
-#: modules/booking/includes/form.php:694
+#: modules/booking/includes/form.php:696
 msgid "Email"
 msgstr ""
 
@@ -233,7 +233,7 @@ msgstr ""
 msgid "Car Park"
 msgstr ""
 
-#: modules/booking/includes/form.php:594
+#: modules/booking/includes/form.php:596
 msgid "Trip Information"
 msgstr ""
 
@@ -249,12 +249,12 @@ msgstr ""
 msgid "Terminal return"
 msgstr ""
 
-#: modules/booking/includes/form.php:685
+#: modules/booking/includes/form.php:687
 #: modules/booking/includes/home_form.php:79
 msgid "Dropping off at"
 msgstr ""
 
-#: modules/booking/includes/form.php:689
+#: modules/booking/includes/form.php:691
 #: modules/booking/includes/home_form.php:96
 msgid "Landing at the airport"
 msgstr ""
@@ -263,27 +263,23 @@ msgstr ""
 msgid "Number of pax"
 msgstr ""
 
-#: modules/booking/includes/form.php:645
+#: modules/booking/includes/form.php:647
 msgid "Order amount"
 msgstr ""
 
-#: modules/booking/includes/form.php:664
-msgid "Validate your order"
-msgstr ""
-
-#: modules/booking/includes/form.php:681
+#: modules/booking/includes/form.php:683
 msgid "Confirmation"
 msgstr ""
 
-#: modules/booking/includes/form.php:702
+#: modules/booking/includes/form.php:704
 msgid "Confirm your order"
 msgstr ""
 
-#: modules/booking/includes/form.php:718
+#: modules/booking/includes/form.php:720
 msgid "I hereby subscribe to the cancellation insurance for "
 msgstr ""
 
-#: modules/booking/includes/form.php:744
+#: modules/booking/includes/form.php:746
 msgid "Loading..."
 msgstr ""
 
@@ -297,6 +293,7 @@ msgstr ""
 
 #: modules/payment/includes/mypos/api.php:73
 #: modules/payment/includes/payplug/api.php:63
+#: modules/payment/includes/stripe/api.php:64
 msgid "failed to get parking management instance"
 msgstr ""
 
@@ -440,6 +437,10 @@ msgstr ""
 msgid "Copy and paste this code into your page to include stripe payment form."
 msgstr ""
 
-#: modules/booking/includes/form.php:552
-msgid "Journey"
+#: modules/booking/includes/form.php:555
+msgid "Date and hour"
+msgstr ""
+
+#: modules/booking/includes/form.php:666
+msgid "Pay and validate"
 msgstr ""
