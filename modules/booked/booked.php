@@ -26,7 +26,13 @@ class Booked implements IShortcode, IParkingManagement
 
 	public function shortcode(string $type): string
 	{
+		$this->enqueue();
 		return self::HTMLMessage($this->pm);
+	}
+
+	private function enqueue(): void
+	{
+		wp_enqueue_style('parking-management-booked', pkmgmt_plugin_url('modules/booked/css/style.css'));
 	}
 
 	/**
@@ -89,6 +95,7 @@ class Booked implements IShortcode, IParkingManagement
 		return !empty($used) ? $used : array(0);
 	}
 
+
 	private static function HTMLMessage(ParkingManagement $pm): string
 	{
 		try {
@@ -99,7 +106,10 @@ class Booked implements IShortcode, IParkingManagement
 			if (empty($message)) {
 				return '';
 			}
-			return Html::_alert('warning', $message);
+			return Html::_div(
+				['class' => 'booked'],
+				Html::_alert('danger', $message)
+			);
 
 		} catch (Exception $e) {
 			Logger::error("booked.HTMLMessage", $e->getMessage());

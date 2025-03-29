@@ -22,9 +22,14 @@ class HighSeason implements IShortcode, IParkingmanagement
 
 	public function shortcode(string $type): string
 	{
+		$this->enqueue();
 		return self::HTMLMessage($this->pm);
 	}
 
+	private function enqueue(): void
+	{
+		wp_enqueue_style('parking-management-high-season', pkmgmt_plugin_url('modules/high_season/css/style.css'));
+	}
 	private static function HTMLMessage(ParkingManagement $pm): string
 	{
 		try {
@@ -38,7 +43,10 @@ class HighSeason implements IShortcode, IParkingmanagement
 			if (empty($message)) {
 				return '';
 			}
-			return Html::_alert('info', $message);
+			return Html::_div(
+				['class' => 'high-season'],
+				Html::_alert('warning', $message)
+			);
 
 		} catch (Exception $e) {
 			Logger::error("database.connect", $e->getMessage());
