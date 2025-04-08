@@ -137,7 +137,7 @@ class Booking implements IShortcode, IParkingManagement
 			if ($form['validation_page']['value'] != '' )
 				$page = $form['validation_page']['value'];
 
-			wp_redirect($page . '?order_id=' . $order_id);
+			wp_redirect($page . '?order_id=' . $order_id .'&kind=' . $this->kind);
 			exit(0);
 
 		} catch (Exception $e) {
