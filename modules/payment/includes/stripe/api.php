@@ -94,14 +94,16 @@ class StripeAPI extends API
 				$session = $event->data->object;
 
 				$session = Session::constructFrom($session->toArray());
-				$order_id = (int)$session->metadata['id_commande'];
-				$order = new Order($kind);
-				if ($session->payment_status == 'paid') {
-					$payment_date = $date = date('Y-m-d H:i:s');
-					$amount = $session->amount_total /100;
-					$payment_id = PaymentID::STRIPE;
-					$order->update_payment((int)$order_id, $payment_date, $amount, $payment_id);
-					Logger::info("stripe.api.create_item", "record payment status recorded");
+				if ($session->metadata['kind'] == $kind) {
+					$order_id = (int)$session->metadata['id_commande'];
+					$order = new Order($kind);
+					if ($session->payment_status == 'paid') {
+						$payment_date = $date = date('Y-m-d H:i:s');
+						$amount = $session->amount_total / 100;
+						$payment_id = PaymentID::STRIPE;
+						$order->update_payment((int)$order_id, $payment_date, $amount, $payment_id);
+						Logger::info("stripe.api.create_item", "record payment status recorded");
+					}
 				}
 			}
 			return new WP_REST_Response(null, WP_Http::NO_CONTENT);
