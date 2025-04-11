@@ -104,6 +104,8 @@ class Stripe implements IPayment
 		try {
 			$member = new Member($this->kind);
 			$order = new Order($this->kind);
+			if ($order['paye'] == $order['total'])
+				return '';
 			$data['post'] = $_POST;
 			$data['order'] = $order->read($this->order_id);
 			$data['member'] = $member->read($data['order']['membre_id']);

@@ -291,7 +291,7 @@ class Order
 			$end_date = DateTime::createFromFormat('Y-m-d', $end);
 
 			if ($start_date === false || $end_date === false) {
-				Logger::error("order.isExists", ["message" => "Invalid date format ", "start" => $start, "end" => $end, "start_hour" => $start_hour, "end_hour" => $end_hour]);
+				Logger::warning("order.isExists", ["message" => "Invalid date format ", "start" => $start, "end" => $end, "start_hour" => $start_hour, "end_hour" => $end_hour]);
 				throw new InvalidArgumentException("Invalid date format provided");
 			}
 
@@ -307,8 +307,7 @@ class Order
 					]
 				),
 				ARRAY_A) === null) {
-				Logger::error("order.isExists", "Database query execution failed");
-				throw new Exception("Database query execution failed");
+				return 0;
 			}
 
 			if (!empty($row['id_commande'])) {
