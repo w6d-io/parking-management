@@ -53,7 +53,7 @@ class Price implements IShortcode, IParkingmanagement
 	{
 		try {
 
-			$pm = getParkingManagementInstance();
+			$pm = $this->pm;
 			$info = $pm->prop('info');
 			$form = $pm->prop('form');
 			$high_season = $pm->prop('high_season');

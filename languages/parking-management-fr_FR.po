@@ -286,7 +286,7 @@ msgstr "Chargement..."
 msgid "Car park is full on "
 msgstr "Parking complet le "
 
-#: modules/notification/notification.php:65
+#: modules/notification/notification.php:67
 msgid "Summary of your order"
 msgstr "Récapitulatif de votre commande"
 
@@ -420,10 +420,6 @@ msgstr "Copier et coller ce code dans votre page pour inclure un tableau des pri
 msgid "Copy and paste this code into your page to include price valet table."
 msgstr "Copier et coller ce code dans votre page pour inclure un tableau des prix pour les réservations voiturier"
 
-#: modules/notification/notification.php:85
-msgid "Cancellation of your order"
-msgstr "Annulation de votre réservation"
-
 #: modules/booking/includes/order.php:162
 msgid "Order already exist"
 msgstr "Cette réservation existe déjà"
@@ -444,3 +440,7 @@ msgstr "Date et heure"
 #: modules/booking/includes/form.php:666
 msgid "Pay and validate"
 msgstr "Payer et valider"
+
+#: modules/notification/notification.php:87
+msgid "Pending payment"
+msgstr "En attente de paiement"
