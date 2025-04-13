@@ -35,7 +35,6 @@ class Notification implements IShortcode
 		if (Payment::validateOnPayment($this->kind) && (!array_key_exists('from', $_GET) || $_GET['from'] != 'provider'))
 			return '';
 		try {
-
 			$data = $this->getData($this->kind);
 			$order = new Order($this->kind);
 			return match ($type) {
@@ -85,7 +84,7 @@ class Notification implements IShortcode
 				Logger::error("notification.confirmation", "get config failed");
 				return '';
 			}
-			$this->mail($data, esc_html__('Cancellation of your order', 'parking-management'), $config['mail_templates']['cancellation']['value']);
+			$this->mail($data, esc_html__('Pending payment', 'parking-management'), $config['mail_templates']['cancellation']['value']);
 		} catch (Exception $e) {
 			Logger::error("notification.cancellation", $e->getMessage());
 		}

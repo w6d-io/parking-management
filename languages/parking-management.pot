@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-03-26T18:04:39+00:00\n"
+"POT-Creation-Date: 2025-04-13T21:14:21+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.10.0\n"
 "X-Domain: parking-management\n"
@@ -367,12 +367,12 @@ msgstr ""
 msgid "vehicle creation failed"
 msgstr ""
 
-#: modules/notification/notification.php:65
+#: modules/notification/notification.php:67
 msgid "Summary of your order"
 msgstr ""
 
-#: modules/notification/notification.php:85
-msgid "Cancellation of your order"
+#: modules/notification/notification.php:87
+msgid "Pending payment"
 msgstr ""
 
 #: modules/payment/includes/mypos/api.php:73
