@@ -57,9 +57,9 @@ class Payplug implements IPayment
 		$data = array();
 		try {
 			$order = new Order($this->kind);
-			if ($order['paye'] == $order['total'])
-				return '';
 			$data['order'] = $order->read($this->order_id);
+			if ($data['order']['paye'] == $data['order']['total'])
+				return '';
 			$member = new Member($this->kind);
 			$data['member'] = $member->read($data['order']['membre_id']);
 			$data['post'] = $_POST;
