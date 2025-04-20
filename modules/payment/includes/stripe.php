@@ -62,20 +62,17 @@ class Stripe implements IPayment
 			$session = $stripe->checkout->sessions->retrieve($session_id);
 			$amount = $session->amount_total / 100;
 			$payment_id = PaymentID::STRIPE;
-			$status = OrderStatus::PAID;
 			if ($session->payment_status != 'paid') {
 				$payment_id = PaymentID::UNKNOWN;
 				$amount = 0;
-				$status = OrderStatus::PENDING;
 			}
 			Logger::debug('stripe.updatePaymentStatus', [
 				'session' => $session,
 				'amount' => $amount,
-				'payment_id' => $payment_id,
-				'status' => $status,
+				'payment_id' => $payment_id
 			]);
 			$order = new Order($kind);
-			$order->update_payment($order_id, date('Y-m-d H:i:s'), $amount, $payment_id, $status);
+			$order->update_payment($order_id, date('Y-m-d H:i:s'), $amount, $payment_id);
 			Logger::info("stripe.updatePaymentStatus", "update payment status recorded");
 			return true;
 		} catch (Exception|ApiErrorException $e) {
