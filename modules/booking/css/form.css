@@ -479,3 +479,7 @@ label.error {
 #reservation div.journey {
 	max-width: 530px;
 }
+
+#reservation .black {
+	color: black;
+}

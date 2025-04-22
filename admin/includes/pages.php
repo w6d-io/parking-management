@@ -339,11 +339,13 @@ class Pages
 
 	private static function _option_card(string $id, array $option): string
 	{
+
 		return '<div class="col-sm-3">'
 			. '<div class="card">'
 			. '<div class="card-body">'
 			. '<h5 class="card-title">' . $option['title'] . '</h5>'
 			. '<input type="hidden" value="' . $option['title'] . '" name="pkmgmt-form[options][' . $id . '][title]"/>'
+			. '<input type="hidden" value="' . $option['label'] . '" name="pkmgmt-form[options][' . $id . '][label]"/>'
 			. '<div class="input-group mb-3">'
 			. '<div class="input-group-text">'
 			. '<input type="hidden" value="0" name="pkmgmt-form[options][' . $id . '][enabled]"/>'

@@ -224,11 +224,25 @@ class Price implements IShortcode, IParkingmanagement
 				]);
 			}
 
-			$assurance_annulation = $this->getData($data, 'assurance_annulation');
-			if (!empty($assurance_annulation) && ($assurance_annulation == '1')) {
+			$cancellation_insurance = $this->getData($data, 'cancellation_insurance');
+			if (!empty($cancellation_insurance) && ($cancellation_insurance == '1')) {
 				$insurance_price = (int)$form['options']['cancellation_insurance']['price'];
 				$price['total'] += $insurance_price;
 				Logger::info("price.getPrice.insurance", ['price' => $insurance_price]);
+			}
+
+			$keep_keys = $this->getData($data, 'keep_keys');
+			if (!empty($keep_keys) && ($keep_keys == '1')) {
+				$keep_keys = (int)$form['options']['keep_keys']['price'];
+				$price['total'] += $keep_keys;
+				Logger::info("price.getPrice.keep_keys", ['price' => $keep_keys]);
+			}
+
+			$ev_charging = $this->getData($data, 'ev_charging');
+			if (!empty($ev_charging) && ($ev_charging == '1')) {
+				$ev_charging = (int)$form['options']['ev_charging']['price'];
+				$price['total'] += $ev_charging;
+				Logger::info("price.getPrice.ev_charging", ['price' => $ev_charging]);
 			}
 
 			$price['timing'] = microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"];
@@ -321,7 +335,7 @@ class Price implements IShortcode, IParkingmanagement
 	{
 		if ($night_extra_charge['enabled'] === '1') {
 			$hour = (int)str_replace(":", "", $hour);
-			if (($hour < 600) || ($hour > 2200))
+			if (($hour < 700) || ($hour > 2100))
 				return $night_extra_charge['price'];
 		}
 		return 0;

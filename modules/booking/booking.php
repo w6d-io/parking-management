@@ -55,10 +55,10 @@ class Booking implements IShortcode, IParkingManagement
 						Html::_form('reservation', 'reservation', 'post', '', array(),
 							Html::_div(array('class' => 'row'),
 								Html::_div(array('class' => 'col-12'),
+									$form->trip_information(),
 									$form->personal_information(),
-									$form->trip_information()
 								),
-								$form->cancellation_insurance(),
+								$form->options(),
 								$form->cgv(),
 								$form->total(),
 								$form->submit(),

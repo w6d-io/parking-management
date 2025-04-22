@@ -60,7 +60,7 @@ document.addEventListener('DOMContentLoaded', function () {
 	$('#cgv_reservation').on('change', function () {
 		switchSubmitBtn($(this).is(':checked'))
 	});
-	$('#depart, #return, #nb_pax, #assurance_annulation, input.type-id, input.parking-type').on('change', function () {
+	$('#depart, #return, #nb_pax, .options-checkbox, input.type-id, input.parking-type').on('change', function () {
 		getPrice();
 	})
 
@@ -139,6 +139,7 @@ document.addEventListener('DOMContentLoaded', function () {
 					callback();
 				});
 				picker.on('view', (evt) => {
+
 					const {view, date, target} = evt.detail;
 					if ( view === 'CalendarDay' && date.inArray(highSeason, '[]') ) {
 						target.classList.add('high-season');
@@ -150,6 +151,7 @@ document.addEventListener('DOMContentLoaded', function () {
 			RangePlugin: {
 				elementEnd: endDateInput,
 				minDate: new Date(),
+
 				locale: {
 					one: "jour",
 					other: "jours"
