@@ -159,6 +159,18 @@ class Template
 					'title' => 'Shuttle',
 					'price' => 0
 				),
+				'keep_keys' => array(
+					'enabled' => "0",
+					'title' => 'Keep keys',
+					'price' => 0,
+					'label' => esc_html__('I will keep my keys for %s €', 'parking-management')
+				),
+				'ev_charging' => array(
+					'enabled' => "0",
+					'title' => 'EV Charging',
+					'price' => 0,
+					'label' => esc_html__('Electric Vehicle charging for %s €', 'parking-management')
+				),
 				'late' => array(
 					'enabled' => "0",
 					'title' => 'Late',
@@ -177,7 +189,8 @@ class Template
 				'cancellation_insurance' => array(
 					'enabled' => "0",
 					'title' => 'Cancellation insurance',
-					'price' => 0
+					'price' => 0,
+					'label' => esc_html__('I hereby subscribe to the cancellation insurance for %s €', 'parking-management')
 				),
 			),
 		);

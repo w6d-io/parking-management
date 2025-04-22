@@ -152,6 +152,9 @@ function pkmgmt_upgrade(): void
 	if (version_compare($old_version, '4.3.5', '<')) {
 		pkmgmt_migrate_to_4_3_5();
 	}
+	if (version_compare($old_version, '4.5.0', '<')) {
+		pkmgmt_migrate_to_4_5_0();
+	}
 
 	do_action('pkmgmt_upgrade', $old_version, $new_version);
 	PKMGMT::update_option('version', $new_version);
@@ -484,6 +487,35 @@ function pkmgmt_migrate_to_4_3_5(): void
 		$pm->save();
 	} catch (Exception $e) {
 		Logger::error("migrate.to.4.3.5", $e->getMessage());
+	}
+}
+
+function pkmgmt_migrate_to_4_5_0(): void
+{
+	try {
+		$pm = getParkingManagementInstance();
+		if (!$pm)
+			return;
+		$payment = Template::payment_properties();
+		$props = $pm->get_properties();
+		$props['form']['options']['keep_keys'] =  array(
+			'enabled' => "0",
+			'title' => 'Keep keys',
+			'price' => 0,
+			'label' => 'I will keep my keep for %s €'
+		);
+		$props['form']['options']['ev_charging'] = [
+			'enabled' => "0",
+			'title' => 'EV Charging',
+			'price' => 0,
+			'label' => 'Electric Vehicle charging for %s €'
+		];
+		$props['form']['options']['cancellation_insurance']['label'] = 'I hereby subscribe to the cancellation insurance for %s €';
+
+		$pm->set_properties($props);
+		$pm->save();
+	} catch (Exception $e) {
+		Logger::error("migrate.to.4.5.0", $e->getMessage());
 	}
 }
 

@@ -357,7 +357,11 @@ class Form
 			);
 		}
 		return array_merge($content,
-			[self::_row_field('modele',
+			[
+				Html::_p([
+					'class' => 'h5 black',
+				], esc_html__('We only accommodate passenger vehicles such as compact cars, sedans, SUVs, and 4x4s.', 'parking-management')),
+				self::_row_field('modele',
 				self::_label('modele', esc_html__('Car model', 'parking-management')),
 				Html::_index('text', 'marque', 'marque',
 					array(
@@ -710,32 +714,36 @@ EOT;
 </div>';
 	}
 
-	public function cancellation_insurance(): string
+	public function options(): string
 	{
 		$form = $this->pm->prop('form');
-		if ($form['options']['cancellation_insurance']['enabled'] !== '1' || $form['options']['cancellation_insurance']['price'] === '0')
-			return '';
-		// Cocher cette case si le client souscrit l'assurance annulation à
+
 		$post = array_merge($_GET, $_POST);
-		$msg = esc_html__('I hereby subscribe to the cancellation insurance for ', 'parking-management') . $form['options']['cancellation_insurance']['price'] . ' €';
-		return Html::_div(
-			array('class' => 'cancellation-insurance form-check'),
-			Html::_index('hidden', '', 'assurance_annulation', array('value' => '0')),
-			Html::_index(
-				'checkbox',
-				'assurance_annulation',
-				'assurance_annulation',
-				array(
-					'class' => 'cancellation-insurance form-check-input',
-					'value' => "1",
-					'tabindex' => "15",
+		$contents = [];
+		foreach ($form['options'] as $key => $value) {
+			if ($value['enabled'] !== '1' || $value['price'] === '0' || empty($value['label'])) {
+				continue;
+			}
+			$msg = sprintf(esc_html__($value['label'], 'parking-management'), $value['price']);
+			$contents[] = Html::_div(
+				array('class' => 'options-container form-check'),
+				Html::_index('hidden', '', $key, array('value' => '0')),
+				Html::_index(
+					'checkbox',
+					$key,
+					$key,
+					[
+						'class' => 'options-checkbox form-check-input',
+						'value' => "1",
+					],
+					false,
+					false,
+					(array_key_exists($key, $post) ? $post[$key] : '0') == '1'
 				),
-				false,
-				false,
-				(array_key_exists('assurance_annulation', $post) ? $post['assurance_annulation'] : '0') == '1'
-			),
-			Html::_label_with_attr(array('class' => 'form-check-label'), 'assurance_annulation', $msg),
-		);
+				Html::_label_with_attr(array('class' => 'form-check-label'), $key, $msg)
+			);
+		}
+		return join('', $contents);
 	}
 
 	public function spinner(): string
