@@ -124,6 +124,8 @@ document.addEventListener('DOMContentLoaded', function () {
 			|| $('#retour').val().length === 0
 		)
 			return;
+		$('#depart').val($('#depart').val() + ' 12:00');
+		$('#retour').val($('#retour').val() + ' 12:00');
 		$.ajax({
 			type: 'GET',
 			url: '/wp-json/pkmgmt/v1/prices',
