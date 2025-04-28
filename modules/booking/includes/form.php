@@ -632,7 +632,7 @@ EOT;
 				false,
 				(array_key_exists('cgv_reservation', $post) ? $post['cgv_reservation'] : '0') == '1'
 			),
-			Html::_label_with_attr(array('class' => 'form-check-label'), 'cgv_reservation', $msg),
+			Html::_label_with_attr(array('class' => 'form-check-label black'), 'cgv_reservation', $msg),
 		);
 	}
 
@@ -740,7 +740,7 @@ EOT;
 					false,
 					(array_key_exists($key, $post) ? $post[$key] : '0') == '1'
 				),
-				Html::_label_with_attr(array('class' => 'form-check-label'), $key, $msg)
+				Html::_label_with_attr(array('class' => 'form-check-label black'), $key, $msg)
 			);
 		}
 		return join('', $contents);

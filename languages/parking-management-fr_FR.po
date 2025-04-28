@@ -455,4 +455,4 @@ msgstr "Charger mon véhicule électrique pour %s €"
 
 #: modules/booking/includes/form.php:363
 msgid "We only accommodate passenger vehicles such as compact cars, sedans, SUVs, and 4x4s."
-msgstr "Nous acceptons uniquement les véhicules de tourisme tels que les voitures compactes, les berlines, les VUS et les 4x4."
+msgstr "Nous acceptons uniquement les véhicules de tourisme tels que les voitures compactes, les berlines, les SUV et les 4x4."

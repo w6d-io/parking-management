@@ -502,7 +502,7 @@ function pkmgmt_migrate_to_4_5_0(): void
 			'enabled' => "0",
 			'title' => 'Keep keys',
 			'price' => 0,
-			'label' => 'I will keep my keep for %s €'
+			'label' => 'I will keep my keys for %s €'
 		);
 		$props['form']['options']['ev_charging'] = [
 			'enabled' => "0",
@@ -510,7 +510,7 @@ function pkmgmt_migrate_to_4_5_0(): void
 			'price' => 0,
 			'label' => 'Electric Vehicle charging for %s €'
 		];
-		$props['form']['options']['cancellation_insurance']['label'] = 'I hereby subscribe to the cancellation insurance for %s €';
+		$props['form']['options']['cancellation_insurance']['label'] = esc_html__('I hereby subscribe to the cancellation insurance for %s €', 'parking-management');
 
 		$pm->set_properties($props);
 		$pm->save();

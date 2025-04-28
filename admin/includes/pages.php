@@ -630,6 +630,7 @@ class Pages
 
 		echo '<div class="' . $box['id'] . '-fields">';
 		echo '<div class="row">';
+		$form['options']['keep_keys']['label'] = 'I will keep my keys for %s €';
 		foreach ($form['options'] as $id => $option) {
 			echo self::_option_card($id, $option);
 		}
