@@ -118,7 +118,7 @@ msgstr ""
 
 #: admin/includes/pages.php:441
 #: modules/booking/includes/form.php:326
-#: modules/booking/includes/form.php:698
+#: modules/booking/includes/form.php:700
 msgid "Email"
 msgstr ""
 
@@ -201,7 +201,7 @@ msgstr ""
 msgid "Inside"
 msgstr ""
 
-#: modules/booking/includes/form.php:422
+#: modules/booking/includes/form.php:424
 msgid "Personal Information"
 msgstr ""
 
@@ -221,61 +221,61 @@ msgstr ""
 msgid "Type of vehicle"
 msgstr ""
 
-#: modules/booking/includes/form.php:363
+#: modules/booking/includes/form.php:365
 msgid "Car model"
 msgstr ""
 
-#: modules/booking/includes/form.php:380
+#: modules/booking/includes/form.php:382
 msgid "Immatriculation"
 msgstr ""
 
-#: modules/booking/includes/form.php:404
+#: modules/booking/includes/form.php:406
 msgid "Car Park"
 msgstr ""
 
-#: modules/booking/includes/form.php:598
+#: modules/booking/includes/form.php:600
 msgid "Trip Information"
 msgstr ""
 
-#: modules/booking/includes/form.php:477
+#: modules/booking/includes/form.php:479
 msgid "Destination"
 msgstr ""
 
-#: modules/booking/includes/form.php:520
+#: modules/booking/includes/form.php:522
 msgid "Terminal departure"
 msgstr ""
 
-#: modules/booking/includes/form.php:536
+#: modules/booking/includes/form.php:538
 msgid "Terminal return"
 msgstr ""
 
-#: modules/booking/includes/form.php:689
+#: modules/booking/includes/form.php:691
 #: modules/booking/includes/home_form.php:79
 msgid "Dropping off at"
 msgstr ""
 
-#: modules/booking/includes/form.php:693
+#: modules/booking/includes/form.php:695
 #: modules/booking/includes/home_form.php:96
 msgid "Landing at the airport"
 msgstr ""
 
-#: modules/booking/includes/form.php:432
+#: modules/booking/includes/form.php:434
 msgid "Number of pax"
 msgstr ""
 
-#: modules/booking/includes/form.php:649
+#: modules/booking/includes/form.php:651
 msgid "Order amount"
 msgstr ""
 
-#: modules/booking/includes/form.php:685
+#: modules/booking/includes/form.php:687
 msgid "Confirmation"
 msgstr ""
 
-#: modules/booking/includes/form.php:706
+#: modules/booking/includes/form.php:708
 msgid "Confirm your order"
 msgstr ""
 
-#: modules/booking/includes/form.php:752
+#: modules/booking/includes/form.php:754
 msgid "Loading..."
 msgstr ""
 
@@ -375,11 +375,11 @@ msgstr ""
 msgid "Your quote in 2 clicks"
 msgstr ""
 
-#: modules/booking/includes/form.php:504
+#: modules/booking/includes/form.php:506
 msgid "Departure"
 msgstr ""
 
-#: modules/booking/includes/form.php:510
+#: modules/booking/includes/form.php:512
 msgid "Return"
 msgstr ""
 
@@ -429,11 +429,11 @@ msgstr ""
 msgid "Copy and paste this code into your page to include stripe payment form."
 msgstr ""
 
-#: modules/booking/includes/form.php:557
+#: modules/booking/includes/form.php:559
 msgid "Date and hour"
 msgstr ""
 
-#: modules/booking/includes/form.php:668
+#: modules/booking/includes/form.php:670
 msgid "Pay and validate"
 msgstr ""
 
@@ -453,6 +453,6 @@ msgstr ""
 msgid "Electric Vehicle charging for %s €"
 msgstr ""
 
-#: modules/booking/includes/form.php:361
+#: modules/booking/includes/form.php:363
 msgid "We only accommodate passenger vehicles such as compact cars, sedans, SUVs, and 4x4s."
 msgstr ""

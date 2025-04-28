@@ -117,7 +117,7 @@ msgstr "RCS"
 
 #: admin/includes/pages.php:441
 #: modules/booking/includes/form.php:326
-#: modules/booking/includes/form.php:698
+#: modules/booking/includes/form.php:700
 msgid "Email"
 msgstr "Email"
 
@@ -200,7 +200,7 @@ msgstr "Extérieur"
 msgid "Inside"
 msgstr "Intérieur"
 
-#: modules/booking/includes/form.php:422
+#: modules/booking/includes/form.php:424
 msgid "Personal Information"
 msgstr "Information personnel"
 
@@ -220,61 +220,61 @@ msgstr "Mobile"
 msgid "Type of vehicle"
 msgstr "Type de véhicule"
 
-#: modules/booking/includes/form.php:363
+#: modules/booking/includes/form.php:365
 msgid "Car model"
 msgstr "Modèle du Véhicule"
 
-#: modules/booking/includes/form.php:380
+#: modules/booking/includes/form.php:382
 msgid "Immatriculation"
 msgstr "Immatriculation"
 
-#: modules/booking/includes/form.php:404
+#: modules/booking/includes/form.php:406
 msgid "Car Park"
 msgstr "Parking"
 
-#: modules/booking/includes/form.php:598
+#: modules/booking/includes/form.php:600
 msgid "Trip Information"
 msgstr "Voyage"
 
-#: modules/booking/includes/form.php:477
+#: modules/booking/includes/form.php:479
 msgid "Destination"
 msgstr "Destination"
 
-#: modules/booking/includes/form.php:520
+#: modules/booking/includes/form.php:522
 msgid "Terminal departure"
 msgstr "Terminal de départ"
 
-#: modules/booking/includes/form.php:536
+#: modules/booking/includes/form.php:538
 msgid "Terminal return"
 msgstr "Terminal de retour"
 
-#: modules/booking/includes/form.php:689
+#: modules/booking/includes/form.php:691
 #: modules/booking/includes/home_form.php:79
 msgid "Dropping off at"
 msgstr "Dépôt à"
 
-#: modules/booking/includes/form.php:693
+#: modules/booking/includes/form.php:695
 #: modules/booking/includes/home_form.php:96
 msgid "Landing at the airport"
 msgstr "Arrivée à l'aéroport"
 
-#: modules/booking/includes/form.php:432
+#: modules/booking/includes/form.php:434
 msgid "Number of pax"
 msgstr "Nombre de passager"
 
-#: modules/booking/includes/form.php:649
+#: modules/booking/includes/form.php:651
 msgid "Order amount"
 msgstr "Montant de la commande"
 
-#: modules/booking/includes/form.php:685
+#: modules/booking/includes/form.php:687
 msgid "Confirmation"
 msgstr "Confirmation"
 
-#: modules/booking/includes/form.php:706
+#: modules/booking/includes/form.php:708
 msgid "Confirm your order"
 msgstr "Confirmer votre commande"
 
-#: modules/booking/includes/form.php:752
+#: modules/booking/includes/form.php:754
 msgid "Loading..."
 msgstr "Chargement..."
 
@@ -379,11 +379,11 @@ msgstr "Oubli dans le véhicule"
 msgid "Your quote in 2 clicks"
 msgstr "Votre devis en 2 clicks"
 
-#: modules/booking/includes/form.php:504
+#: modules/booking/includes/form.php:506
 msgid "Departure"
 msgstr "Départ"
 
-#: modules/booking/includes/form.php:510
+#: modules/booking/includes/form.php:512
 msgid "Return"
 msgstr "Retour"
 
@@ -429,11 +429,11 @@ msgstr "Copier et coller ce code dans votre page pour inclure un formulaire Voit
 msgid "Copy and paste this code into your page to include stripe payment form."
 msgstr "Copier et coller ce code dans votre page pour inclure un paiement Stripe"
 
-#: modules/booking/includes/form.php:557
+#: modules/booking/includes/form.php:559
 msgid "Date and hour"
 msgstr "Date et heure"
 
-#: modules/booking/includes/form.php:668
+#: modules/booking/includes/form.php:670
 msgid "Pay and validate"
 msgstr "Payer et valider"
 
@@ -453,6 +453,6 @@ msgstr "Je garde ma clé pour %s €"
 msgid "Electric Vehicle charging for %s €"
 msgstr "Charger mon véhicule électrique pour %s €"
 
-#: modules/booking/includes/form.php:361
+#: modules/booking/includes/form.php:363
 msgid "We only accommodate passenger vehicles such as compact cars, sedans, SUVs, and 4x4s."
 msgstr "Nous acceptons uniquement les véhicules de tourisme tels que les voitures compactes, les berlines, les VUS et les 4x4."
