@@ -523,8 +523,8 @@ add_action('activate_' . PKMGMT_PLUGIN_BASENAME, 'pkmgmt_install', 9, 0);
 
 
 /**
- * Callback tied to plugin activation action hook. Attempts to create
- * initial user dataset.
+ * Callback tied to a plugin activation action hook. Attempts to create
+ *  an initial user dataset.
  * @throws Exception
  */
 function pkmgmt_install(): void
