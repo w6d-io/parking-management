@@ -3,6 +3,7 @@
 namespace ParkingManagement\API;
 
 use ParkingManagement\DatesRange;
+use ParkingManagement\Logger;
 use WP_Error;
 use WP_REST_Request;
 use WP_REST_Response;
@@ -23,6 +24,13 @@ class HighSeasonApi extends Api
 			'methods' => WP_REST_Server::READABLE,
 			'callback' => [$this, 'get_items'],
 			'permission_callback' => '__return_true',
+			'args' => [
+				'raw' => [
+					'description' => 'get raw values',
+					'default' => "false",
+					'required' => false
+				],
+			]
 		]);
 	}
 
@@ -34,12 +42,17 @@ class HighSeasonApi extends Api
 	{
 		$pm = getParkingManagementInstance();
 		if (!$pm)
-			return new WP_Error('error', __('failed to get config', 'parking-management'));
+			return new WP_Error('error', __('failed to get config', 'parking-management'), ['status' => 500]);
 		$highSeasons = $pm->prop('high_season');
-		if (empty($highSeasons['dates'])||!is_array($highSeasons['dates']))
-			$hs = [];
+		Logger::info('high-seasons', $highSeasons);
+		$raw = $request->has_param('raw') ? $request->get_param('raw') : false;
+		if (empty($highSeasons['dates']) || !is_array($highSeasons['dates']))
+			return rest_ensure_response([]);
+		if (isEmptyOrTrue($raw))
+			$hs = DatesRange::getDatesRange($highSeasons['dates']);
 		else
 			$hs = DatesRange::getDatesRangeAPI($highSeasons['dates']);
+
 		return rest_ensure_response($hs);
 	}
 }

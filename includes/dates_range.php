@@ -59,6 +59,16 @@ class DatesRange
 		return $datesRange;
 	}
 
+	public static function getDatesRange(array $dates): array
+	{
+		$datesRange = array();
+		$sorted = self::getDatesRangeSorted($dates);
+		foreach ($sorted as $date) {
+			$datesRange[] = $date;
+		}
+		return $datesRange;
+	}
+
 	public static function isContain(string $search, array $dates): bool
 	{
 		try {
