@@ -279,3 +279,8 @@ function inline_svg($file_path)
 	}
 	return 'SVG not found';
 }
+
+function isEmptyOrTrue(mixed $value): bool
+{
+	return empty($value) || $value === "true";
+}

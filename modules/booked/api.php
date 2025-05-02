@@ -3,6 +3,7 @@
 namespace ParkingManagement\API;
 
 use ParkingManagement\DatesRange;
+use ParkingManagement\Logger;
 use WP_Error;
 use WP_REST_Request;
 use WP_REST_Response;
@@ -24,6 +25,13 @@ class BookedAPI extends API
 				'methods' => WP_REST_Server::READABLE,
 				'callback' => [$this, 'get_items'],
 				'permission_callback' => '__return_true',
+				'args' => [
+					'raw' => [
+						'description' => 'get raw values',
+						'default' => "false",
+						'required' => false
+					],
+				]
 			]
 		);
 	}
@@ -38,7 +46,14 @@ class BookedAPI extends API
 		if (!$pm)
 			return new WP_Error('error', __('failed to get config', 'parking-management'));
 		$bookedDates = $pm->prop('booked_dates');
-		$booked = DatesRange::getDatesRangeAPI($bookedDates);
+		Logger::info('booked-dates', $bookedDates);
+		$raw = $request->has_param('raw') ? $request->get_param('raw') : false;
+		if (empty($bookedDates) || !is_array($bookedDates) )
+			return rest_ensure_response([]);
+		if (isEmptyOrTrue($raw))
+			$booked = DatesRange::getDatesRange($bookedDates);
+		else
+			$booked = DatesRange::getDatesRangeAPI($bookedDates);
 		return rest_ensure_response($booked);
 	}
 }
