@@ -433,7 +433,7 @@ class Form
 		return self::_row_field('nb_pax',
 			self::_label('nb_pax', esc_html__('Number of pax', 'parking-management')),
 			Html::_select('nb_pax', 'nb_pax', array(
-				'class' => 'required border col-5 rounded py-2 px-3 form-select esg-sorting-select',
+				'class' => 'required border col-5 rounded py-2 px-3 form-select',
 				'tabindex' => "14",
 			),
 				array(
