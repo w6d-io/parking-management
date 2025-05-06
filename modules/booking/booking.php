@@ -110,7 +110,7 @@ class Booking implements IShortcode, IParkingManagement
 		$post = array_merge($_GET, $_POST);
 		$page = home_url();
 
-		Logger::debug('bookinf.record', ['kind' => $this->kind]);
+		Logger::debug('booking.record', ['kind' => $this->kind]);
 		try {
 			$member = new Member($this->kind);
 			$member_id = $member->isMemberExists($post['email']);
