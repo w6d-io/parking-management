@@ -46,7 +46,6 @@ class BookedAPI extends API
 		if (!$pm)
 			return new WP_Error('error', __('failed to get config', 'parking-management'));
 		$bookedDates = $pm->prop('booked_dates');
-		Logger::info('booked-dates', $bookedDates);
 		$raw = $request->has_param('raw') ? $request->get_param('raw') : false;
 		if (empty($bookedDates) || !is_array($bookedDates) )
 			return rest_ensure_response([]);

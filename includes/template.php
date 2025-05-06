@@ -186,12 +186,13 @@ class Template
 					'title' => 'Forgetting',
 					'price' => 0
 				),
-				'cancellation_insurance' => array(
-					'enabled' => "0",
+				'cancellation_insurance' =>
+					[
+						'enabled' => "0",
 					'title' => 'Cancellation insurance',
 					'price' => 0,
 					'label' => esc_html__('I hereby subscribe to the cancellation insurance for %s €', 'parking-management')
-				),
+					],
 			),
 		);
 	}

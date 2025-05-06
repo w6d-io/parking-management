@@ -523,7 +523,7 @@ class Form
 							),
 							Html::_select('terminal_depart', 'terminal[depart]',
 								array(
-									'class' => 'border form-select esg-sorting-select py-2',
+									'class' => 'border form-select py-2',
 									'tabindex' => "11",
 								),
 								self::get_terminal($pm),
@@ -539,7 +539,7 @@ class Form
 							),
 							Html::_select('terminal_arrivee', 'terminal[arrivee]',
 								array(
-									'class' => 'border form-select esg-sorting-select py-2',
+									'class' => 'border form-select py-2',
 									'tabindex' => "13",
 								),
 								self::get_terminal($pm),
