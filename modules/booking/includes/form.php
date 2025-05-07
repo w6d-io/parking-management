@@ -337,6 +337,7 @@ class Form
 		if ($this->kind === 'valet') {
 			$content[] = Html::_index('hidden', 'type_id', 'type_id', ['value' => VehicleType::CAR->value]);
 		} else {
+			if (count($vehicle_type) == 1)
 			$content[] = self::_row_field('type-id input-group align-items-center',
 				Html::_label_with_attr(
 					array('class' => 'type_id col-sm-3 form form-label'),
@@ -356,6 +357,7 @@ class Form
 				)
 			);
 		}
+
 		return array_merge($content,
 			[
 				Html::_p([
@@ -738,7 +740,7 @@ EOT;
 					],
 					false,
 					false,
-					(array_key_exists($key, $post) ? $post[$key] : '0') == '1'
+					(array_key_exists($key, $post) ? $post[$key] : $value['checked']) == '1'
 				),
 				Html::_label_with_attr(array('class' => 'form-check-label black'), $key, $msg)
 			);

@@ -151,48 +151,55 @@ class Template
 			'options' => array(
 				'night_extra_charge' => array(
 					'enabled' => "0",
+					'checked' => "0",
 					'title' => 'Night extra charge',
 					'price' => 0
 				),
 				'shuttle' => array(
 					'enabled' => "0",
+					'checked' => "0",
 					'title' => 'Shuttle',
 					'price' => 0
 				),
 				'keep_keys' => array(
 					'enabled' => "0",
+					'checked' => "0",
 					'title' => 'Keep keys',
 					'price' => 0,
 					'label' => esc_html__('I will keep my keys for %s €', 'parking-management')
 				),
 				'ev_charging' => array(
 					'enabled' => "0",
+					'checked' => "0",
 					'title' => 'EV Charging',
 					'price' => 0,
 					'label' => esc_html__('Electric Vehicle charging for %s €', 'parking-management')
 				),
 				'late' => array(
 					'enabled' => "0",
+					'checked' => "0",
 					'title' => 'Late',
 					'price' => 0
 				),
 				'holiday' => array(
 					'enabled' => "0",
+					'checked' => "0",
 					'title' => 'Holiday',
 					'price' => 0
 				),
 				'forgetting' => array(
 					'enabled' => "0",
+					'checked' => "0",
 					'title' => 'Forgetting',
 					'price' => 0
 				),
-				'cancellation_insurance' =>
-					[
-						'enabled' => "0",
+				'cancellation_insurance' => [
+					'enabled' => "0",
+					'checked' => "0",
 					'title' => 'Cancellation insurance',
 					'price' => 0,
 					'label' => esc_html__('I hereby subscribe to the cancellation insurance for %s €', 'parking-management')
-					],
+				],
 			),
 		);
 	}
@@ -277,6 +284,7 @@ class Template
 			]
 		];
 	}
+
 	private static function notification(): array
 	{
 		return [
