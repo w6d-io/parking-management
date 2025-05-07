@@ -49,7 +49,11 @@ class controller
 		$post = array_merge($_GET, $_POST);
 		$pm = getParkingManagementInstance();
 		$form = $pm->prop('form');
-		$page = match ($post['kind']){
+		$kind = 'booking';
+		if (isset($post['kind']) && !empty($post['kind']))
+			$kind = $post['kind'];
+
+		$page = match ($kind){
 			'booking' => $form['booking_page']['value'],
 			'valet' => $form['valet_page']['value'],
 		};

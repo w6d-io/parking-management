@@ -64,7 +64,7 @@ class Price implements IShortcode, IParkingmanagement
 			$end = substr($this->getData($data, 'retour'), 0, 10);
 			$end_hour = substr($this->getData($data, 'retour'), 11, 5);
 
-			if (!$start || !$end) {
+			if (!$start || !$end || "$start" == " 00:00" || "$end" == " 00:00") {
 				Logger::error("price.getPrice.dates", [
 					'start' => $start,
 					'end' => $end,
@@ -77,8 +77,9 @@ class Price implements IShortcode, IParkingmanagement
 				'start' => $start,
 				'start_hour' => $start_hour,
 				'end' => $end,
-				'end_hour' => $end_hour
+				'end_hour' => $end_hour,
 			]);
+
 
 			$realNumberOfDay = $numberOfDay = Order::nbRealDay($start, $end);
 			// Get lot availability

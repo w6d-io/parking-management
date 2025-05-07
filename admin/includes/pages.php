@@ -349,6 +349,7 @@ class Pages
 			. '<div class="input-group mb-3">'
 			. '<div class="input-group-text">'
 			. '<input type="hidden" value="0" name="pkmgmt-form[options][' . $id . '][enabled]"/>'
+			. '<input type="hidden" value="0" name="pkmgmt-form[options][' . $id . '][checked]"/>'
 			. Html::_index('checkbox', 'pkmgmt-form-options-' . $id . '-enabled', 'pkmgmt-form[options][' . $id . '][enabled]',
 				array(
 					'aria-label' => 'Enable the ' . $option['title'],
@@ -358,6 +359,19 @@ class Pages
 				false,
 				false,
 				$option['enabled'] === '1'
+
+			)
+			. '</div>'
+			. '<div class="input-group-text">'
+			. Html::_index('checkbox', 'pkmgmt-form-options-' . $id . '-checked', 'pkmgmt-form[options][' . $id . '][checked]',
+				array(
+					'aria-label' => 'the ' . $option['title'] . 'is checked in form',
+					"value" => '1',
+					'class' => 'form-check-input mt-0'
+				),
+				false,
+				false,
+				$option['checked'] === '1'
 
 			)
 			. '</div>'
