@@ -338,6 +338,7 @@ class Form
 			$content[] = Html::_index('hidden', 'type_id', 'type_id', ['value' => VehicleType::CAR->value]);
 		} else {
 			if (count($vehicle_type) == 1)
+				$content[] = Html::_index('hidden', 'type_id', 'type_id', ['value' => $vehicle_type[0]->id]);
 			$content[] = self::_row_field('type-id input-group align-items-center',
 				Html::_label_with_attr(
 					array('class' => 'type_id col-sm-3 form form-label'),
@@ -357,29 +358,37 @@ class Form
 				)
 			);
 		}
-
+		$form = $this->pm->prop('form');
+		if ($form['options']['keep_keys']['enabled'] === '1' && $form['options']['keep_keys']['price'] !== '0' || !empty($form['options']['keep_keys']['label']) ) {
+			$msg = sprintf(esc_html__($form['options']['keep_keys']['label'], 'parking-management'), $form['options']['keep_keys']['price']);
+			$content[] = Html::_switch(
+				'keep_keys',
+				'keep_keys', [],
+				$msg,
+				array_key_exists('keep_keys', $post) ? $post['keep_keys']: $form['options']['keep_keys']['checked']);
+		}
 		return array_merge($content,
 			[
 				Html::_p([
 					'class' => 'h5 black',
 				], esc_html__('We only accommodate passenger vehicles such as compact cars, sedans, SUVs, and 4x4s.', 'parking-management')),
 				self::_row_field('modele',
-				self::_label('modele', esc_html__('Car model', 'parking-management')),
-				Html::_index('text', 'marque', 'marque',
-					array(
-						'class' => 'marque regular',
-						'value' => $post['marque'] ?? '',
-						'tabindex' => "-1",
+					self::_label('modele', esc_html__('Car model', 'parking-management')),
+					Html::_index('text', 'marque', 'marque',
+						array(
+							'class' => 'marque regular',
+							'value' => $post['marque'] ?? '',
+							'tabindex' => "-1",
+						)
+					),
+					Html::_index('text', 'modele', 'modele',
+						array(
+							'class' => 'modele regular required col-5 border rounded py-2 px-3 form-control',
+							'value' => $post['modele'] ?? '',
+							'tabindex' => "7",
+						)
 					)
 				),
-				Html::_index('text', 'modele', 'modele',
-					array(
-						'class' => 'modele regular required col-5 border rounded py-2 px-3 form-control',
-						'value' => $post['modele'] ?? '',
-						'tabindex' => "7",
-					)
-				)
-			),
 				self::_row_field('immatriculation',
 					self::_label('immatriculation', esc_html__('Immatriculation', 'parking-management')),
 					Html::_index('text', 'immatriculation', 'immatriculation',
@@ -723,7 +732,7 @@ EOT;
 		$post = array_merge($_GET, $_POST);
 		$contents = [];
 		foreach ($form['options'] as $key => $value) {
-			if ($value['enabled'] !== '1' || $value['price'] === '0' || empty($value['label'])) {
+			if ($value['enabled'] !== '1' || $value['price'] === '0' || empty($value['label']) || $key == 'keep_keys') {
 				continue;
 			}
 			$msg = sprintf(esc_html__($value['label'], 'parking-management'), $value['price']);

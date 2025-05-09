@@ -9,8 +9,6 @@ class Html
 	{
 		$result = '';
 		foreach ($attr as $key => $value) {
-//			if (in_array($key, ['id', 'name', 'type']))
-//				continue;
 			$result .= $key . '="' . $value . '" ';
 		}
 		return trim($result);
@@ -96,7 +94,6 @@ class Html
 			$value == '1'
 		);
 		$contents[] = Html::_label_with_attr(array('class' => 'form-check-label'), $id . '-' . $key, $key);
-//		$contents[] = '<br/>';
 
 		return implode(PHP_EOL, $contents);
 	}
@@ -158,6 +155,28 @@ class Html
 			),
 
 		);
+	}
+
+	public static function _switch($id, $name, array $args, $label, $value): string
+	{
+		$args = array_merge(array('value' => '1'), $args);
+		$contents = array();
+		$args['class'] = 'options-checkbox form-check-input';
+		$contents[] = self::_div(
+			['class'=> 'options-switch form-check'],
+			self::_index('hidden', "", $name, array('value' => '0')),
+			self::_index(
+				'checkbox',
+				$id ,
+				$name,
+				$args,
+				false,
+				false,
+				$value == '1'
+			),
+			self::_label_with_attr(['class' => 'form-check-label black'], $id, $label),
+		);
+		return implode(PHP_EOL, $contents);
 	}
 
 }

@@ -483,3 +483,7 @@ label.error {
 #reservation .black {
 	color: black;
 }
+
+.options-switch {
+	padding: 0 !important;
+}
