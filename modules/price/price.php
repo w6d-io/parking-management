@@ -109,7 +109,7 @@ class Price implements IShortcode, IParkingmanagement
 				'total' => 0,
 				'total_reel' => 0,
 				'timing' => 0,
-				'max' => max($maxLot),
+				'max' => (int)max($maxLot),
 				'utilise' => $maxUsedLot,
 				'nb_jour_reel' => $realNumberOfDay,
 				'nb_jour' => $numberOfDay,
@@ -172,7 +172,7 @@ class Price implements IShortcode, IParkingmanagement
 				$total += ($numberOfDay - $latest) * $priceGrid[$site_id][$type_id->value][$parking_type->value]['jour_supplementaire'];
 			}
 
-			$price['total'] = $price['total_reel'] = $total;
+			$price['total'] = $price['total_reel'] = (int)$total;
 
 			// Apply holiday surcharge
 			try {
