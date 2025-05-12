@@ -13,6 +13,7 @@ use ParkingManagement\database\database;
 use ParkingManagement\interfaces\IParkingmanagement;
 use ParkingManagement\interfaces\IShortcode;
 use Price\Page;
+use stdClass;
 use WP_REST_Request;
 
 require_once PKMGMT_PLUGIN_MODULES_DIR . DS . "price" . DS . "includes" . DS . "page.php";
@@ -318,6 +319,53 @@ class Price implements IShortcode, IParkingmanagement
 		$max = max($price);    // Get the higher price
 		$flip = array_flip($price);
 		return array('grille' => $priceGrid[$flip[$max]], 'date' => $flip[$max]);
+	}
+
+
+	/**
+	 * @throws Exception
+	 */
+	public function priceGridFuture(DateTime $date){
+		$conn = database::connect($this->kind);
+		if ($conn === false) {
+			Logger::error("price.priceGrid", database::getError());
+			throw new Exception("Database connection failed");
+		}
+		if (!$result = $conn->get_row(
+			$conn->prepare(
+				"SELECT `grille_tarifaire` FROM `tbl_remplissage` WHERE `date` = '%s'",
+				[$date->format('Y-m-d')]
+			),
+			ARRAY_A
+		))
+			throw new Exception("get price grid failed");
+		$price = [];
+		$row = unserialize($result['grille_tarifaire']);
+		Logger::info('price.priceDridFuture',['row' =>$row]);
+		foreach ($row as $airport_id => $airport_data ) {
+			foreach ($airport_data as $vehicle_id => $vehicle_data) {
+				foreach ($vehicle_data as $parking_type_id => $parking_type_data) {
+					$airport = Airport::fromInt($airport_id);
+					$parking = ParkingType::fromInt($parking_type_id);
+					$vehicle = VehicleType::fromInt($vehicle_id);
+					if ($parking == ParkingType::VALET) {
+						$kind = 'valet';
+						$parking = ParkingType::OUTSIDE;
+					} else {
+						$kind = 'booking';
+					}
+					foreach ($parking_type_data as $nbDay => $priceDay) {
+						if ($priceDay == 0)
+							continue;
+						if (is_numeric($nbDay))
+							$price[strtolower($airport->name)][$kind][strtolower($parking->name)][strtolower($vehicle->name)]['prices'][$date->format('Y-m-d')][$nbDay] = $priceDay;
+						else
+							$price[strtolower($airport->name)][$kind][strtolower($parking->name)][strtolower($vehicle->name)]['extra_day'] = $priceDay;
+					}
+				}
+			}
+		}
+		return $price;
 	}
 
 	public static function latestPrice($grid): int
