@@ -2,6 +2,8 @@
 
 namespace ParkingManagement\API;
 
+use DateTime;
+use DateTimeZone;
 use Exception;
 use ParkingManagement\Logger;
 use ParkingManagement\Price;
@@ -31,12 +33,12 @@ class PriceAPI extends API
 						'depart' => array(
 							'description' => "Starting date for the getting price",
 							'type' => "string",
-							'required' => true,
+							'required' => false,
 						),
 						'retour' => array(
 							'description' => "Ending date for the getting price",
 							'type' => "string",
-							'required' => true,
+							'required' => false,
 						),
 						'kind' => [
 							'description' => "The kind of the price",
@@ -92,7 +94,13 @@ class PriceAPI extends API
 			$pm = getParkingManagementInstance();
 			$price = new Price($pm);
 			$price->setKind($kind);
-			$data = $price->getPrice($request);
+			if ($request->has_param('depart') && $request->has_param('retour')) {
+				$data = $price->getPrice($request);
+			} else{
+				$zone = new DateTimeZone("Europe/Paris");
+				$date = new DateTime( 'now', $zone);
+				$data = $price->priceGridFuture($date);
+			}
 		} catch (Exception $e) {
 			Logger::error("price.api.get_item", $e->getMessage());
 			return new WP_Error('error', $e->getMessage());
