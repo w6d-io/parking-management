@@ -358,9 +358,9 @@ class Price implements IShortcode, IParkingmanagement
 						if ($priceDay == 0)
 							continue;
 						if (is_numeric($nbDay))
-							$price[strtolower($airport->name)][$kind][strtolower($parking->name)][strtolower($vehicle->name)]['prices'][$date->format('Y-m-d')][$nbDay] = $priceDay;
+							$price[strtolower($airport->name)][$kind][strtolower($parking->name)][strtolower($vehicle->name)]['prices'][$date->format('Y-m-d')][$nbDay] = (int)$priceDay;
 						else
-							$price[strtolower($airport->name)][$kind][strtolower($parking->name)][strtolower($vehicle->name)]['extra_day'] = $priceDay;
+							$price[strtolower($airport->name)][$kind][strtolower($parking->name)][strtolower($vehicle->name)]['extra_day'] = (int)$priceDay;
 					}
 				}
 			}
