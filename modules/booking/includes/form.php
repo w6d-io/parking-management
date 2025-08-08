@@ -359,7 +359,7 @@ class Form
 			);
 		}
 		$form = $this->pm->prop('form');
-		if ($form['options']['keep_keys']['enabled'] === '1' && $form['options']['keep_keys']['price'] !== '0' || !empty($form['options']['keep_keys']['label']) ) {
+		if ($form['options']['keep_keys']['enabled'] === '1' && $form['options']['keep_keys']['price'] !== '0' || !empty($form['options']['keep_keys']['label']) || ($this->kind !== 'valet')) {
 			$msg = sprintf(esc_html__($form['options']['keep_keys']['label'], 'parking-management'), $form['options']['keep_keys']['price']);
 			$content[] = Html::_switch(
 				'keep_keys',
