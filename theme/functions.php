@@ -5,7 +5,7 @@ function mantine_card_styles() {
         .mantine-card {
             background: white;
             border-radius: 8px;
-            padding: 1.5rem;
+            padding: 0;
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.1);
             border: 1px solid #e9ecef;
             transition: all 0.2s ease;
@@ -13,7 +13,7 @@ function mantine_card_styles() {
             flex-direction: column;
             position: relative;
             overflow: hidden;
-            height: 100%;
+            height: 340px;
             margin-bottom: 1.5rem;
         }
 
@@ -26,7 +26,8 @@ function mantine_card_styles() {
         .mantine-card-image {
             width: 100%;
             height: 120px;
-            border-radius: 4px;
+            border-radius: 0;
+            margin: 0;
             margin-bottom: 1rem;
             display: flex;
             align-items: center;
@@ -83,6 +84,7 @@ function mantine_card_styles() {
             color: #212529;
             margin-bottom: 0.5rem;
             line-height: 1.3;
+            padding: 0 1.5rem;
         }
 
         .mantine-card-subtitle {
@@ -95,11 +97,12 @@ function mantine_card_styles() {
         .mantine-card-content {
             flex: 1;
             margin-bottom: 1rem;
+            padding: 0 1.5rem;
         }
 
         .mantine-card-text {
-            color: #495057;
-            font-size: 0.9rem;
+            color: black;
+            font-size: 1.3rem;
             line-height: 1.5;
         }
 
