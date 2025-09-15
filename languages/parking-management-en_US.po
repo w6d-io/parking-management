@@ -467,14 +467,14 @@ msgstr ""
 msgid "Keep your keys"
 msgstr ""
 
-#: modules/price/includes/page.php:116
-msgid "Extra baggage"
-msgstr ""
-
 #: modules/price/includes/page.php:122
 msgid "Oversize baggage"
 msgstr ""
 
 #: modules/price/includes/page.php:128
 msgid "Cancellation insurance"
+msgstr ""
+
+#: modules/price/includes/page.php:116
+msgid "Fees for extra baggage more than 2"
 msgstr ""

@@ -461,15 +461,11 @@ msgstr "Recharge électrique"
 
 #: modules/price/includes/page.php:98
 msgid "Night extra charge arrival"
-msgstr "tarif pour arrivée de nuit (22h-6h)"
+msgstr "tarif pour arrivée de nuit"
 
 #: modules/price/includes/page.php:104
 msgid "Keep your keys"
 msgstr "Gardez vos clés"
-
-#: modules/price/includes/page.php:116
-msgid "Extra baggage"
-msgstr "Bagage supplémentaire"
 
 #: modules/price/includes/page.php:122
 msgid "Oversize baggage"
@@ -478,3 +474,7 @@ msgstr "Bagage trop lourd"
 #: modules/price/includes/page.php:128
 msgid "Cancellation insurance"
 msgstr "Assurance annulation"
+
+#: modules/price/includes/page.php:116
+msgid "Fees for extra baggage more than 2"
+msgstr "Tarif pour plus de 2 bagages"
