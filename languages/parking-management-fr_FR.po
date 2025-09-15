@@ -50,7 +50,7 @@ msgid "Title"
 msgstr "Titre"
 
 #: admin/includes/pages.php:98
-#: admin/includes/pages.php:472
+#: admin/includes/pages.php:486
 #: modules/booking/includes/form.php:263
 msgid "Name"
 msgstr "Nom"
@@ -75,23 +75,23 @@ msgstr "Copier et coller ce code dans votre page pour inclure un message de park
 msgid "Copy and paste this code into your page to include high-season message."
 msgstr "Copier et coller ce code dans votre page pour inclure un message sur les hautes saisons"
 
-#: admin/includes/pages.php:784
-#: admin/includes/pages.php:846
+#: admin/includes/pages.php:799
+#: admin/includes/pages.php:861
 msgid "Copy and paste this code into your page where you want a notification confirmation after an order."
 msgstr "Copier et coller ce code dans votre page pour envoyer des notifications de confirmation de réservation"
 
-#: admin/includes/pages.php:790
-#: admin/includes/pages.php:852
+#: admin/includes/pages.php:805
+#: admin/includes/pages.php:867
 msgid "Copy and paste this code into your page where you want a notification cancellation after an order."
 msgstr "Copier et coller ce code dans votre page pour envoyer une notification d'annulation de réservation"
 
-#: admin/includes/pages.php:766
-#: admin/includes/pages.php:828
+#: admin/includes/pages.php:781
+#: admin/includes/pages.php:843
 msgid "Copy and paste this code into your page to include payplug payment form."
 msgstr "Copier et coller ce code dans votre page pour inclure un formulaire Payplug"
 
-#: admin/includes/pages.php:772
-#: admin/includes/pages.php:834
+#: admin/includes/pages.php:787
+#: admin/includes/pages.php:849
 msgid "Copy and paste this code into your page to include mypos payment form."
 msgstr "Copier et coller ce code dans votre page pour inclure un formulaire MyPOS"
 
@@ -103,76 +103,76 @@ msgstr "Sauvegarder"
 msgid "Browse page"
 msgstr "Selectionner une page"
 
-#: admin/includes/pages.php:432
+#: admin/includes/pages.php:446
 msgid "Address"
 msgstr "Adresse"
 
-#: admin/includes/pages.php:435
+#: admin/includes/pages.php:449
 msgid "Mobile"
 msgstr "Mobile"
 
-#: admin/includes/pages.php:438
+#: admin/includes/pages.php:452
 msgid "RCS"
 msgstr "RCS"
 
-#: admin/includes/pages.php:441
+#: admin/includes/pages.php:455
 #: modules/booking/includes/form.php:326
-#: modules/booking/includes/form.php:700
+#: modules/booking/includes/form.php:711
 msgid "Email"
 msgstr "Email"
 
-#: admin/includes/pages.php:444
+#: admin/includes/pages.php:458
 msgid "Terminal"
 msgstr "Terminal"
 
-#: admin/includes/pages.php:452
+#: admin/includes/pages.php:466
 msgid "Vehicle Type supported"
 msgstr "Type de véhicule supporté"
 
-#: admin/includes/pages.php:455
+#: admin/includes/pages.php:469
 msgid "Vehicle storage mode"
 msgstr "Mode de garde"
 
-#: admin/includes/pages.php:473
+#: admin/includes/pages.php:487
 msgid "Host"
 msgstr "Adresse"
 
-#: admin/includes/pages.php:474
+#: admin/includes/pages.php:488
 msgid "Port"
 msgstr "Port"
 
-#: admin/includes/pages.php:475
-#: admin/includes/pages.php:605
+#: admin/includes/pages.php:489
+#: admin/includes/pages.php:619
 msgid "Username"
 msgstr "Utilisateur"
 
-#: admin/includes/pages.php:476
-#: admin/includes/pages.php:608
+#: admin/includes/pages.php:490
+#: admin/includes/pages.php:622
 msgid "Password"
 msgstr "Mot de passe"
 
-#: admin/includes/pages.php:628
+#: admin/includes/pages.php:642
 msgid "Indicative"
 msgstr "Indicatif"
 
-#: admin/includes/pages.php:645
-#: admin/includes/pages.php:677
+#: admin/includes/pages.php:660
+#: admin/includes/pages.php:692
 msgid "Add a date"
 msgstr "Ajouter une date"
 
-#: admin/includes/pages.php:591
+#: admin/includes/pages.php:605
 msgid "Type"
 msgstr "Type"
 
-#: admin/includes/pages.php:611
+#: admin/includes/pages.php:625
 msgid "Sender"
 msgstr "Émetteur"
 
-#: admin/includes/pages.php:424
+#: admin/includes/pages.php:438
 msgid "Template"
 msgstr "Modèle"
 
-#: admin/includes/pages.php:893
+#: admin/includes/pages.php:908
 msgid "Select a page"
 msgstr "Sélectionner une page"
 
@@ -187,8 +187,8 @@ msgstr "Sans titre"
 msgid "Error: not a Parking Management shortcode"
 msgstr "Erreur: Ce n'est pas un shortcode géré par Parking Management"
 
-#: modules/booked/api.php:39
-#: modules/high_season/api.php:37
+#: modules/booked/api.php:47
+#: modules/high_season/api.php:45
 msgid "failed to get config"
 msgstr "la récupération de la configuration à échoué"
 
@@ -200,7 +200,7 @@ msgstr "Extérieur"
 msgid "Inside"
 msgstr "Intérieur"
 
-#: modules/booking/includes/form.php:424
+#: modules/booking/includes/form.php:435
 msgid "Personal Information"
 msgstr "Information personnel"
 
@@ -216,65 +216,65 @@ msgstr "Code postal"
 msgid "Mobile phone"
 msgstr "Mobile"
 
-#: modules/booking/includes/form.php:344
+#: modules/booking/includes/form.php:346
 msgid "Type of vehicle"
 msgstr "Type de véhicule"
 
-#: modules/booking/includes/form.php:365
+#: modules/booking/includes/form.php:376
 msgid "Car model"
 msgstr "Modèle du Véhicule"
 
-#: modules/booking/includes/form.php:382
+#: modules/booking/includes/form.php:393
 msgid "Immatriculation"
 msgstr "Immatriculation"
 
-#: modules/booking/includes/form.php:406
+#: modules/booking/includes/form.php:417
 msgid "Car Park"
 msgstr "Parking"
 
-#: modules/booking/includes/form.php:600
+#: modules/booking/includes/form.php:611
 msgid "Trip Information"
 msgstr "Voyage"
 
-#: modules/booking/includes/form.php:479
+#: modules/booking/includes/form.php:490
 msgid "Destination"
 msgstr "Destination"
 
-#: modules/booking/includes/form.php:522
+#: modules/booking/includes/form.php:533
 msgid "Terminal departure"
 msgstr "Terminal de départ"
 
-#: modules/booking/includes/form.php:538
+#: modules/booking/includes/form.php:549
 msgid "Terminal return"
 msgstr "Terminal de retour"
 
-#: modules/booking/includes/form.php:691
+#: modules/booking/includes/form.php:702
 #: modules/booking/includes/home_form.php:79
 msgid "Dropping off at"
 msgstr "Dépôt à"
 
-#: modules/booking/includes/form.php:695
+#: modules/booking/includes/form.php:706
 #: modules/booking/includes/home_form.php:96
 msgid "Landing at the airport"
 msgstr "Arrivée à l'aéroport"
 
-#: modules/booking/includes/form.php:434
+#: modules/booking/includes/form.php:445
 msgid "Number of pax"
 msgstr "Nombre de passager"
 
-#: modules/booking/includes/form.php:651
+#: modules/booking/includes/form.php:662
 msgid "Order amount"
 msgstr "Montant de la commande"
 
-#: modules/booking/includes/form.php:687
+#: modules/booking/includes/form.php:698
 msgid "Confirmation"
 msgstr "Confirmation"
 
-#: modules/booking/includes/form.php:708
+#: modules/booking/includes/form.php:719
 msgid "Confirm your order"
 msgstr "Confirmer votre commande"
 
-#: modules/booking/includes/form.php:754
+#: modules/booking/includes/form.php:765
 msgid "Loading..."
 msgstr "Chargement..."
 
@@ -321,14 +321,11 @@ msgstr "Prix"
 msgid "High Season Price"
 msgstr "Prix haute saison"
 
-#: modules/price/includes/page.php:106
+#: modules/price/includes/page.php:149
 msgid "Options price"
 msgstr "Prix des options"
 
-#: modules/price/includes/page.php:88
-#: modules/price/includes/page.php:92
-#: modules/price/includes/page.php:97
-#: modules/price/includes/page.php:101
+#: modules/price/includes/page.php:137
 msgid "person"
 msgstr "personne"
 
@@ -359,19 +356,19 @@ msgstr "Dernière étape: paiement"
 msgid "Amount of the reservation :"
 msgstr "Montant de la réservation :"
 
-#: modules/price/includes/page.php:87
+#: modules/price/includes/page.php:136
 msgid "Shuffle with more than 4 persons"
 msgstr "Navette avec plus de 4 personnes"
 
-#: modules/price/includes/page.php:96
+#: modules/price/includes/page.php:110
 msgid "Days late"
 msgstr "Jours de retard"
 
-#: modules/price/includes/page.php:100
+#: modules/price/includes/page.php:86
 msgid "Holidays (on leave and/or return)"
 msgstr "Jours férié (au départ et/ou au retour)"
 
-#: modules/price/includes/page.php:91
+#: modules/price/includes/page.php:142
 msgid "Things forgotten in the vehicle"
 msgstr "Oubli dans le véhicule"
 
@@ -379,11 +376,11 @@ msgstr "Oubli dans le véhicule"
 msgid "Your quote in 2 clicks"
 msgstr "Votre devis en 2 clicks"
 
-#: modules/booking/includes/form.php:506
+#: modules/booking/includes/form.php:517
 msgid "Departure"
 msgstr "Départ"
 
-#: modules/booking/includes/form.php:512
+#: modules/booking/includes/form.php:523
 msgid "Return"
 msgstr "Retour"
 
@@ -424,16 +421,16 @@ msgstr "Cette réservation existe déjà"
 msgid "Copy and paste this code into your page to include home valet form."
 msgstr "Copier et coller ce code dans votre page pour inclure un formulaire Voiturier en page d'accueil"
 
-#: admin/includes/pages.php:778
-#: admin/includes/pages.php:840
+#: admin/includes/pages.php:793
+#: admin/includes/pages.php:855
 msgid "Copy and paste this code into your page to include stripe payment form."
 msgstr "Copier et coller ce code dans votre page pour inclure un paiement Stripe"
 
-#: modules/booking/includes/form.php:559
+#: modules/booking/includes/form.php:570
 msgid "Date and hour"
 msgstr "Date et heure"
 
-#: modules/booking/includes/form.php:670
+#: modules/booking/includes/form.php:681
 msgid "Pay and validate"
 msgstr "Payer et valider"
 
@@ -441,18 +438,43 @@ msgstr "Payer et valider"
 msgid "Pending payment"
 msgstr "En attente de paiement"
 
-#: includes/template.php:193
+#: includes/template.php:213
+#: load.php:516
 msgid "I hereby subscribe to the cancellation insurance for %s €"
 msgstr "Je souhaite souscrire à l'assurance annulation pour %s €"
 
-#: includes/template.php:166
+#: includes/template.php:169
 msgid "I will keep my keys for %s €"
 msgstr "Je garde ma clé pour %s €"
 
-#: includes/template.php:172
+#: includes/template.php:176
 msgid "Electric Vehicle charging for %s €"
 msgstr "Charger mon véhicule électrique pour %s €"
 
-#: modules/booking/includes/form.php:363
+#: modules/booking/includes/form.php:374
 msgid "We only accommodate passenger vehicles such as compact cars, sedans, SUVs, and 4x4s."
 msgstr "Nous acceptons uniquement les véhicules de tourisme tels que les voitures compactes, les berlines, les SUV et les 4x4."
+
+#: modules/price/includes/page.php:92
+msgid "EV Charge"
+msgstr "Recharge électrique"
+
+#: modules/price/includes/page.php:98
+msgid "Night extra charge arrival"
+msgstr "tarif pour arrivée de nuit (22h-6h)"
+
+#: modules/price/includes/page.php:104
+msgid "Keep your keys"
+msgstr "Gardez vos clés"
+
+#: modules/price/includes/page.php:116
+msgid "Extra baggage"
+msgstr "Bagage supplémentaire"
+
+#: modules/price/includes/page.php:122
+msgid "Oversize baggage"
+msgstr "Bagage trop lourd"
+
+#: modules/price/includes/page.php:128
+msgid "Cancellation insurance"
+msgstr "Assurance annulation"

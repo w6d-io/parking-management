@@ -81,25 +81,68 @@ class Page implements IParkingmanagement
 	private function options(array $options): string
 	{
 		$ul_contents = [];
-		$is_valet = $this->kind === 'valet';
-		if (!$is_valet) {
+		if ($options['holiday']['enabled'] === '1') {
 			$ul_contents[] = Html::_li(array('class' => 'list-group-item'),
-				esc_html__("Shuffle with more than 4 persons", 'parking-management') . " <strong>{$options['shuttle']['price']} € / "
-				. esc_html__("person", 'parking-management') . "</strong>"
-			);
-			$ul_contents[] = 				Html::_li(array('class' => 'list-group-item'),
-				esc_html__("Things forgotten in the vehicle", 'parking-management') . " <strong>{$options['forgetting']['price']} € / "
-				. esc_html__("person", 'parking-management') . "</strong>"
+				esc_html__("Holidays (on leave and/or return)", 'parking-management') . " <strong>{$options['holiday']['price']} €</strong>"
 			);
 		}
-		$ul_contents[] = Html::_li(array('class' => 'list-group-item'),
-			esc_html__("Days late", 'parking-management') . " <strong>{$options['late']['price']} € / "
-			. esc_html__("person", 'parking-management') . "</strong>"
-		);
-		$ul_contents[] = Html::_li(array('class' => 'list-group-item'),
-			esc_html__("Holidays (on leave and/or return)", 'parking-management') . " <strong>{$options['holiday']['price']} € / "
-			. esc_html__("person", 'parking-management') . "</strong>"
-		);
+
+		if ($options['ev_charging']['enabled'] === '1') {
+			$ul_contents[] = Html::_li(array('class' => 'list-group-item'),
+				esc_html__("EV Charge", 'parking-management') . " <strong>{$options['ev_charging']['price']} €</strong>"
+			);
+		}
+
+		if ($options['night_extra_charge']['enabled'] === '1') {
+			$ul_contents[] = Html::_li(array('class' => 'list-group-item'),
+				esc_html__("Night extra charge arrival (22h-6h)", 'parking-management') . " <strong>{$options['night_extra_charge']['price']} €</strong>"
+			);
+		}
+
+		if ($options['keep_keys']['enabled'] === '1') {
+			$ul_contents[] = Html::_li(array('class' => 'list-group-item'),
+				esc_html__("Keep your keys", 'parking-management') . " <strong>{$options['keep_keys']['price']} €</strong>"
+			);
+		}
+
+		if ($options['late']['enabled'] === '1') {
+			$ul_contents[] = Html::_li(array('class' => 'list-group-item'),
+				esc_html__("Days late", 'parking-management') . " <strong>{$options['late']['price']} €</strong>"
+			);
+		}
+
+		if ($options['extra_baggage']['enabled'] === '1') {
+			$ul_contents[] = Html::_li(array('class' => 'list-group-item'),
+				esc_html__("Fees for extra baggage more than 2", 'parking-management') . " <strong>{$options['extra_baggage']['price']} €</strong>"
+			);
+		}
+
+		if ($options['oversize_baggage']['enabled'] === '1') {
+			$ul_contents[] = Html::_li(array('class' => 'list-group-item'),
+				esc_html__("Oversize baggage", 'parking-management') . " <strong>{$options['oversize_baggage']['price']} €</strong>"
+			);
+		}
+
+		if ($options['cancellation_insurance']['enabled'] === '1') {
+			$ul_contents[] = Html::_li(array('class' => 'list-group-item'),
+				esc_html__("Cancellation insurance", 'parking-management') . " <strong>{$options['cancellation_insurance']['price']} €</strong>"
+			);
+		}
+
+		$is_valet = $this->kind === 'valet';
+		if (!$is_valet) {
+			if ($options['shuttle']['enabled'] === '1') {
+				$ul_contents[] = Html::_li(array('class' => 'list-group-item'),
+					esc_html__("Shuffle with more than 4 persons", 'parking-management') . " <strong>{$options['shuttle']['price']} € / "
+					. esc_html__("person", 'parking-management') . "</strong>"
+				);
+			}
+			if ($options['forgetting']['enabled'] === '1') {
+				$ul_contents[] = Html::_li(array('class' => 'list-group-item'),
+					esc_html__("Things forgotten in the vehicle", 'parking-management') . " <strong>{$options['forgetting']['price']} €</strong>"
+				);
+			}
+		}
 
 		return Html::_div(
 			array('class' => 'col mt-5'),

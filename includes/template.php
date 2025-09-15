@@ -193,6 +193,18 @@ class Template
 					'title' => 'Forgetting',
 					'price' => 0
 				),
+				'extra_baggage' => [
+					'enabled' => "0",
+					'checked' => "0",
+					'title' => 'Extra baggage',
+					'price' => 0
+				],
+				'oversize_baggage' => [
+					'enabled' => "0",
+					'checked' => "0",
+					'title' => 'Oversize baggage',
+					'price' => 0
+				],
 				'cancellation_insurance' => [
 					'enabled' => "0",
 					'checked' => "0",

@@ -155,6 +155,9 @@ function pkmgmt_upgrade(): void
 	if (version_compare($old_version, '4.5.0', '<')) {
 		pkmgmt_migrate_to_4_5_0();
 	}
+	if (version_compare($old_version, '4.9.0', '<')) {
+		pkmgmt_migrate_to_4_9_0();
+	}
 
 	do_action('pkmgmt_upgrade', $old_version, $new_version);
 	PKMGMT::update_option('version', $new_version);
@@ -516,6 +519,31 @@ function pkmgmt_migrate_to_4_5_0(): void
 		$pm->save();
 	} catch (Exception $e) {
 		Logger::error("migrate.to.4.5.0", $e->getMessage());
+	}
+}
+
+function pkmgmt_migrate_to_4_9_0(): void
+{
+	try {
+		$pm = getParkingManagementInstance();
+		if (!$pm)
+			return;
+		$props = $pm->get_properties();
+		$props['form']['options']['extra_baggage'] =  [
+			'enabled' => "0",
+			'title' => 'Extra baggage',
+			'price' => 0
+		];
+		$props['form']['options']['oversize_baggage'] = [
+			'enabled' => "0",
+			'title' => 'Oversize baggage',
+			'price' => 0
+		];
+
+		$pm->set_properties($props);
+		$pm->save();
+	} catch (Exception $e) {
+		Logger::error("migrate.to.4.9.0", $e->getMessage());
 	}
 }
 
