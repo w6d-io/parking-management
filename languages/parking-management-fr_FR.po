@@ -461,7 +461,7 @@ msgstr "Recharge électrique"
 
 #: modules/price/includes/page.php:98
 msgid "Night extra charge arrival"
-msgstr "tarif pour arrivée de nuit"
+msgstr "tarif pour arrivée et/ou départ de nuit"
 
 #: modules/price/includes/page.php:104
 msgid "Keep your keys"
