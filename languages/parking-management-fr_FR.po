@@ -321,11 +321,11 @@ msgstr "Prix"
 msgid "High Season Price"
 msgstr "Prix haute saison"
 
-#: modules/price/includes/page.php:149
+#: modules/price/includes/page.php:150
 msgid "Options price"
 msgstr "Prix des options"
 
-#: modules/price/includes/page.php:137
+#: modules/price/includes/page.php:138
 msgid "person"
 msgstr "personne"
 
@@ -356,7 +356,7 @@ msgstr "Dernière étape: paiement"
 msgid "Amount of the reservation :"
 msgstr "Montant de la réservation :"
 
-#: modules/price/includes/page.php:136
+#: modules/price/includes/page.php:137
 msgid "Shuffle with more than 4 persons"
 msgstr "Navette avec plus de 4 personnes"
 
@@ -368,7 +368,7 @@ msgstr "Jours de retard"
 msgid "Holidays (on leave and/or return)"
 msgstr "Jours férié (au départ et/ou au retour)"
 
-#: modules/price/includes/page.php:142
+#: modules/price/includes/page.php:143
 msgid "Things forgotten in the vehicle"
 msgstr "Oubli dans le véhicule"
 
@@ -467,14 +467,18 @@ msgstr "tarif pour arrivée et/ou départ de nuit"
 msgid "Keep your keys"
 msgstr "Gardez vos clés"
 
-#: modules/price/includes/page.php:122
+#: modules/price/includes/page.php:123
 msgid "Oversize baggage"
 msgstr "Bagage trop lourd"
 
-#: modules/price/includes/page.php:128
+#: modules/price/includes/page.php:129
 msgid "Cancellation insurance"
 msgstr "Assurance annulation"
 
 #: modules/price/includes/page.php:116
-msgid "Fees for extra baggage more than 2"
-msgstr "Tarif pour plus de 2 bagages"
+msgid "Fees for extra baggage more than 2 per person"
+msgstr "Frais pour plus de 2 bagages par personne"
+
+#: modules/price/includes/page.php:117
+msgid "per extra baggage"
+msgstr "par bagage supplémentaire"

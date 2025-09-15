@@ -113,7 +113,8 @@ class Page implements IParkingmanagement
 
 		if ($options['extra_baggage']['enabled'] === '1') {
 			$ul_contents[] = Html::_li(array('class' => 'list-group-item'),
-				esc_html__("Fees for extra baggage more than 2", 'parking-management') . " <strong>{$options['extra_baggage']['price']} €</strong>"
+				esc_html__("Fees for extra baggage more than 2 per person", 'parking-management') .
+				" <strong>{$options['extra_baggage']['price']} €</strong> " . esc_html__("per extra baggage", "parking-management")
 			);
 		}
 

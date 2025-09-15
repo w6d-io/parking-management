@@ -318,11 +318,11 @@ msgstr ""
 msgid "High Season Price"
 msgstr ""
 
-#: modules/price/includes/page.php:149
+#: modules/price/includes/page.php:150
 msgid "Options price"
 msgstr ""
 
-#: modules/price/includes/page.php:137
+#: modules/price/includes/page.php:138
 msgid "person"
 msgstr ""
 
@@ -352,7 +352,7 @@ msgstr ""
 msgid "Amount of the reservation :"
 msgstr ""
 
-#: modules/price/includes/page.php:136
+#: modules/price/includes/page.php:137
 msgid "Shuffle with more than 4 persons"
 msgstr ""
 
@@ -364,7 +364,7 @@ msgstr ""
 msgid "Holidays (on leave and/or return)"
 msgstr ""
 
-#: modules/price/includes/page.php:142
+#: modules/price/includes/page.php:143
 msgid "Things forgotten in the vehicle"
 msgstr ""
 
@@ -467,14 +467,18 @@ msgstr ""
 msgid "Keep your keys"
 msgstr ""
 
-#: modules/price/includes/page.php:122
+#: modules/price/includes/page.php:123
 msgid "Oversize baggage"
 msgstr ""
 
-#: modules/price/includes/page.php:128
+#: modules/price/includes/page.php:129
 msgid "Cancellation insurance"
 msgstr ""
 
 #: modules/price/includes/page.php:116
-msgid "Fees for extra baggage more than 2"
+msgid "Fees for extra baggage more than 2 per person"
+msgstr ""
+
+#: modules/price/includes/page.php:117
+msgid "per extra baggage"
 msgstr ""
