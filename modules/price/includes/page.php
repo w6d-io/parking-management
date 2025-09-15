@@ -95,7 +95,7 @@ class Page implements IParkingmanagement
 
 		if ($options['night_extra_charge']['enabled'] === '1') {
 			$ul_contents[] = Html::_li(array('class' => 'list-group-item'),
-				esc_html__("Night extra charge arrival (22h-6h)", 'parking-management') . " <strong>{$options['night_extra_charge']['price']} €</strong>"
+				esc_html__("Night extra charge arrival", 'parking-management') . " (22h-6h) <strong>{$options['night_extra_charge']['price']} €</strong>"
 			);
 		}
 
