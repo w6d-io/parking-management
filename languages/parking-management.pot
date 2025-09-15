@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-09-15T18:44:12+00:00\n"
+"POT-Creation-Date: 2025-09-15T20:54:42+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.10.0\n"
 "X-Domain: parking-management\n"
@@ -455,29 +455,33 @@ msgid "Days late"
 msgstr ""
 
 #: modules/price/includes/page.php:116
-msgid "Fees for extra baggage more than 2"
+msgid "Fees for extra baggage more than 2 per person"
 msgstr ""
 
-#: modules/price/includes/page.php:122
+#: modules/price/includes/page.php:117
+msgid "per extra baggage"
+msgstr ""
+
+#: modules/price/includes/page.php:123
 msgid "Oversize baggage"
 msgstr ""
 
-#: modules/price/includes/page.php:128
+#: modules/price/includes/page.php:129
 msgid "Cancellation insurance"
 msgstr ""
 
-#: modules/price/includes/page.php:136
+#: modules/price/includes/page.php:137
 msgid "Shuffle with more than 4 persons"
 msgstr ""
 
-#: modules/price/includes/page.php:137
+#: modules/price/includes/page.php:138
 msgid "person"
 msgstr ""
 
-#: modules/price/includes/page.php:142
+#: modules/price/includes/page.php:143
 msgid "Things forgotten in the vehicle"
 msgstr ""
 
-#: modules/price/includes/page.php:149
+#: modules/price/includes/page.php:150
 msgid "Options price"
 msgstr ""
