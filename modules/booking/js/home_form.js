@@ -60,14 +60,17 @@ document.addEventListener('DOMContentLoaded', function () {
 		}
 	});
 
-	function easepickCreate(startDateInput, endDateInput, calendars, callback, format = 'YYYY-MM-DD') {
+	function easepickCreate(startDateInput, endDateInput, calendars, callback, format = 'YYYY-MM-DD HH:mm') {
 		new easepick.create({
 			element: startDateInput,
 			lang: 'fr-FR',
-			autoApply: true,
+			autoApply: false,
+			locale: {
+				apply: "OK"
+			},
 			calendars: calendars,
 			grid: calendars,
-			plugins: ['RangePlugin', 'LockPlugin'],
+			plugins: ['RangePlugin', 'LockPlugin', 'TimePlugin'],
 			css: [
 				'https://cdn.jsdelivr.net/npm/@easepick/bundle@1.2.1/dist/index.css',
 				external_object.home_form_css,
@@ -99,6 +102,9 @@ document.addEventListener('DOMContentLoaded', function () {
 				filter(date) {
 					return date.inArray(bookedDates, '[]');
 				},
+			},
+			TimePlugin: {
+				format: 'HH:mm',
 			}
 		});
 	}
@@ -124,8 +130,6 @@ document.addEventListener('DOMContentLoaded', function () {
 			|| $('#retour').val().length === 0
 		)
 			return;
-		$('#depart').val($('#depart').val() + ' 12:00');
-		$('#retour').val($('#retour').val() + ' 12:00');
 		$.ajax({
 			type: 'GET',
 			url: '/wp-json/pkmgmt/v1/prices',
