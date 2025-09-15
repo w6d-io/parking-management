@@ -1,4 +1,10 @@
 <?php
+function parkivia_child_enqueue_styles() {
+	wp_enqueue_style( 'parent-style', get_template_directory_uri() . '/style.css' );
+	//wp_enqueue_script( 'superfish', '/wp-content/themes/parkivia/js/superfish/superfish.min.js', array('parking-management-jquery'), null, true );
+}
+add_action( 'wp_enqueue_scripts', 'parkivia_child_enqueue_styles' );
+
 // Enqueue styles for the single Mantine card element
 function mantine_card_styles() {
 	wp_add_inline_style('wp-block-library', '
@@ -190,15 +196,46 @@ function mantine_card_styles() {
             margin-bottom: 0;
         }
 
+        /* Desktop styles (larger screens) */
+        @media (min-width: 769px) {
+            .mantine-card-title {
+                font-size: 1.8rem; /* Larger title on desktop */
+            }
+
+            .mantine-card-text {
+                font-size: 1.3rem; /* Slightly larger text on desktop */
+            }
+        }
+
+        /* Mobile styles */
         @media (max-width: 768px) {
             .mantine-card {
                 margin-bottom: 1rem;
+            }
+
+            .mantine-card-title {
+                font-size: 3rem; /* Larger title on desktop */
+            }
+
+            .mantine-card-text {
+                font-size: 2.6rem; /* Slightly larger text on desktop */
             }
 
             .mantine-card-footer {
                 flex-direction: column;
                 gap: 0.5rem;
                 align-items: flex-start;
+            }
+        }
+
+        /* Tablet styles (optional - intermediate size) */
+        @media (min-width: 769px) and (max-width: 1024px) {
+            .mantine-card-title {
+                font-size: 3rem; /* Larger title on desktop */
+            }
+
+            .mantine-card-text {
+                font-size: 2.6rem; /* Slightly larger text on desktop */
             }
         }
     ');
