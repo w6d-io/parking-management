@@ -47,17 +47,32 @@ class Page implements IParkingmanagement
 		$latest = Price::latestPrice($this->priceGrid[$site_id][1][$parking_type]);
 
 		$contents = array();
+		$headers = array();
+
+		// Build headers first
+		foreach (VehicleType::cases() as $case) {
+			if ($info['vehicle_type'][$case->key()] !== '1')
+				continue;
+			$headers[] = '<th class="align-middle text-center bg-primary">' . esc_html__("Price", "parking-management") . ' <i class="fa fa-'. $case->key() .' fa-lg"></i></th>';
+		}
+
+		// Build table rows
 		foreach ($this->priceGrid[$site_id][1][$parking_type] as $k => $v) {
-			if (is_numeric($k)) {
-				$v2 = $this->priceGrid[$site_id][1][$parking_type][$latest] + (($k - $latest) * $this->priceGrid[$site_id][1][$parking_type]['jour_supplementaire']);
-				$v = !empty($v) ? $v : $v2;
+			$contents[] = '<tr>';
+			$contents[] = '<th class="align-middle text-center" scope="row">' . $k . '</th>';
+
+			foreach (VehicleType::cases() as $case) {
+				if ($info['vehicle_type'][$case->key()] !== '1')
+					continue;
+				if (is_numeric($k)) {
+					$v2 = $this->priceGrid[$site_id][$case->value][$parking_type][$latest] + (($k - $latest) * $this->priceGrid[$site_id][$case->value][$parking_type]['jour_supplementaire']);
+					$v = !empty($v) ? $v : $v2;
+				}
+				$contents[] = '<td class="align-middle text-center">' . $v . '€</td>';
 			}
-			$contents[] = '<tr><th class="align-middle text-center" scope="row">' . $k . '</th>';
-			$contents[] = '<td class="align-middle text-center">' . $v . '€' . '</td>';
-			if ($high_season !== '0')
-				$contents[] = '<td class="align-middle text-center">' . ($v + $high_season) . '€' . '</td>';
 			$contents[] = '</tr>';
 		}
+
 		return Html::_div(array('class' => $div_class),
 			Html::_div(
 				array('class' => 'table-responsive'),
@@ -66,8 +81,7 @@ class Page implements IParkingmanagement
 				'<thead class="table-dark">',
 				'<tr>',
 				'<th class="align-middle text-center bg-primary col-1">' . esc_html__("Number of days", 'parking-management') . '</th>',
-				'<th class="align-middle text-center bg-primary">' . esc_html__("Price", "parking-management") . '</th>',
-				($high_season !== '0') ? '<th class="align-middle text-center bg-warning col-4">' . esc_html__("High Season Price", 'parking-management') . '</th>' : '',
+				implode('', $headers),
 				'</tr>',
 				'</thead>',
 				'<tbody>',

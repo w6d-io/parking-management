@@ -328,7 +328,7 @@ class Price implements IShortcode, IParkingmanagement
 	public function priceGridFuture(DateTime $date){
 		$conn = database::connect($this->kind);
 		if ($conn === false) {
-			Logger::error("price.priceGrid", database::getError());
+			Logger::error("price.priceGridFuture", database::getError());
 			throw new Exception("Database connection failed");
 		}
 		if (!$result = $conn->get_row(
@@ -341,7 +341,7 @@ class Price implements IShortcode, IParkingmanagement
 			throw new Exception("get price grid failed");
 		$price = [];
 		$row = unserialize($result['grille_tarifaire']);
-		Logger::info('price.priceDridFuture',['row' =>$row]);
+		Logger::info('price.priceGridFuture',['row' =>$row]);
 		foreach ($row as $airport_id => $airport_data ) {
 			foreach ($airport_data as $vehicle_id => $vehicle_data) {
 				foreach ($vehicle_data as $parking_type_id => $parking_type_data) {
