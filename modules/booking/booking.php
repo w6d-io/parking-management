@@ -131,6 +131,10 @@ class Booking implements IShortcode, IParkingManagement
 			if ($payment->isEnabled() && $payment->doRedirect()) {
 				$_GET['order_id'] = $order_id;
 				Logger::debug('booking.record', ["source" => $this->kind, "order_id" => $order_id]);
+				$data = $this->getData($order_id, $member_id);;
+				$not = new Notification($this->pm);
+				$not->setKind($this->kind);
+				$not->confirmation($data, $order);
 				$payment->redirect();
 			}
 			$form = $this->pm->prop($this->kind);
@@ -151,5 +155,37 @@ class Booking implements IShortcode, IParkingManagement
 	public function setKind(string $kind): void
 	{
 		$this->kind = $kind;
+	}
+
+	/**
+	 * @throws Exception
+	 */
+	private function getData($order_id, $member_id): array
+	{
+		$orderInstance = new Order($this->kind);
+		$order = $orderInstance->read($order_id);
+		$memberInstance = new Member($this->kind);
+		$member = $memberInstance->read($member_id);
+		$vehicleInstance = new Vehicle($this->kind);
+		$vehicle = $vehicleInstance->read($order_id);
+
+		$info = $this->pm->prop('info');
+		$form = $this->pm->prop('form');
+		$data = replacementData('member', $member);
+		$data = array_merge($data, replacementData('order', $order));
+		$data = array_merge($data, replacementData('vehicle', $vehicle));
+		$data['order_depart_formated'] = DatesRange::convertDate($data['order_depart'] . ' ' . $data['order_depart_heure'], 'Y-m-d H:i:s', 'd MMMM y H:mm');
+		$data['order_arrivee_formated'] = DatesRange::convertDate($data['order_arrivee'] . ' ' . $data['order_arrivee_heure'], 'Y-m-d H:i:s', 'd MMMM y H:mm');
+		$data['order_id'] = $_GET['order_id'];
+		$data['member_id'] = $order['membre_id'];
+		$data['info_name'] = $this->pm->title;
+		$data['info_address'] = $info['address'];
+		$data['info_mobile'] = $info['mobile'];
+		$data['info_rcs'] = $info['RCS'];
+		$data['info_email'] = $info['email'];
+		$data['form_options_late_price'] = $form['options']['late']['price'];
+		$data['url_access'] = home_url();
+		$data['home_url'] = home_url();
+		return $data;
 	}
 }

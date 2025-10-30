@@ -48,7 +48,7 @@ class Notification implements IShortcode
 		}
 	}
 
-	private function confirmation(array $data, Order $order): string
+	public function confirmation(array $data, Order $order): string
 	{
 		try {
 			$payment = new Payment($this->pm);
