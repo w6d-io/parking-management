@@ -146,7 +146,8 @@ class Order
 			'tva_transport' => 10,
 			'coupon_id' => 0,
 			'recherche' => sansAccent($search),
-			'status' => (Payment::validateOnPayment($this->kind) || $this->getData('parking_type') == ParkingType::VALET->value) && $payment->isEnabled() ? OrderStatus::PENDING->value : OrderStatus::CONFIRMED->value,
+			'status' => OrderStatus::CONFIRMED->value,
+//			'status' => (Payment::validateOnPayment($this->kind) || $this->getData('parking_type') == ParkingType::VALET->value) && $payment->isEnabled() ? OrderStatus::PENDING->value : OrderStatus::CONFIRMED->value,
 			'nb_retard' => 0,
 			'ip' => $_SERVER['REMOTE_ADDR'],
 			'host' => $_SERVER['HTTP_USER_AGENT'],
@@ -265,7 +266,8 @@ class Order
 			'tbl_commande',
 			[
 				'annulation' => 1,
-				'status' => OrderStatus::PENDING->value,
+				'status' => OrderStatus::CONFIRMED->value,
+//				'status' => OrderStatus::PENDING->value,
 			],
 			[
 				'id_commande' => $order_id
