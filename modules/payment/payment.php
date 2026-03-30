@@ -49,7 +49,7 @@ class Payment implements IShortcode, IParkingManagement
 			|| (array_key_exists('from', $_GET) && $_GET['from'] === 'provider')
 		)
 			return '';
-		$this->order_id = $_GET['order_id'];
+		$this->order_id = (int)$_GET['order_id'];
 		if (!$this->isEnabled())
 			return '';
 		return match ($this->provider) {

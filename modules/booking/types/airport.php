@@ -10,6 +10,8 @@ enum Airport: int
 	case ROISSY = 2;
 	case ZAVENTEM = 3;
 
+	case ORLY2 = 4;
+
 	public static function fromInt(int $value): ?self
 	{
 		foreach (self::cases() as $case) {

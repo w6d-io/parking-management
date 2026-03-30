@@ -55,11 +55,27 @@ class Stripe implements IPayment
 	{
 		try {
 			$properties = $config['properties']['stripe'];
-			$session_id = $_GET['session_id'];
+			$session_id = isset($_GET['session_id']) ? sanitize_text_field($_GET['session_id']) : '';
+			if (empty($session_id) || !preg_match('/^cs_(test|live)_[a-zA-Z0-9]+$/', $session_id)) {
+				Logger::warning("stripe.updatePaymentStatus", ["message" => "invalid session_id format"]);
+				return false;
+			}
 			$test_enabled = $config['active-test'] === '1';
 			$secretKey = $test_enabled ? $properties['secret_key_test']['value'] : $properties['secret_key']['value'];
 			$stripe = new StripeClient($secretKey);
 			$session = $stripe->checkout->sessions->retrieve($session_id);
+
+			// Verify the session metadata matches the expected order to prevent tampering
+			if (
+				!isset($session->metadata['id_commande']) ||
+				(int)$session->metadata['id_commande'] !== (int)$order_id ||
+				!isset($session->metadata['kind']) ||
+				$session->metadata['kind'] !== $kind
+			) {
+				Logger::warning("stripe.updatePaymentStatus", ["message" => "session metadata mismatch", "order_id" => $order_id]);
+				return false;
+			}
+
 			$amount = $session->amount_total / 100;
 			$payment_id = PaymentID::STRIPE;
 			if ($session->payment_status != 'paid') {
@@ -67,7 +83,8 @@ class Stripe implements IPayment
 				$amount = 0;
 			}
 			Logger::debug('stripe.updatePaymentStatus', [
-				'session' => $session,
+				'session_id' => $session_id,
+				'payment_status' => $session->payment_status,
 				'amount' => $amount,
 				'payment_id' => $payment_id
 			]);
@@ -77,20 +94,14 @@ class Stripe implements IPayment
 			return true;
 		} catch (Exception|ApiErrorException $e) {
 			$message = [
-				'payload' => $payload ?? 'n/c',
-				'exception' => $e->getMessage()
+				'exception' => 'Stripe payment status update failed'
 			];
 			if ($e instanceof ApiErrorException) {
-				$error = $e->getError(); // Using getError() instead of getStripeError()
 				$message["request_id"] = $e->getRequestId();
 				$message["http_status"] = $e->getHttpStatus();
 				$message["stripe_code"] = $e->getStripeCode();
-				if ($error) {
-					$message["Error Type"] = $error->type;
-					$message["Error Code"] = $error->code;
-				}
 			}
-			Logger::error("stripe.initPayment", $message);
+			Logger::error("stripe.updatePaymentStatus", $message);
 		}
 		return false;
 	}
