@@ -28,7 +28,7 @@ class Notification implements IShortcode
 	{
 		if (!array_key_exists('order_id', $_GET) || !is_numeric($_GET['order_id']))
 			return '';
-		if (array_key_exists('kind', $_GET))
+		if (array_key_exists('kind', $_GET) && in_array($_GET['kind'], ['booking', 'valet'], true))
 			$this->setKind($_GET['kind']);
 
 			// TODO add query string into payment validation redirect
