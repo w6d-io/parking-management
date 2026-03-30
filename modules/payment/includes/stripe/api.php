@@ -20,6 +20,7 @@ use WP_REST_Server;
 class StripeAPI extends API
 {
 	private const rest_base = '/stripe/webhook';
+	private const ALLOWED_KINDS = ['booking', 'valet'];
 
 	public function __construct()
 	{
@@ -49,11 +50,11 @@ class StripeAPI extends API
 	public function create_item($request): WP_Error|WP_REST_Response
 	{
 		$kind = $request->get_param('kind');
-		if ($kind === null) {
-			Logger::error("stripe.api.create_item", ["message" => "missing kind"]);
+		if ($kind === null || !in_array($kind, self::ALLOWED_KINDS, true)) {
+			Logger::error("stripe.api.create_item", ["message" => "missing or invalid kind"]);
 			return new WP_Error(
 				'stripe-notification-error',
-				'Missing parameter',
+				'Invalid request',
 				array('status' => WP_Http::BAD_REQUEST)
 			);
 		}
@@ -85,8 +86,9 @@ class StripeAPI extends API
 				$stripe_signature,
 				$webhook_secret
 			);
-			Logger::warning('stripe.create_item', [
-				'event' => $event,
+			Logger::info('stripe.create_item', [
+				'event_type' => $event->type,
+				'event_id' => $event->id,
 				'kind' => $kind,
 			]);
 			if ( $event->type === 'checkout.session.completed')
@@ -109,11 +111,11 @@ class StripeAPI extends API
 			return new WP_REST_Response(null, WP_Http::NO_CONTENT);
 		} catch (UnexpectedValueException|SignatureVerificationException|Exception $e) {
 			Logger::warning("stripe.api.create_item", $e->getMessage());
-			if ( $e->getMessage() == "The resource you requested could not be found.")
-				new WP_REST_Response(null, WP_Http::NO_CONTENT);
+			if ($e->getMessage() == "The resource you requested could not be found.")
+				return new WP_REST_Response(null, WP_Http::NO_CONTENT);
 			return new WP_Error(
 				'stripe-notification-error',
-				$e->getMessage(),
+				'Webhook processing failed',
 				array('status' => WP_Http::BAD_REQUEST)
 			);
 		}

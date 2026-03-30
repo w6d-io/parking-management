@@ -371,6 +371,7 @@ class Order
 		return match (strtolower($terminal)) {
 			"roissy" => Airport::ROISSY,
 			"zaventem" => Airport::ZAVENTEM,
+			"orly2" => Airport::ORLY2,
 			default => Airport::ORLY,
 		};
 	}
