@@ -370,8 +370,8 @@ class Order
 	{
 		return match (strtolower($terminal)) {
 			"roissy" => Airport::ROISSY,
-			"zaventem" => Airport::ZAVENTEM,
 			"orly2" => Airport::ORLY2,
+			"orly3" => Airport::ORLY3,
 			default => Airport::ORLY,
 		};
 	}
@@ -380,7 +380,6 @@ class Order
 	{
 		return match ($airport) {
 			Airport::ROISSY => IATA::CDG,
-			Airport::ZAVENTEM => IATA::BRU,
 			default => IATA::ORY
 		};
 	}
