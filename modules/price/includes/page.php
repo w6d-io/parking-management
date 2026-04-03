@@ -3,6 +3,8 @@
 namespace Price;
 
 use Booking\Order;
+use Booking\ParkingType;
+use Booking\VehicleType;
 use Exception;
 use ParkingManagement\Html;
 use ParkingManagement\interfaces\IParkingmanagement;
@@ -163,8 +165,36 @@ class Page implements IParkingmanagement
 		$info = $this->pm->prop('info');
 		$price = new Price($this->pm);
 		$price->setKind($kind);
-		$priceGrid = $price->priceGrid(Order::getSiteID($info['terminal']), 1, date('Y-m-d'), date('Y-m-d'));
-		$this->priceGrid = unserialize($priceGrid['grille']);
 
+		$vehicleTypeMap = [
+			'car'        => VehicleType::CAR,
+			'motorcycle' => VehicleType::MOTORCYCLE,
+			'truck'      => VehicleType::TRUCK,
+		];
+		$parkingTypeMap = [
+			'ext'   => ParkingType::OUTSIDE,
+			'int'   => ParkingType::INSIDE,
+			'valet' => ParkingType::VALET,
+		];
+
+		$vehicleType = VehicleType::CAR;
+		foreach ($info['vehicle_type'] as $key => $enabled) {
+			if ($enabled && isset($vehicleTypeMap[$key])) {
+				$vehicleType = $vehicleTypeMap[$key];
+				break;
+			}
+		}
+
+		$parkingType = ParkingType::OUTSIDE;
+		foreach ($info['type'] as $key => $enabled) {
+			if ($enabled && isset($parkingTypeMap[$key])) {
+				$parkingType = $parkingTypeMap[$key];
+				break;
+			}
+		}
+
+		$priceGrid = $price->priceGrid(Order::getSiteID($info['terminal']), 1, date('Y-m-d'), date('Y-m-d'), $vehicleType, $parkingType);
+		$grid = unserialize($priceGrid['grille']);
+		$this->priceGrid = is_array($grid) ? $grid : [];
 	}
 }
