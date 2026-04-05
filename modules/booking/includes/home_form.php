@@ -76,14 +76,17 @@ class HomeForm
 				Html::_label_with_attr(
 					array('class' => 'form-label'),
 					'depart',
-					esc_html__('Dropping off at', 'parking-management')
+					esc_html__('Start date', 'parking-management')
 				),
+				'<div class="input-group">',
+				'<span class="input-group-text"><i class="fa-solid fa-calendar-days"></i></span>',
 				Html::_index('text', 'depart', 'depart', array(
-					'class' => 'departure regular required border rounded form-control py-2',
+					'class' => 'departure regular required border rounded-end form-control py-2',
 					'autocomplete' => 'off',
 					'tabindex' => "12",
 					'value' => $post['depart'] ?? '',
 				)),
+				'</div>',
 
 			).
 			Html::_div(
@@ -93,14 +96,17 @@ class HomeForm
 						'class' => 'form-label'
 					),
 					'retour',
-					esc_html__('Landing at the airport', 'parking-management')
+					esc_html__('End date', 'parking-management')
 				),
+				'<div class="input-group">',
+				'<span class="input-group-text"><i class="fa-solid fa-calendar-days"></i></span>',
 				Html::_index('text', 'retour', 'retour', array(
-					'class' => 'return regular required border rounded form-control py-2',
+					'class' => 'return regular required border rounded-end form-control py-2',
 					'autocomplete' => 'off',
 					'tabindex' => "-1",
 					'value' => $post['retour'] ?? '',
 				)),
+				'</div>',
 			).
 			Html::_div(
 				array('class' => 'col-12 d-flex justify-content-around pt-3'),

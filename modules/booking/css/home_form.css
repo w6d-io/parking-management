@@ -11,8 +11,19 @@
 
 form#quote label.form-label {
 	color: #ffffff;
+	font-weight: 600;
 }
 
 form#quote input.form-control {
 	height: 42px;
+}
+
+form#quote .input-group-text {
+	background-color: #ffffff;
+	border-right: none;
+	color: #6c757d;
+}
+
+form#quote .input-group .form-control {
+	border-left: none;
 }

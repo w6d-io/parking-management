@@ -250,12 +250,10 @@ msgid "Terminal return"
 msgstr ""
 
 #: modules/booking/includes/form.php:702
-#: modules/booking/includes/home_form.php:79
 msgid "Dropping off at"
 msgstr ""
 
 #: modules/booking/includes/form.php:706
-#: modules/booking/includes/home_form.php:96
 msgid "Landing at the airport"
 msgstr ""
 
@@ -289,7 +287,7 @@ msgstr ""
 
 #: modules/payment/includes/mypos/api.php:73
 #: modules/payment/includes/payplug/api.php:63
-#: modules/payment/includes/stripe/api.php:64
+#: modules/payment/includes/stripe/api.php:65
 msgid "failed to get parking management instance"
 msgstr ""
 
@@ -298,31 +296,31 @@ msgstr ""
 msgid "Checkout"
 msgstr ""
 
-#: modules/price/includes/page.php:33
+#: modules/price/includes/page.php:35
 msgid "Outside lots"
 msgstr ""
 
-#: modules/price/includes/page.php:34
+#: modules/price/includes/page.php:36
 msgid "Inside lots"
 msgstr ""
 
-#: modules/price/includes/page.php:68
+#: modules/price/includes/page.php:70
 msgid "Number of days"
 msgstr ""
 
-#: modules/price/includes/page.php:69
+#: modules/price/includes/page.php:71
 msgid "Price"
 msgstr ""
 
-#: modules/price/includes/page.php:70
+#: modules/price/includes/page.php:72
 msgid "High Season Price"
 msgstr ""
 
-#: modules/price/includes/page.php:150
+#: modules/price/includes/page.php:152
 msgid "Options price"
 msgstr ""
 
-#: modules/price/includes/page.php:138
+#: modules/price/includes/page.php:140
 msgid "person"
 msgstr ""
 
@@ -352,19 +350,19 @@ msgstr ""
 msgid "Amount of the reservation :"
 msgstr ""
 
-#: modules/price/includes/page.php:137
+#: modules/price/includes/page.php:139
 msgid "Shuffle with more than 4 persons"
 msgstr ""
 
-#: modules/price/includes/page.php:110
+#: modules/price/includes/page.php:112
 msgid "Days late"
 msgstr ""
 
-#: modules/price/includes/page.php:86
+#: modules/price/includes/page.php:88
 msgid "Holidays (on leave and/or return)"
 msgstr ""
 
-#: modules/price/includes/page.php:143
+#: modules/price/includes/page.php:145
 msgid "Things forgotten in the vehicle"
 msgstr ""
 
@@ -384,11 +382,11 @@ msgstr ""
 msgid "Failed to create member"
 msgstr ""
 
-#: modules/booking/includes/order.php:164
+#: modules/booking/includes/order.php:165
 msgid "order creation failed in database insertion"
 msgstr ""
 
-#: modules/booking/includes/order.php:170
+#: modules/booking/includes/order.php:171
 msgid "fail to create order"
 msgstr ""
 
@@ -397,7 +395,7 @@ msgid "Copy and paste this code into your page to include valet booking form."
 msgstr ""
 
 #: modules/booking/includes/form.php:90
-#: modules/price/includes/page.php:35
+#: modules/price/includes/page.php:37
 msgid "Valet"
 msgstr ""
 
@@ -413,7 +411,7 @@ msgstr ""
 msgid "Copy and paste this code into your page to include price valet table."
 msgstr ""
 
-#: modules/booking/includes/order.php:162
+#: modules/booking/includes/order.php:163
 msgid "Order already exist"
 msgstr ""
 
@@ -440,14 +438,17 @@ msgstr ""
 
 #: includes/template.php:213
 #: load.php:516
+#, php-format
 msgid "I hereby subscribe to the cancellation insurance for %s €"
 msgstr ""
 
 #: includes/template.php:169
+#, php-format
 msgid "I will keep my keys for %s €"
 msgstr ""
 
 #: includes/template.php:176
+#, php-format
 msgid "Electric Vehicle charging for %s €"
 msgstr ""
 
@@ -455,30 +456,38 @@ msgstr ""
 msgid "We only accommodate passenger vehicles such as compact cars, sedans, SUVs, and 4x4s."
 msgstr ""
 
-#: modules/price/includes/page.php:92
+#: modules/price/includes/page.php:94
 msgid "EV Charge"
 msgstr ""
 
-#: modules/price/includes/page.php:98
+#: modules/price/includes/page.php:100
 msgid "Night extra charge arrival"
 msgstr ""
 
-#: modules/price/includes/page.php:104
+#: modules/price/includes/page.php:106
 msgid "Keep your keys"
 msgstr ""
 
-#: modules/price/includes/page.php:123
+#: modules/price/includes/page.php:125
 msgid "Oversize baggage"
 msgstr ""
 
-#: modules/price/includes/page.php:129
+#: modules/price/includes/page.php:131
 msgid "Cancellation insurance"
 msgstr ""
 
-#: modules/price/includes/page.php:116
+#: modules/price/includes/page.php:118
 msgid "Fees for extra baggage more than 2 per person"
 msgstr ""
 
-#: modules/price/includes/page.php:117
+#: modules/price/includes/page.php:119
 msgid "per extra baggage"
+msgstr ""
+
+#: modules/booking/includes/home_form.php:79
+msgid "Start date"
+msgstr ""
+
+#: modules/booking/includes/home_form.php:96
+msgid "End date"
 msgstr ""
