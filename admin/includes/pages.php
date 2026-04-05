@@ -378,12 +378,14 @@ class Pages
 			. '<span class="input-group-text">€</span>'
 			. '<input type="number" class="form-control" name="pkmgmt-form[options][' . $id . '][price]" aria-label="Price for ' . $option['title'] . '" value="' . $option['price'] . '">'
 			. '</div>'
-			. '<div class="input-group mb-3">'
-			. '<span class="input-group-text">Start</span>'
-			. '<input type="time" class="form-control" name="pkmgmt-form[options][' . $id . '][start]" value="' . ($option['start'] ?? '') . '">'
-			. '<span class="input-group-text">End</span>'
-			. '<input type="time" class="form-control" name="pkmgmt-form[options][' . $id . '][end]" value="' . ($option['end'] ?? '') . '">'
-			. '</div>'
+			. (isset($option['start'], $option['end']) ?
+				'<div class="input-group mb-3">'
+				. '<span class="input-group-text">Start</span>'
+				. '<input type="time" class="form-control" name="pkmgmt-form[options][' . $id . '][start]" value="' . $option['start'] . '">'
+				. '<span class="input-group-text">End</span>'
+				. '<input type="time" class="form-control" name="pkmgmt-form[options][' . $id . '][end]" value="' . $option['end'] . '">'
+				. '</div>'
+				: '')
 			. '</div>'
 			. '</div>'
 			. '</div>';

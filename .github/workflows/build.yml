@@ -48,12 +48,14 @@ jobs:
           cd temp/
           zip -r ../${{ env.REPO_NAME }}.zip .
 
-      - name: Run Release Drafter
+      - name: Create Release
         id: create_release
         uses: release-drafter/release-drafter@v6
         with:
           config-name: release-drafter.yml
           publish: true
+          tag: ${{ github.ref_name }}
+          name: 'Release ${{ github.ref_name }}'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
