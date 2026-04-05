@@ -384,7 +384,9 @@ class Price implements IShortcode, IParkingmanagement
 	{
 		if ($night_extra_charge['enabled'] === '1') {
 			$hour = (int)str_replace(":", "", $hour);
-			if (($hour < 700) || ($hour > 2100))
+			$start = (int)str_replace(":", "", $night_extra_charge['start'] ?? '21:00');
+			$end = (int)str_replace(":", "", $night_extra_charge['end'] ?? '07:00');
+			if (($hour < $end) || ($hour > $start))
 				return $night_extra_charge['price'];
 		}
 		return 0;

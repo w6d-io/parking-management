@@ -158,6 +158,9 @@ function pkmgmt_upgrade(): void
 	if (version_compare($old_version, '4.9.0', '<')) {
 		pkmgmt_migrate_to_4_9_0();
 	}
+	if (version_compare($old_version, '4.11.0', '<')) {
+		pkmgmt_migrate_to_4_11_0();
+	}
 
 	do_action('pkmgmt_upgrade', $old_version, $new_version);
 	PKMGMT::update_option('version', $new_version);
@@ -544,6 +547,23 @@ function pkmgmt_migrate_to_4_9_0(): void
 		$pm->save();
 	} catch (Exception $e) {
 		Logger::error("migrate.to.4.9.0", $e->getMessage());
+	}
+}
+
+function pkmgmt_migrate_to_4_11_0(): void
+{
+	try {
+		$pm = getParkingManagementInstance();
+		if (!$pm)
+			return;
+		$props = $pm->get_properties();
+		$props['form']['options']['night_extra_charge']['start'] = $props['form']['options']['night_extra_charge']['start'] ?? '21:00';
+		$props['form']['options']['night_extra_charge']['end'] = $props['form']['options']['night_extra_charge']['end'] ?? '07:00';
+
+		$pm->set_properties($props);
+		$pm->save();
+	} catch (Exception $e) {
+		Logger::error("migrate.to.4.11.0", $e->getMessage());
 	}
 }
 

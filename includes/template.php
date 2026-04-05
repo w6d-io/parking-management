@@ -153,7 +153,9 @@ class Template
 					'enabled' => "0",
 					'checked' => "0",
 					'title' => 'Night extra charge',
-					'price' => 0
+					'price' => 0,
+					'start' => '21:00',
+					'end' => '07:00',
 				),
 				'shuttle' => array(
 					'enabled' => "0",
