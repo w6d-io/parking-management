@@ -5,3 +5,8 @@ logs/
 *.swp
 
 payplug.log
+.claude-flow/
+.claude/
+.mcp.json
+.swarm/
+CLAUDE.md
