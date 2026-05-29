@@ -189,6 +189,7 @@ class Stripe implements IPayment
 			$customerData = [
 				'email' => $data['member']['email'],
 				'name' => $data['member']['nom'] . " " . $data['member']['prenom'],
+				'preferred_locales' => ['fr-FR'],
 				'address' => [
 					'country' => 'FR',
 					'postal_code' => $data['member']['code_postal'],
