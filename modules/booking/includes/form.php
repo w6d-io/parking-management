@@ -476,6 +476,22 @@ class Form
 						'value' => '6',
 						'label' => '6 (+14€)'
 					),
+					array(
+						'value' => '7',
+						'label' => '7 (+21€)'
+					),
+					array(
+						'value' => '8',
+						'label' => '8 (+28€)'
+					),
+					array(
+						'value' => '9',
+						'label' => '9 (+35€)'
+					),
+					array(
+						'value' => '10',
+						'label' => '10 (+42€)'
+					),
 				),
 				array_key_exists('nb_pax', $post) ? $post['nb_pax'] : ''
 			),
